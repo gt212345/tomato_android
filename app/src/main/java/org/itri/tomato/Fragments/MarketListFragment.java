@@ -37,8 +37,8 @@ public class MarketListFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         marketList = (ListView) rootView.findViewById(R.id.marketList);
-        adapter = new MarketListAdapter(getActivity(),items);
-        marketList.setAdapter(adapter);
+//        adapter = new MarketListAdapter(getActivity(),items);
+//        marketList.setAdapter(adapter);
     }
 
     void createDummyList() {
