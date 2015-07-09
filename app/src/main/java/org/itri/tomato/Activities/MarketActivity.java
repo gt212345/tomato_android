@@ -26,7 +26,6 @@ public class MarketActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_market, menu);
         return true;
     }
@@ -42,6 +41,9 @@ public class MarketActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if (id == R.id.action_search) {
+            //TODO override search behave
         }
 
         return super.onOptionsItemSelected(item);
