@@ -2,6 +2,7 @@ package org.itri.tomato.Activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.graphics.BitmapFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,10 +11,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 
+import org.itri.tomato.MarketListItem;
 import org.itri.tomato.R;
 
 import org.itri.tomato.Fragments.MarketListFragment;
+
+import java.util.ArrayList;
 
 public class MarketActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
@@ -26,6 +33,9 @@ public class MarketActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market);
+        ListView sideView = (ListView) findViewById(R.id.drawer_view);
+        MarketListAdapter adapter = new MarketListAdapter(this,createDummyList());
+        sideView.setAdapter(adapter);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_market);
         setSupportActionBar(toolbar);
@@ -72,5 +82,18 @@ public class MarketActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    ArrayList<MarketListItem> createDummyList() {
+        ArrayList<MarketListItem> items = new ArrayList<>();
+        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.fb), null, "My Account",false));
+        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.github), null, "Channels",false));
+        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.email), null, "Settings",false));
+        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.youtube), null, "Log out",false));
+        return items;
     }
 }

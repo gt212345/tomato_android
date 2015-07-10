@@ -83,16 +83,16 @@ public class MarketListFragment extends Fragment {
         for (int i = 0;i<10;i++) {
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!"));
+                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true));
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project."));
+                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true));
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!"));
+                    R.drawable.youtube), "This AutoRun script will do nothing!",true));
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!"));
+                    R.drawable.gplus), "This AutoRun script will do nothing!",true));
         }
         return items;
     }
@@ -106,16 +106,16 @@ public class MarketListFragment extends Fragment {
             }
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!"));
+                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true));
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project."));
+                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true));
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!"));
+                    R.drawable.youtube), "This AutoRun script will do nothing!",true));
             items.add(new MarketListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!"));
+                    R.drawable.gplus), "This AutoRun script will do nothing!",true));
         }
     }
 }
