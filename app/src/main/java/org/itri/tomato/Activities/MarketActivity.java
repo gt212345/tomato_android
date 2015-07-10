@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -34,6 +35,12 @@ public class MarketActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market);
         ListView sideView = (ListView) findViewById(R.id.drawer_view);
+        sideView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
         MarketListAdapter adapter = new MarketListAdapter(this,createDummyList());
         sideView.setAdapter(adapter);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
