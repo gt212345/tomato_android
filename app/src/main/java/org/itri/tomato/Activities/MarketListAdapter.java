@@ -1,7 +1,7 @@
 package org.itri.tomato.Activities;
 
 import android.content.Context;
-import android.media.Image;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +18,7 @@ import java.util.ArrayList;
  * Created by hrw on 15/7/9.
  */
 public class MarketListAdapter extends BaseAdapter {
-    Context context;
-    LayoutInflater inflater;
+    LayoutInflater li;
     ArrayList<MarketListItem> items;
     ViewHolder viewHolder;
 
@@ -29,8 +28,8 @@ public class MarketListAdapter extends BaseAdapter {
     }
 
     public MarketListAdapter(Context context, ArrayList<MarketListItem> items) {
-        inflater = LayoutInflater.from(context);
         this.items = items;
+        li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class MarketListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
         if (convertView == null) {
-            view = inflater.inflate(R.layout.item_marketlist,null);
+            view = li.inflate(R.layout.item_marketlist,null);
             viewHolder = new ViewHolder();
             viewHolder.image1 = (ImageView) view.findViewById(R.id.service1);
             viewHolder.image2 = (ImageView) view.findViewById(R.id.service2);
@@ -61,11 +60,11 @@ public class MarketListAdapter extends BaseAdapter {
         } else {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag();
-            MarketListItem item = items.get(position);
-            viewHolder.image1.setImageBitmap(item.getImage1());
-            viewHolder.image2.setImageBitmap(item.getImage2());
-            viewHolder.content.setText(item.getContent());
         }
+        MarketListItem item = items.get(position);
+        viewHolder.image1.setImageBitmap(item.getImage1());
+        viewHolder.image2.setImageBitmap(item.getImage2());
+        viewHolder.content.setText(item.getContent());
         return view;
     }
 }
