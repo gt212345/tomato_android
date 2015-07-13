@@ -1,7 +1,11 @@
 .gradle
 /local.properties
 /.idea/workspace.xml
-/.idea/libraries
+/.idea/librarieis
+/.idea
+app/app.iml
+tomato_android.iml
 .DS_Store
 /build
 /captures
+
