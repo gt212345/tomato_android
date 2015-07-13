@@ -2,6 +2,10 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
+/.idea
 .DS_Store
 /build
 /captures
+tomato_android.iml
+.idea/modules.xml
+app/app.iml
