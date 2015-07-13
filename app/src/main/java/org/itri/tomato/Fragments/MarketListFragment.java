@@ -1,6 +1,7 @@
 package org.itri.tomato.Fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
@@ -10,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
 
+import org.itri.tomato.Activities.AddAutoRunActivity;
 import org.itri.tomato.MarketListItem;
 import org.itri.tomato.R;
 
@@ -24,7 +27,7 @@ import java.util.ArrayList;
 /**
  * Created by hrw on 15/7/9.
  */
-public class MarketListFragment extends Fragment {
+public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener{
     private View rootView;
 
     ListView marketList;
@@ -76,6 +79,7 @@ public class MarketListFragment extends Fragment {
         });
         adapter = new MarketListAdapter(getActivity(),items);
         marketList.setAdapter(adapter);
+        marketList.setOnItemClickListener(this);
     }
 
     ArrayList<MarketListItem> createDummyList() {
@@ -117,5 +121,13 @@ public class MarketListFragment extends Fragment {
                     R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.gplus), "This AutoRun script will do nothing!",true));
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        //TODO switch{} view
+        Intent intent = new Intent();
+        intent.setClass(getActivity(), AddAutoRunActivity.class);
+        startActivity(intent);
     }
 }

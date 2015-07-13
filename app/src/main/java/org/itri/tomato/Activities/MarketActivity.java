@@ -2,6 +2,7 @@ package org.itri.tomato.Activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -23,7 +24,7 @@ import org.itri.tomato.Fragments.MarketListFragment;
 
 import java.util.ArrayList;
 
-public class MarketActivity extends AppCompatActivity {
+public class MarketActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     FragmentManager fragmentManager;
     Fragment fragment;
     DrawerLayout drawerLayout;
@@ -31,16 +32,16 @@ public class MarketActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market);
         ListView sideView = (ListView) findViewById(R.id.drawer_view);
-        sideView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
+        sideView.setOnItemClickListener(this);
         MarketListAdapter adapter = new MarketListAdapter(this,createDummyList());
         sideView.setAdapter(adapter);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
