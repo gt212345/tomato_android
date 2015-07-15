@@ -28,4 +28,5 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
     compile files('libs/dropbox-android-sdk-1.6.3.jar')
     compile files('libs/json_simple-1.1.jar')
+    compile 'com.sromku:simple-fb:4.0.5'
 }

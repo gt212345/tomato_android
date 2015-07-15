@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -31,12 +32,26 @@ import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.itri.tomato.R;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, View.OnClickListener{
     //home button ID
     private static final int home = 16908332;
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
+    //Test function
+    private static final String TEST_URL = "http://210.61.209.197/~n100/Tomato/tomato_api.php";
 
     /**
      * For DropBox API
@@ -44,12 +59,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private final static String APP_KEY = "v6muq2c27l4zfsi";
     private final static String APP_SECRET = "dgs7aafbchna97t";
     private DropboxAPI<AndroidAuthSession> mDBApi;
-    private static String db_acces_token;
+    private static String db_access_token;
 
     /**
      * For Facebook API
      */
     private CallbackManager callbackManager;
+    private static String fb_access_token;
+
+    /**
+     * For Server API
+     */
+    private String Action = "&action=";
+    private String Params = "&params=";
 
 
     //floating view
@@ -75,7 +97,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 // Required to complete auth, sets the access token on the session
                 mDBApi.getSession().finishAuthentication();
 
-                db_acces_token = mDBApi.getSession().getOAuth2AccessToken();
+                db_access_token = mDBApi.getSession().getOAuth2AccessToken();
             } catch (IllegalStateException e) {
                 Log.i("DbAuthLog", "Error authenticating", e);
             }
@@ -89,7 +111,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 48;//cant call getActionBarSize()
 
-        toast = Toast.makeText(this,"",Toast.LENGTH_SHORT);
+        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         /**
          * init Facebook API
@@ -103,6 +125,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             public void onSuccess(LoginResult loginResult) {
                 toast.setText("Success");
                 toast.show();
+                fb_access_token = loginResult.getAccessToken().getToken();
             }
 
             @Override
@@ -161,6 +184,47 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 mScrollView.scrollTo(0, 0);
             }
         });
+        Thread testThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Action += "Login";
+                    Params += "{}";
+                    String out = Action+Params;
+                    URL url = new URL(TEST_URL);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setDoInput(true);
+                    httpURLConnection.connect();
+                    OutputStream outputStream = httpURLConnection.getOutputStream();
+                    outputStream.write(out.getBytes());
+                    outputStream.flush();
+                    outputStream.close();
+                    InputStream inputStream = httpURLConnection.getInputStream();
+                    BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String temp = null;
+                    while ((temp = bReader.readLine()) != null) {
+                        stringBuilder.append(temp + "\n");
+                    }
+                    inputStream.close();
+                    JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+                    Log.i("Test Response",jsonObject.get("response").toString());
+                    Log.i("Test Success",jsonObject.get("success").toString());
+                    Log.i("Test Action",jsonObject.get("action").toString());
+                    Log.i("Test Params",jsonObject.get("params").toString());
+                    Log.i("Test Detail",jsonObject.get("detail").toString());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+
+                } catch (JSONException e) {
+                    Log.w("JSONException",e.toString());
+                }
+            }
+        });
+        testThread.start();
     }
 
     @Override
