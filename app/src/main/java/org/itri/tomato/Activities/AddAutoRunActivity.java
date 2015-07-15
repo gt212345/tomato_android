@@ -5,13 +5,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dropbox.client2.DropboxAPI;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.session.AppKeyPair;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -27,37 +32,72 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.itri.tomato.R;
 
-public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks{
+public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, View.OnClickListener{
+    //home button ID
     private static final int home = 16908332;
+    //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
 
+    /**
+     * For DropBox API
+     */
+    private final static String APP_KEY = "v6muq2c27l4zfsi";
+    private final static String APP_SECRET = "dgs7aafbchna97t";
+    private DropboxAPI<AndroidAuthSession> mDBApi;
+    private static String db_acces_token;
+
+    /**
+     * For Facebook API
+     */
+    private CallbackManager callbackManager;
+
+
+    //floating view
+    private View mFab;
     private View mImageView;
     private View mOverlayView;
     private ObservableScrollView mScrollView;
     private TextView mTitleView;
-    private View mFab;
     private int mActionBarSize;
     private int mFlexibleSpaceShowFabOffset;
     private int mFlexibleSpaceImageHeight;
     private int mFabMargin;
     private boolean mFabIsShown;
+
+
     Toast toast;
 
-    private CallbackManager callbackManager;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mDBApi.getSession().authenticationSuccessful()) {
+            try {
+                // Required to complete auth, sets the access token on the session
+                mDBApi.getSession().finishAuthentication();
+
+                db_acces_token = mDBApi.getSession().getOAuth2AccessToken();
+            } catch (IllegalStateException e) {
+                Log.i("DbAuthLog", "Error authenticating", e);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
-        mActionBarSize = 48;
+        mActionBarSize = 48;//cant call getActionBarSize()
 
         toast = Toast.makeText(this,"",Toast.LENGTH_SHORT);
 
+        /**
+         * init Facebook API
+         */
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_addautorun);
-        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button_fb);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -67,7 +107,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
             @Override
             public void onCancel() {
-
+                toast.setText("Canceled");
+                toast.show();
             }
 
             @Override
@@ -76,7 +117,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 toast.show();
             }
         });
-
+        /**
+         * init DropBox API
+         */
+        AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
+        AndroidAuthSession session = new AndroidAuthSession(appKeys);
+        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
+        Button loginButtonDb = (Button) findViewById(R.id.login_button_db);
+        loginButtonDb.setOnClickListener(this);
 
         mImageView = findViewById(R.id.image);
         mOverlayView = findViewById(R.id.overlay);
@@ -208,5 +256,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             ViewPropertyAnimator.animate(mFab).scaleX(0).scaleY(0).setDuration(200).start();
             mFabIsShown = false;
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        mDBApi.getSession().startOAuth2Authentication(AddAutoRunActivity.this);
     }
 }
