@@ -16,6 +16,8 @@
         android:id="@+id/service2"
         android:adjustViewBounds="false"
         android:layout_width="0dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"/>
 

@@ -7,13 +7,13 @@ import android.media.Image;
 /**
  * Created by hrw on 15/7/9.
  */
-public class MarketListItem {
+public class ListItem {
     Bitmap image1;
     Bitmap image2;
     String content;
     boolean has2Image;
 
-    public MarketListItem(Bitmap image1, Bitmap image2, String content, boolean has2Image) {
+    public ListItem(Bitmap image1, Bitmap image2, String content, boolean has2Image) {
         this.image1 = image1;
         this.image2 = image2;
         this.content = content;

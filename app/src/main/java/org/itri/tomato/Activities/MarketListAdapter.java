@@ -1,7 +1,6 @@
 package org.itri.tomato.Activities;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.itri.tomato.MarketListItem;
+import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
  */
 public class MarketListAdapter extends BaseAdapter {
     LayoutInflater li;
-    ArrayList<MarketListItem> items;
+    ArrayList<ListItem> items;
     ViewHolder viewHolder;
 
     private class ViewHolder {
@@ -27,7 +26,7 @@ public class MarketListAdapter extends BaseAdapter {
         TextView content;
     }
 
-    public MarketListAdapter(Context context, ArrayList<MarketListItem> items) {
+    public MarketListAdapter(Context context, ArrayList<ListItem> items) {
         this.items = items;
         li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -62,7 +61,7 @@ public class MarketListAdapter extends BaseAdapter {
                 view = convertView;
                 viewHolder = (ViewHolder) view.getTag();
             }
-            MarketListItem item = items.get(position);
+            ListItem item = items.get(position);
             viewHolder.image1.setImageBitmap(item.getImage1());
             viewHolder.image2.setImageBitmap(item.getImage2());
             viewHolder.content.setText(item.getContent());
@@ -78,7 +77,7 @@ public class MarketListAdapter extends BaseAdapter {
                 view = convertView;
                 viewHolder = (ViewHolder) view.getTag();
             }
-            MarketListItem item = items.get(position);
+            ListItem item = items.get(position);
             viewHolder.image1.setImageBitmap(item.getImage1());
             viewHolder.content.setText(item.getContent());
             return view;

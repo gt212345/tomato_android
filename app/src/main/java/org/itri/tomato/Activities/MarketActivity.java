@@ -2,7 +2,6 @@ package org.itri.tomato.Activities;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,11 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import org.itri.tomato.MarketListItem;
+import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
 import org.itri.tomato.Fragments.MarketListFragment;
@@ -32,8 +29,16 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     Toolbar toolbar;
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        switch (position) {
+            case 0:
+//                fragment = new
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
     }
 
     @Override
@@ -48,6 +53,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         toolbar.inflateMenu(R.menu.menu_market);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setTitle("Market List");
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer);
         toggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar, R.string.drawer_open, R.string.drawer_close){
             @Override
@@ -92,15 +98,15 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         return super.onOptionsItemSelected(item);
     }
 
-    ArrayList<MarketListItem> createDummyList() {
-        ArrayList<MarketListItem> items = new ArrayList<>();
-        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.fb), null, "My Account",false));
-        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+    ArrayList<ListItem> createDummyList() {
+        ArrayList<ListItem> items = new ArrayList<>();
+        items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.fb), null, "My AutoRuns",false));
+        items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.github), null, "Channels",false));
-        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+        items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.email), null, "Settings",false));
-        items.add(new MarketListItem(BitmapFactory.decodeResource(this.getResources(),
+        items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.youtube), null, "Log out",false));
         return items;
     }

@@ -109,7 +109,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         super.onCreate(savedInstanceState);
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
-        mActionBarSize = 48;//cant call getActionBarSize()
+        mActionBarSize = 48;
 
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
@@ -149,6 +149,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         Button loginButtonDb = (Button) findViewById(R.id.login_button_db);
         loginButtonDb.setOnClickListener(this);
 
+
+        /**
+         * init UI
+         */
         mImageView = findViewById(R.id.image);
         mOverlayView = findViewById(R.id.overlay);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
@@ -184,6 +188,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 mScrollView.scrollTo(0, 0);
             }
         });
+        /**
+         * API Test
+         */
         Thread testThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -204,7 +211,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
                     StringBuilder stringBuilder = new StringBuilder();
-                    String temp = null;
+                    String temp;
                     while ((temp = bReader.readLine()) != null) {
                         stringBuilder.append(temp + "\n");
                     }
