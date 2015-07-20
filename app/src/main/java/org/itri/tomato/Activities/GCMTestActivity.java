@@ -27,8 +27,8 @@ public class GCMTestActivity extends AppCompatActivity {
             String collapse_key;
             Log.d(TAG, "from " + from + ": " + message);
         }
-        TextView button = (TextView) findViewById(R.id.gcmMsg);
-        button.setText(button.getText().toString()+"\n: " + intent.getStringExtra("message"));
+        TextView gcmMsg = (TextView) findViewById(R.id.gcmMsg);
+        gcmMsg.setText(gcmMsg.getText().toString()+"\n: " + intent.getStringExtra("message"));
     }
 
 }
