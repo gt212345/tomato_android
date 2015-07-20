@@ -24,6 +24,7 @@ import org.itri.tomato.QuickStartPreferences;
 import org.itri.tomato.R;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -34,16 +35,27 @@ import java.util.List;
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegistIntentService";
     private static final String SENDER_ID = "948528150442";
-    private static final String REGIST_URL = "http://210.61.209.197/tomato/gcm_register.php";
+    private static final String REGIST_URL = "http://210.61.209.197/~n100/Tomato/tomato_api.php";
     private static final String[] TOPICS = {"global"};
+    private static final String UID = "wuheiru.5203@gmail.com";
+    private static final String TOKEN = "123";
+    private static final String TYPE = "android";
 
+
+    /**
+     * For Server API
+     */
+    private String Action = "&action=";
+    private String Params = "&params=";
+
+    SharedPreferences sharedPreferences;
     public RegistrationIntentService() {
         super(TAG);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         try {
             // In the (unlikely) event that multiple refresh operations occur simultaneously,
             // ensure that they are processed sequentially.
@@ -57,7 +69,6 @@ public class RegistrationIntentService extends IntentService {
                 // [END get_token]
                 Log.i(TAG, "GCM Registration Token: " + token);
 
-                // TODO: Implement this method to send any registration to your app's servers.
                 sendRegistrationToServer(token);
 
                 // Subscribe to topic channels
@@ -82,25 +93,42 @@ public class RegistrationIntentService extends IntentService {
 
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        try {
-            URL url = new URL(REGIST_URL);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setUseCaches(false);
-            httpURLConnection.setDoOutput(true);
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setRequestProperty("regId", token);
-            httpURLConnection.setRequestProperty("applicationid", "tomato");
-            httpURLConnection.setRequestProperty("userid", "wuheiru.5203@gmail.com");
-            httpURLConnection.setRequestProperty("os", "android");
-            httpURLConnection.connect();
-            if (httpURLConnection.getResponseCode() == 200) {
-                Log.w("POST","succeed");
+        if (!sharedPreferences.getBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER,false)) {
+            try {
+                Action += "PostGCMDataByDevice";
+                Params += "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"reg_id\":\"" + token + "\",\"type\":\"" + TYPE + "\"}";
+                URL url = new URL(REGIST_URL);
+                String out = Action+Params;
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.connect();
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                outputStream.write(out.getBytes());
+                outputStream.flush();
+                outputStream.close();
+//                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+//                httpURLConnection.setUseCaches(false);
+//                httpURLConnection.setDoOutput(true);
+//                httpURLConnection.setRequestMethod("POST");
+//                httpURLConnection.setRequestProperty("uid", "wuheiru.5203@gmail.com");
+//                httpURLConnection.setRequestProperty("token", "123");
+//                httpURLConnection.setRequestProperty("reg_id", token);
+//                httpURLConnection.setRequestProperty("type", "android");
+//                httpURLConnection.connect();
+                if (httpURLConnection.getResponseCode() == 200) {
+                    Log.w("POST", "succeed");
+                }
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+
+    private void unRegistrationToServer(String token) {
+        sharedPreferences.edit().putBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
     }
 
     /**

@@ -7,4 +7,5 @@
     <string name="drawer_close">close</string>
     <string name="title_activity_add_auto_run">AddAutoRunActivity</string>
     <string name="facebook_app_id">1598854787062798</string>
+    <string name="title_activity_gcmtest">GCMTestActivity</string>
 </resources>
