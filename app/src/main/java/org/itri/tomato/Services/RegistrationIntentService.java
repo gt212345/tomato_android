@@ -25,12 +25,16 @@ import org.itri.tomato.R;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegistIntentService";
     private static final String SENDER_ID = "948528150442";
+    private static final String REGIST_URL = "http://210.61.209.197/tomato/gcm_register.php";
     private static final String[] TOPICS = {"global"};
 
     public RegistrationIntentService() {
@@ -78,23 +82,21 @@ public class RegistrationIntentService extends IntentService {
 
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        List<NameValuePair> requestParameters = new ArrayList<NameValuePair>();
-        requestParameters.add(new BasicNameValuePair("regId", token));
-        requestParameters.add(new BasicNameValuePair("applicationid", "tomato"));
-        requestParameters.add(new BasicNameValuePair("userid", "wuheiru.5203@gmail.com"));
-        requestParameters.add(new BasicNameValuePair("os", "android"));
-        String url = "http://210.61.209.197/tomato/gcm_register.php";
-        HttpClient client = new DefaultHttpClient();
-        HttpPost post = new HttpPost(url);
         try {
-            post.setEntity(new UrlEncodedFormEntity(requestParameters, HTTP.UTF_8));
-            HttpResponse response = client.execute(post);
-            if (response.getStatusLine().getStatusCode() == 200) {
+            URL url = new URL(REGIST_URL);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setUseCaches(false);
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setRequestProperty("regId", token);
+            httpURLConnection.setRequestProperty("applicationid", "tomato");
+            httpURLConnection.setRequestProperty("userid", "wuheiru.5203@gmail.com");
+            httpURLConnection.setRequestProperty("os", "android");
+            httpURLConnection.connect();
+            if (httpURLConnection.getResponseCode() == 200) {
                 Log.w("POST","succeed");
             }
-        } catch (UnsupportedEncodingException e) {
-            Log.w("POST","Error: "+e.toString());
-        } catch (ClientProtocolException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
