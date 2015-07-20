@@ -25,7 +25,7 @@
         <!-- Side Drawer -->
         <ListView
             android:id="@+id/drawer_view"
-            android:layout_width="match_parent"
+            android:layout_width="200dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="#FFFFFF">

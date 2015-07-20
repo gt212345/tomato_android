@@ -2,15 +2,21 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/librarieis
-
 #IntelliJ IDEA
 .idea
 *.iml
 classes
-
 app/app.iml
 tomato_android.iml
 .DS_Store
 /build
 /captures
+/.idea/libraries
+/.idea
+.DS_Store
+/build
+/captures
+tomato_android.iml
+.idea/modules.xml
+app/app.iml
 

@@ -1,7 +1,6 @@
 package org.itri.tomato.Activities;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.itri.tomato.MarketListItem;
+import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
  */
 public class MarketListAdapter extends BaseAdapter {
     LayoutInflater li;
-    ArrayList<MarketListItem> items;
+    ArrayList<ListItem> items;
     ViewHolder viewHolder;
 
     private class ViewHolder {
@@ -27,7 +26,7 @@ public class MarketListAdapter extends BaseAdapter {
         TextView content;
     }
 
-    public MarketListAdapter(Context context, ArrayList<MarketListItem> items) {
+    public MarketListAdapter(Context context, ArrayList<ListItem> items) {
         this.items = items;
         li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -50,21 +49,38 @@ public class MarketListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
-        if (convertView == null) {
-            view = li.inflate(R.layout.item_marketlist,null);
-            viewHolder = new ViewHolder();
-            viewHolder.image1 = (ImageView) view.findViewById(R.id.service1);
-            viewHolder.image2 = (ImageView) view.findViewById(R.id.service2);
-            viewHolder.content = (TextView) view.findViewById(R.id.content);
-            view.setTag(viewHolder);
+        if(items.get(position).isHas2Image()) {
+            if (convertView == null) {
+                view = li.inflate(R.layout.item_marketlist, null);
+                viewHolder = new ViewHolder();
+                viewHolder.image1 = (ImageView) view.findViewById(R.id.service1);
+                viewHolder.image2 = (ImageView) view.findViewById(R.id.service2);
+                viewHolder.content = (TextView) view.findViewById(R.id.content);
+                view.setTag(viewHolder);
+            } else {
+                view = convertView;
+                viewHolder = (ViewHolder) view.getTag();
+            }
+            ListItem item = items.get(position);
+            viewHolder.image1.setImageBitmap(item.getImage1());
+            viewHolder.image2.setImageBitmap(item.getImage2());
+            viewHolder.content.setText(item.getContent());
+            return view;
         } else {
-            view = convertView;
-            viewHolder = (ViewHolder) view.getTag();
+            if (convertView == null) {
+                view = li.inflate(R.layout.item_drawerlist, null);
+                viewHolder = new ViewHolder();
+                viewHolder.image1 = (ImageView) view.findViewById(R.id.icon);
+                viewHolder.content = (TextView) view.findViewById(R.id.drawer_text);
+                view.setTag(viewHolder);
+            } else {
+                view = convertView;
+                viewHolder = (ViewHolder) view.getTag();
+            }
+            ListItem item = items.get(position);
+            viewHolder.image1.setImageBitmap(item.getImage1());
+            viewHolder.content.setText(item.getContent());
+            return view;
         }
-        MarketListItem item = items.get(position);
-        viewHolder.image1.setImageBitmap(item.getImage1());
-        viewHolder.image2.setImageBitmap(item.getImage2());
-        viewHolder.content.setText(item.getContent());
-        return view;
     }
 }
