@@ -2,6 +2,10 @@ package org.itri.tomato.Services;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import org.itri.tomato.Utilities;
 
 public class InstanceIDListenerService extends com.google.android.gms.iid.InstanceIDListenerService {
     /**
@@ -14,6 +18,9 @@ public class InstanceIDListenerService extends com.google.android.gms.iid.Instan
     public void onTokenRefresh() {
         // Fetch updated Instance ID token and notify our app's server of any changes (if applicable).
         Intent intent = new Intent(this, RegistrationIntentService.class);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.edit().remove(Utilities.SENT_TOKEN_TO_SERVER);
+        sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, false).apply();
         startService(intent);
     }
 

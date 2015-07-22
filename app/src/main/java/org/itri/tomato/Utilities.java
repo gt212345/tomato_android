@@ -23,14 +23,20 @@ public class Utilities {
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String USER_ID = "userId";
     public static final String USER_TOKEN = "userToken";
+    public static final String USER_ACCOUNT = "userAccount";
+    public static final String USER_PASSWORD = "userPassword";
+    public static final String HAS_ACCOUNT = "hasAccount";
+
     /**
      * For Server API
      */
     public static final String ACTION = "&action=";
     public static final String PARAMS = "&params=";
-    public static final String API_URL = "http://210.61.209.197/~n100/Tomato/tomato_api.php";
+    public static final String API_URL = "http://210.61.209.197/~n100/Tomato_sample/tomato_api.php";
     public static final String SENDER_ID = "948528150442";
     public static final String TYPE = "android";
+
+    private static int responseCode = 0;
 
     public static JSONObject API_CONNECT(String Action, String Params, boolean hasInput) {
         try {
@@ -55,7 +61,7 @@ public class Utilities {
                 }
                 inputStream.close();
                 JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-                Log.i("ResponseCode",String.valueOf(httpURLConnection.getResponseCode()));
+                responseCode = httpURLConnection.getResponseCode();
                 if (httpURLConnection.getResponseCode() == 200) {
                     return jsonObject;
                 } else {
@@ -74,5 +80,9 @@ public class Utilities {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static int getResponseCode() {
+        return responseCode;
     }
 }

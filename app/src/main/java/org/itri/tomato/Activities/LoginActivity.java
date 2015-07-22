@@ -1,6 +1,8 @@
 package org.itri.tomato.Activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     Thread loginThread;
     ProgressDialog progressDialog;
+    boolean isCancel = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +60,28 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                UserAccount = editAccount.getText().toString();
+                UserPassword = editPass.getText().toString();
+                progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
+                progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        if(isCancel) {
+                            Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
                 loginThread = new Thread(loginRunnable);
-                progressDialog = ProgressDialog.show(LoginActivity.this,"Logging in", "please wait......", true);
                 loginThread.start();
             }
-
         });
-//        Intent intent = new Intent();
-//        intent.setClass(LoginActivity.this, MarketActivity.class);
-//        startActivity(intent);
+        if(sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+            UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT,null);
+            UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
+            progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
+            loginThread = new Thread(loginRunnable);
+            loginThread.start();
+        }
     }
 
     /**
@@ -91,27 +107,42 @@ public class LoginActivity extends AppCompatActivity {
     Runnable loginRunnable = new Runnable() {
         @Override
         public void run() {
-            if(isEmailValid(editAccount.getText().toString())) {
-                UserAccount = editAccount.getText().toString();
-                UserPassword = editPass.getText().toString();
+            if(isEmailValid(UserAccount)) {
                 String Action = Utilities.ACTION + "Login";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
                 jsonObject = Utilities.API_CONNECT(Action, Params, true);
-                if (jsonObject != null) {
-                    try {
-                        JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                        Log.i("uid", jsonObjectTmp.get("uid").toString());
-                        Log.i("token", jsonObjectTmp.get("token").toString());
-                    sharedPreferences.edit().putString(Utilities.USER_ID,jsonObjectTmp.get("uid").toString());
-                    sharedPreferences.edit().putString(Utilities.USER_TOKEN,jsonObjectTmp.get("token").toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                if (Utilities.getResponseCode() == 200) {
+                    if (jsonObject != null) {
+                        try {
+                            if (jsonObject.getString("success").equals("true")) {
+                                if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+                                    sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
+                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD,UserPassword).apply();
+                                    sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
+                                }
+                                JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                                Log.i("uid", jsonObjectTmp.get("uid").toString());
+                                Log.i("token", jsonObjectTmp.get("token").toString());
+                                sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
+                                sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
+                                Intent intent = new Intent();
+                                intent.setClass(LoginActivity.this, MarketActivity.class);
+                                startActivity(intent);
+                                isCancel = false;
+                                progressDialog.dismiss();
+                                finish();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        isCancel = true;
+                        progressDialog.cancel();
                     }
                 }
             } else {
-                Toast.makeText(LoginActivity.this, "Account format invalid", Toast.LENGTH_SHORT).show();
+                isCancel = true;
+                progressDialog.cancel();
             }
-            progressDialog.cancel();
         }
     };
 }

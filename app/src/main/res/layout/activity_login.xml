@@ -58,7 +58,7 @@
         android:id="@+id/login"
         android:layout_centerInParent="true"
         android:layout_below="@+id/passLayout"
-        android:background="@android:color/holo_green_light"
+        android:background="@color/material_deep_teal_200"
         />
 
 
