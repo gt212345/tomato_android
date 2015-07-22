@@ -11,42 +11,20 @@ import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.itri.tomato.QuickStartPreferences;
-import org.itri.tomato.R;
+import org.itri.tomato.Utilities;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegistIntentService";
-    private static final String SENDER_ID = "948528150442";
-    private static final String REGIST_URL = "http://210.61.209.197/~n100/Tomato/tomato_api.php";
     private static final String[] TOPICS = {"global"};
-    private static final String UID = "wuheiru.5203@gmail.com";
     private static final String TOKEN = "123";
     private static final String TYPE = "android";
 
-
-    /**
-     * For Server API
-     */
-    private String Action = "&action=";
-    private String Params = "&params=";
 
     SharedPreferences sharedPreferences;
     public RegistrationIntentService() {
@@ -65,7 +43,7 @@ public class RegistrationIntentService extends IntentService {
                 // are local.
                 // [START get_token]
                 InstanceID instanceID = InstanceID.getInstance(this);
-                String token = instanceID.getToken(SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+                String token = instanceID.getToken(Utilities.SENDER_ID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
                 // [END get_token]
                 Log.i(TAG, "GCM Registration Token: " + token);
 
@@ -77,27 +55,28 @@ public class RegistrationIntentService extends IntentService {
                 // You should store a boolean that indicates whether the generated token has been
                 // sent to your server. If the boolean is false, send the token to your server,
                 // otherwise your server should have already received the token.
-                sharedPreferences.edit().putBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
+                sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, true).apply();
                 // [END register_for_gcm]
             }
         } catch (Exception e) {
             Log.d(TAG, "Failed to complete token refresh", e);
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
-            sharedPreferences.edit().putBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
+            sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, false).apply();
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
-        Intent registrationComplete = new Intent(QuickStartPreferences.REGISTRATION_COMPLETE);
+        Intent registrationComplete = new Intent(Utilities.REGISTRATION_COMPLETE);
         LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        if (!sharedPreferences.getBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER,false)) {
+        String UID = sharedPreferences.getString(Utilities.USER_ID, null);
+        if (!sharedPreferences.getBoolean(Utilities.SENT_TOKEN_TO_SERVER,false)) {
             try {
-                Action += "PostGCMDataByDevice";
-                Params += "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"reg_id\":\"" + token + "\",\"type\":\"" + TYPE + "\"}";
-                URL url = new URL(REGIST_URL);
+                String Action = Utilities.ACTION + "PostGCMDataByDevice";
+                String Params = Utilities.PARAMS + "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"reg_id\":\"" + token + "\",\"type\":\"" + Utilities.TYPE + "\"}";
+                URL url = new URL(Utilities.API_URL);
                 String out = Action+Params;
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
@@ -128,7 +107,7 @@ public class RegistrationIntentService extends IntentService {
     }
 
     private void unRegistrationToServer(String token) {
-        sharedPreferences.edit().putBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
+        sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, false).apply();
     }
 
     /**

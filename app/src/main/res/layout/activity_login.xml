@@ -21,7 +21,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="210dp"
-        android:id="@+id/accountbox"
+        android:id="@+id/accLayout"
         android:background="@android:color/white">
 
         <EditText
@@ -30,7 +30,7 @@
             android:text=""
             android:hint="Account"
 
-            android:id="@+id/account"
+            android:id="@+id/editAccount"
             android:layout_gravity="center_horizontal"
             android:gravity="center" />
     </LinearLayout>
@@ -39,15 +39,15 @@
         android:layout_width="210dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:id="@+id/passwdbox"
-        android:layout_below="@id/accountbox"
+        android:id="@+id/passLayout"
+        android:layout_below="@+id/accLayout"
         android:background="@android:color/white">
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text=""
+            android:inputType="textPassword"
             android:hint="Password"
-            android:id="@+id/passwd"
+            android:id="@+id/editPass"
             android:layout_gravity="center_horizontal"
             android:gravity="center" />
     </LinearLayout>
@@ -57,7 +57,7 @@
         android:text="login"
         android:id="@+id/login"
         android:layout_centerInParent="true"
-        android:layout_below="@id/passwdbox"
+        android:layout_below="@+id/passLayout"
         android:background="@android:color/holo_green_light"
         />
 

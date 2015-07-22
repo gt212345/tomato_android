@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
-import android.provider.SyncStateContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -27,7 +26,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import org.itri.tomato.ListItem;
-import org.itri.tomato.QuickStartPreferences;
+import org.itri.tomato.Utilities;
 import org.itri.tomato.R;
 import org.itri.tomato.Fragments.MarketListFragment;
 import org.itri.tomato.Services.RegistrationIntentService;
@@ -98,7 +97,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 SharedPreferences sharedPreferences =
                         PreferenceManager.getDefaultSharedPreferences(context);
                 boolean sentToken = sharedPreferences
-                        .getBoolean(QuickStartPreferences.SENT_TOKEN_TO_SERVER, false);
+                        .getBoolean(Utilities.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
                     Log.i("GCM","registered");
                 } else {
@@ -162,7 +161,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     protected void onResume() {
         super.onResume();
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(QuickStartPreferences.REGISTRATION_COMPLETE));
+                new IntentFilter(Utilities.REGISTRATION_COMPLETE));
     }
 
     @Override
