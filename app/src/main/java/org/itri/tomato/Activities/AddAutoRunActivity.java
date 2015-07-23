@@ -31,10 +31,12 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
+import org.itri.tomato.AutoRunOnClickListener;
 import org.itri.tomato.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,13 +47,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, View.OnClickListener{
+public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, View.OnClickListener {
     //home button ID
     private static final int home = 16908332;
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
-    //Test function
-    private static final String TEST_URL = "http://210.61.209.197/~n100/Tomato/tomato_api.php";
 
     /**
      * For DropBox API
@@ -86,6 +86,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private int mFabMargin;
     private boolean mFabIsShown;
 
+    private int ID;
+
 
     Toast toast;
 
@@ -107,6 +109,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ID = getIntent().getExtras().getInt("id");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 48;
@@ -188,50 +191,18 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 mScrollView.scrollTo(0, 0);
             }
         });
-        /**
-         * API Test
-         */
-        Thread testThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Action += "Login";
-                    Params += "{}";
-                    String out = Action+Params;
-                    URL url = new URL(TEST_URL);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setDoInput(true);
-                    httpURLConnection.connect();
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    outputStream.write(out.getBytes());
-                    outputStream.flush();
-                    outputStream.close();
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String temp;
-                    while ((temp = bReader.readLine()) != null) {
-                        stringBuilder.append(temp + "\n");
-                    }
-                    inputStream.close();
-                    JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-                    Log.i("Test Response",jsonObject.get("response").toString());
-                    Log.i("Test Success",jsonObject.get("success").toString());
-                    Log.i("Test Action",jsonObject.get("action").toString());
-                    Log.i("Test Params",jsonObject.get("params").toString());
-                    Log.i("Test Detail",jsonObject.get("detail").toString());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+        String content = getIntent().getStringExtra("content");
+        TextView contentView = (TextView) findViewById(R.id.content);
+        contentView.setText(content);
+        switch (ID) {
+            case 0:
 
-                } catch (JSONException e) {
-                    Log.w("JSONException",e.toString());
-                }
-            }
-        });
-        testThread.start();
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+        }
     }
 
     @Override
@@ -333,4 +304,5 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     public void onClick(View view) {
         mDBApi.getSession().startOAuth2Authentication(AddAutoRunActivity.this);
     }
+
 }

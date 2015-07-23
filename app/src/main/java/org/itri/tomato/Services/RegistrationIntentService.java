@@ -22,7 +22,6 @@ import java.net.URL;
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegistIntentService";
     private static final String[] TOPICS = {"global"};
-    private static final String TOKEN = "123";
     private static final String TYPE = "android";
 
 
@@ -72,6 +71,7 @@ public class RegistrationIntentService extends IntentService {
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
         String UID = sharedPreferences.getString(Utilities.USER_ID, null);
+        String TOKEN = sharedPreferences.getString(Utilities.USER_ACCOUNT, null);
         if (!sharedPreferences.getBoolean(Utilities.SENT_TOKEN_TO_SERVER,false)) {
             try {
                 String Action = Utilities.ACTION + "PostGCMDataByDevice";

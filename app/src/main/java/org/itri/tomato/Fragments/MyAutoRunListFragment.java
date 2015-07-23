@@ -8,12 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
+
+import java.util.ArrayList;
 
 /**
  * Created by heiruwu on 7/16/15.
  */
 public class MyAutoRunListFragment extends Fragment {
+    ArrayList<ListItem> listItems;
 //    private View rootView;
 
     @Nullable

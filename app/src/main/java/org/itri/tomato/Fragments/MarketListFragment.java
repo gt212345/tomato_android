@@ -17,10 +17,15 @@ import android.widget.ListView;
 import com.baoyz.widget.PullRefreshLayout;
 
 import org.itri.tomato.Activities.AddAutoRunActivity;
+import org.itri.tomato.AutoRunOnClickListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
 import org.itri.tomato.Activities.MarketListAdapter;
+import org.itri.tomato.Utilities;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -43,7 +48,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
         View rootView = inflater.inflate(R.layout.fragment_marketlist,container,false);
 //        this.rootView = rootView;
         handler = new Handler(Looper.getMainLooper());
-        items = createDummyList();
+//        items = createDummyList();
         marketList = (ListView) rootView.findViewById(R.id.marketList);
         marketList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -54,8 +59,8 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if(firstVisibleItem + visibleItemCount >= totalItemCount && adapter != null && isMore) {
-                    dummyLoadMore(items);
-                    adapter.notifyDataSetChanged();
+//                    dummyLoadMore(items);
+//                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -71,7 +76,8 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                 },2000);
             }
         });
-        adapter = new MarketListAdapter(getActivity(),items);
+        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+//        adapter = new MarketListAdapter(getActivity(),items);
         marketList.setAdapter(adapter);
         marketList.setOnItemClickListener(this);
         return rootView;
@@ -119,10 +125,36 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         //TODO switch{} view
         Intent intent = new Intent();
+        intent.putExtra("id", position);
+        intent.putExtra("content", items.get(position).getContent());
         intent.setClass(getActivity(), AddAutoRunActivity.class);
         startActivity(intent);
+    }
+    private ArrayList<ListItem> getAutoRunList() {
+        items = new ArrayList<>();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String Action = Utilities.ACTION + "GetAutoRunList";
+                String Params = Utilities.PARAMS + "{\"uid\":\"4\",\"token\":\"123\",\"filterName\":\"facebook\",\"page\":\"1\",\"count\":\"10\"}";
+                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                if (Utilities.getResponseCode() == 200) {
+                    try {
+                        JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                        JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
+                        for (int i = 0 ; i < jsonArray.length() ; i ++) {
+                            /* TODO Load image */
+                            items.add(new ListItem(null, null, jsonArray.getJSONObject(i).getString("autorunDesc"), false));
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+        return items;
     }
 }

@@ -106,8 +106,8 @@ public class LoginActivity extends AppCompatActivity {
                                     sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                                 }
                                 JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                                Log.i("uid", jsonObjectTmp.get("uid").toString());
-                                Log.i("token", jsonObjectTmp.get("token").toString());
+//                                Log.i("uid", jsonObjectTmp.get("uid").toString());
+//                                Log.i("token", jsonObjectTmp.get("token").toString());
                                 sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
                                 sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
                                 Intent intent = new Intent();

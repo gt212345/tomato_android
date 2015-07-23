@@ -26,13 +26,19 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import org.itri.tomato.Fragments.MyAutoRunListFragment;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.Utilities;
 import org.itri.tomato.R;
 import org.itri.tomato.Fragments.MarketListFragment;
 import org.itri.tomato.Services.RegistrationIntentService;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class MarketActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     FragmentManager fragmentManager;
@@ -52,11 +58,18 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         switch (position) {
             case 0:
-//                fragment = new
+                fragment = new MyAutoRunListFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
+                drawerLayout.closeDrawers();
                 break;
             case 1:
+                drawerLayout.closeDrawers();
                 break;
             case 2:
+                drawerLayout.closeDrawers();
+                break;
+            case 3:
+                drawerLayout.closeDrawers();
                 break;
         }
     }
