@@ -54,10 +54,20 @@
     <Button
         android:layout_width="210dp"
         android:layout_height="50dp"
-        android:text="login"
+        android:text="LOGIN"
         android:id="@+id/login"
         android:layout_centerInParent="true"
         android:layout_below="@+id/passLayout"
+        android:background="@color/material_deep_teal_200"
+        />
+
+    <Button
+        android:layout_width="210dp"
+        android:layout_height="50dp"
+        android:text="Create Accound"
+        android:id="@+id/create"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/login"
         android:background="@color/material_deep_teal_200"
         />
 

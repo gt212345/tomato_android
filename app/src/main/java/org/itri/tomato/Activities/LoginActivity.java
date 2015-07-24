@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     Thread loginThread;
     ProgressDialog progressDialog;
-    boolean isCancel = true;
+    boolean isCancel = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         editAccount = (EditText) findViewById(R.id.editAccount);
         editPass = (EditText) findViewById(R.id.editPass);
         Button login = (Button) findViewById(R.id.login);
+        Button create = (Button) findViewById(R.id.create);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,6 +58,24 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
                 loginThread = new Thread(loginRunnable);
+                loginThread.start();
+            }
+        });
+        create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserAccount = editAccount.getText().toString();
+                UserPassword = editPass.getText().toString();
+                progressDialog = ProgressDialog.show(LoginActivity.this, "Creating Account", "please wait......", true);
+                progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        if(isCancel) {
+                            Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                loginThread = new Thread(createRunnable);
                 loginThread.start();
             }
         });
@@ -99,13 +118,55 @@ public class LoginActivity extends AppCompatActivity {
                 if (Utilities.getResponseCode() == 200) {
                     if (jsonObject != null) {
                         try {
-                            if (jsonObject.getString("success").equals("true")) {
+                            JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                            if (jsonObjectTmp.getString("status").equals("200")) {
                                 if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                                     sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
                                     sharedPreferences.edit().putString(Utilities.USER_PASSWORD,UserPassword).apply();
                                     sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                                 }
-                                JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                                Log.i("uid", jsonObjectTmp.get("uid").toString());
+//                                Log.i("token", jsonObjectTmp.get("token").toString());
+                                sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
+                                sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
+                                Intent intent = new Intent();
+                                intent.setClass(LoginActivity.this, MarketActivity.class);
+                                startActivity(intent);
+                                isCancel = false;
+                                progressDialog.dismiss();
+                                finish();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        isCancel = true;
+                        progressDialog.cancel();
+                    }
+                }
+            } else {
+                isCancel = true;
+                progressDialog.cancel();
+            }
+        }
+    };
+
+    Runnable createRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if(isEmailValid(UserAccount)) {
+                String Action = Utilities.ACTION + "CreateAccount";
+                String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
+                jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                if (Utilities.getResponseCode() == 200) {
+                    if (jsonObject != null) {
+                        try {
+                            JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                            if (jsonObjectTmp.getString("status").equals("200")) {
+                                if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+                                    sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
+                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD,UserPassword).apply();
+                                    sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
+                                }
 //                                Log.i("uid", jsonObjectTmp.get("uid").toString());
 //                                Log.i("token", jsonObjectTmp.get("token").toString());
                                 sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();

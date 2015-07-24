@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -69,7 +70,16 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 drawerLayout.closeDrawers();
                 break;
             case 3:
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                sharedPreferences.edit().remove(Utilities.USER_ACCOUNT).apply();
+                sharedPreferences.edit().remove(Utilities.USER_PASSWORD).apply();
+                sharedPreferences.edit().remove(Utilities.HAS_ACCOUNT).apply();
+                sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, false).apply();
                 drawerLayout.closeDrawers();
+                Intent intent = new Intent();
+                intent.setClass(MarketActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
                 break;
         }
     }
