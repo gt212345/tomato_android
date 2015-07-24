@@ -66,7 +66,7 @@ public class MarketListAdapter extends BaseAdapter {
             viewHolder.image2.setImageBitmap(item.getImage2());
             viewHolder.content.setText(item.getContent());
             return view;
-        } else {
+        } else if (!items.get(position).isChannels()){
             if (convertView == null) {
                 view = li.inflate(R.layout.item_drawerlist, null);
                 viewHolder = new ViewHolder();
@@ -80,6 +80,19 @@ public class MarketListAdapter extends BaseAdapter {
             ListItem item = items.get(position);
             viewHolder.image1.setImageBitmap(item.getImage1());
             viewHolder.content.setText(item.getContent());
+            return view;
+        } else {
+            if (convertView == null) {
+                view = li.inflate(R.layout.item_drawerlist, null);
+                viewHolder = new ViewHolder();
+                viewHolder.image1 = (ImageView) view.findViewById(R.id.icon);
+                view.setTag(viewHolder);
+            } else {
+                view = convertView;
+                viewHolder = (ViewHolder) view.getTag();
+            }
+            ListItem item = items.get(position);
+            viewHolder.image1.setImageBitmap(item.getImage1());
             return view;
         }
     }

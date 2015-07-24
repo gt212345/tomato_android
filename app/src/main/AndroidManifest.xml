@@ -101,6 +101,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activities.ChannelsActivity"
+            android:label="@string/title_activity_channels" >
+        </activity>
+        <activity
+            android:name=".Activities.FacebookAuthActivity"
+            android:label="@string/title_activity_facebook_auth" >
+        </activity>
+        <activity
+            android:name=".Activities.DropboxAuthActivity"
+            android:label="@string/title_activity_dropbox_auth" >
+        </activity>
     </application>
 
 </manifest>

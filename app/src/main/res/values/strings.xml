@@ -9,4 +9,7 @@
     <string name="facebook_app_id">1598854787062798</string>
     <string name="title_activity_gcmtest">GCMTestActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_channels">ChannelsActivity</string>
+    <string name="title_activity_facebook_auth">FacebookAuthActivity</string>
+    <string name="title_activity_dropbox_auth">DropboxAuthActivity</string>
 </resources>

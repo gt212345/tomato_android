@@ -88,16 +88,16 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
         for (int i = 0;i<10;i++) {
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true));
+                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true));
+                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!",true));
+                    R.drawable.youtube), "This AutoRun script will do nothing!",true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!",true));
+                    R.drawable.gplus), "This AutoRun script will do nothing!",true, false));
         }
         return items;
     }
@@ -111,16 +111,16 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
             }
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true));
+                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true));
+                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!",true));
+                    R.drawable.youtube), "This AutoRun script will do nothing!",true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!",true));
+                    R.drawable.gplus), "This AutoRun script will do nothing!",true, false));
         }
     }
 
@@ -149,7 +149,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                             /* TODO Load image */
                             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                                     R.drawable.youtube), BitmapFactory.decodeResource(getActivity().getResources(),
-                                    R.drawable.instagram), jsonArray.getJSONObject(i).getString("autorunDesc"), true));
+                                    R.drawable.instagram), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

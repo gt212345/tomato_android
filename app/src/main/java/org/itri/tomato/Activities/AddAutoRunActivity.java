@@ -1,29 +1,20 @@
 package org.itri.tomato.Activities;
 
-import android.graphics.BitmapFactory;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.session.AppKeyPair;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -31,27 +22,17 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
-import org.itri.tomato.AutoRunOnClickListener;
+import org.itri.tomato.Fragments.MyAutoRunListFragment;
 import org.itri.tomato.R;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, View.OnClickListener {
+public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
     //home button ID
     private static final int home = 16908332;
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
+
+    FragmentManager fragmentManager;
+    Fragment fragment;
 
     /**
      * For DropBox API
@@ -92,67 +73,16 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Toast toast;
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mDBApi.getSession().authenticationSuccessful()) {
-            try {
-                // Required to complete auth, sets the access token on the session
-                mDBApi.getSession().finishAuthentication();
-
-                db_access_token = mDBApi.getSession().getOAuth2AccessToken();
-            } catch (IllegalStateException e) {
-                Log.i("DbAuthLog", "Error authenticating", e);
-            }
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fragment = new MyAutoRunListFragment();
         ID = getIntent().getExtras().getInt("id");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 48;
 
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-
-        /**
-         * init Facebook API
-         */
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_addautorun);
-        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button_fb);
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                toast.setText("Success");
-                toast.show();
-                fb_access_token = loginResult.getAccessToken().getToken();
-            }
-
-            @Override
-            public void onCancel() {
-                toast.setText("Canceled");
-                toast.show();
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                toast.setText("Error");
-                toast.show();
-            }
-        });
-        /**
-         * init DropBox API
-         */
-        AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
-        AndroidAuthSession session = new AndroidAuthSession(appKeys);
-        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
-        Button loginButtonDb = (Button) findViewById(R.id.login_button_db);
-        loginButtonDb.setOnClickListener(this);
-
-
         /**
          * init UI
          */
@@ -191,12 +121,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 mScrollView.scrollTo(0, 0);
             }
         });
-        String content = getIntent().getStringExtra("content");
-        TextView contentView = (TextView) findViewById(R.id.content);
-        contentView.setText(content);
         switch (ID) {
             case 0:
-
+                fragment = new AutoRunFragment();
+                fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
                 break;
             case 1:
                 break;
@@ -298,11 +226,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             ViewPropertyAnimator.animate(mFab).scaleX(0).scaleY(0).setDuration(200).start();
             mFabIsShown = false;
         }
-    }
-
-    @Override
-    public void onClick(View view) {
-        mDBApi.getSession().startOAuth2Authentication(AddAutoRunActivity.this);
     }
 
 }

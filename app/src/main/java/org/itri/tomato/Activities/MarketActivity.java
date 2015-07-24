@@ -55,6 +55,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        Intent intent;
         switch (position) {
             case 0:
                 fragment = new MyAutoRunListFragment();
@@ -62,6 +63,9 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 drawerLayout.closeDrawers();
                 break;
             case 1:
+                intent = new Intent();
+                intent.setClass(MarketActivity.this, ChannelsActivity.class);
+                startActivity(intent);
                 drawerLayout.closeDrawers();
                 break;
             case 2:
@@ -74,7 +78,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 sharedPreferences.edit().remove(Utilities.HAS_ACCOUNT).apply();
                 sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, false).apply();
                 drawerLayout.closeDrawers();
-                Intent intent = new Intent();
+                intent = new Intent();
                 intent.setClass(MarketActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
@@ -157,13 +161,13 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     ArrayList<ListItem> createDummyList() {
         ArrayList<ListItem> items = new ArrayList<>();
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.fb), null, "My AutoRuns",false));
+                R.drawable.fb), null, "My AutoRuns",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.github), null, "Channels",false));
+                R.drawable.github), null, "Channels",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.email), null, "Settings",false));
+                R.drawable.email), null, "Settings",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.youtube), null, "Log out", false));
+                R.drawable.youtube), null, "Log out", false, false));
         return items;
     }
 
