@@ -14,7 +14,7 @@ android:layout_height="match_parent">
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="@dimen/flexible_space_image_height"
-        android:background="?attr/colorPrimary" />
+        android:background="#03A9F4" />
 
     <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
         android:id="@+id/scroll"

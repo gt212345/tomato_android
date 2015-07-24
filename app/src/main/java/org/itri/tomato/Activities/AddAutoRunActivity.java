@@ -75,7 +75,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragment = new MyAutoRunListFragment();
+        fragmentManager = getFragmentManager();
         ID = getIntent().getExtras().getInt("id");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);

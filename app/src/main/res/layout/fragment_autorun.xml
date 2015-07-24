@@ -5,7 +5,92 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/exS"
+                android:textSize="30sp"
+                android:gravity="center"
+                android:background="#FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="Settings"/>
+
+            <Button
+                android:id="@+id/b1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/exS"
+                android:background="#FFFFFF"
+                android:textSize="30sp"
+                android:text="Example Button"/>
+            <Button
+                android:id="@+id/b2"
+                android:layout_below="@+id/b1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:textSize="30sp"
+                android:text="Example Button"/>
+            <TextView
+                android:id="@+id/t1"
+                android:layout_below="@+id/b2"
+                android:background="#FFFFFF"
+                android:textSize="30sp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Example content"/>
+
+            <TextView
+                android:id="@+id/t2"
+                android:layout_below="@+id/t1"
+                android:textSize="30sp"
+                android:gravity="center"
+                android:background="#FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                Example content Example content Example content Example content Example content
+                End
+                "/>
+
+
+
+        </RelativeLayout>
+
 
     </ScrollView>
 
