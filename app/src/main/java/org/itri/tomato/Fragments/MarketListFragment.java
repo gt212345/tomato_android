@@ -147,7 +147,9 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
                         for (int i = 0 ; i < jsonArray.length() ; i ++) {
                             /* TODO Load image */
-                            items.add(new ListItem(null, null, jsonArray.getJSONObject(i).getString("autorunDesc"), false));
+                            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
+                                    R.drawable.youtube), BitmapFactory.decodeResource(getActivity().getResources(),
+                                    R.drawable.instagram), jsonArray.getJSONObject(i).getString("autorunDesc"), true));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

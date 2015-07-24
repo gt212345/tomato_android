@@ -51,8 +51,6 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     /**
      * Google Cloud Messaging
      */
-    private static final String SENDER_ID = "948528150442";
-    private static final String SERVER_API_KEY = "AIzaSyBerIFX1Y_5mp0c1chZQnA5WL-oaDXrNnA";
     private BroadcastReceiver broadcastReceiver;
 
     @Override

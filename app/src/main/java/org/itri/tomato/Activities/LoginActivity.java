@@ -32,7 +32,6 @@ public class LoginActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     Thread loginThread;
     ProgressDialog progressDialog;
-    boolean isCancel = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        if(isCancel) {
-                            Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
                     }
                 });
                 loginThread = new Thread(loginRunnable);
@@ -70,9 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        if(isCancel) {
-                            Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
                     }
                 });
                 loginThread = new Thread(createRunnable);
@@ -132,19 +127,17 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent intent = new Intent();
                                 intent.setClass(LoginActivity.this, MarketActivity.class);
                                 startActivity(intent);
-                                isCancel = false;
                                 progressDialog.dismiss();
                                 finish();
+                            } else {
+                                progressDialog.cancel();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        isCancel = true;
-                        progressDialog.cancel();
                     }
                 }
             } else {
-                isCancel = true;
                 progressDialog.cancel();
             }
         }
@@ -174,19 +167,17 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent intent = new Intent();
                                 intent.setClass(LoginActivity.this, MarketActivity.class);
                                 startActivity(intent);
-                                isCancel = false;
                                 progressDialog.dismiss();
                                 finish();
+                            } else {
+                                progressDialog.cancel();
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        isCancel = true;
-                        progressDialog.cancel();
                     }
                 }
             } else {
-                isCancel = true;
                 progressDialog.cancel();
             }
         }
