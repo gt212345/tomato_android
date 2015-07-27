@@ -160,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                                     sharedPreferences.edit().putString(Utilities.USER_PASSWORD,UserPassword).apply();
                                     sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                                 }
-//                                Log.i("uid", jsonObjectTmp.get("uid").toString());
+                                Log.i("uid", jsonObjectTmp.get("uid").toString());
 //                                Log.i("token", jsonObjectTmp.get("token").toString());
                                 sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
                                 sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();

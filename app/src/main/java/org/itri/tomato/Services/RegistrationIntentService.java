@@ -12,6 +12,8 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
 import org.itri.tomato.Utilities;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -51,10 +53,6 @@ public class RegistrationIntentService extends IntentService {
                 // Subscribe to topic channels
                 subscribeTopics(token);
 
-                // You should store a boolean that indicates whether the generated token has been
-                // sent to your server. If the boolean is false, send the token to your server,
-                // otherwise your server should have already received the token.
-                sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, true).apply();
                 // [END register_for_gcm]
             }
         } catch (Exception e) {
@@ -71,21 +69,20 @@ public class RegistrationIntentService extends IntentService {
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
         String UID = sharedPreferences.getString(Utilities.USER_ID, null);
-        String TOKEN = sharedPreferences.getString(Utilities.USER_ACCOUNT, null);
+        String TOKEN = sharedPreferences.getString(Utilities.USER_TOKEN, null);
         if (!sharedPreferences.getBoolean(Utilities.SENT_TOKEN_TO_SERVER,false)) {
+            String Action = Utilities.ACTION + "PostGCMDataByDevice";
+            String Params = Utilities.PARAMS + "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"regId\":\"" + token + "\",\"type\":\"" + Utilities.TYPE + "\"}";
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
-                String Action = Utilities.ACTION + "PostGCMDataByDevice";
-                String Params = Utilities.PARAMS + "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"reg_id\":\"" + token + "\",\"type\":\"" + Utilities.TYPE + "\"}";
-                URL url = new URL(Utilities.API_URL);
-                String out = Action+Params;
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.connect();
-                OutputStream outputStream = httpURLConnection.getOutputStream();
-                outputStream.write(out.getBytes());
-                outputStream.flush();
-                outputStream.close();
+                JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                if (jsonObjectTmp.getString("status").equals("200")) {
+                    Log.w(TAG, "success");
+                    sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, true).apply();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 //                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
 //                httpURLConnection.setUseCaches(false);
 //                httpURLConnection.setDoOutput(true);
@@ -95,14 +92,6 @@ public class RegistrationIntentService extends IntentService {
 //                httpURLConnection.setRequestProperty("reg_id", token);
 //                httpURLConnection.setRequestProperty("type", "android");
 //                httpURLConnection.connect();
-                if (httpURLConnection.getResponseCode() == 200) {
-                    Log.w("POST", "succeed");
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 

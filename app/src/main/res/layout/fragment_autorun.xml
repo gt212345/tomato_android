@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/exS"
-                android:background="#FFFFFF"
+                android:background="@color/accent_material_light"
                 android:textSize="30sp"
                 android:text="Example Button"/>
             <Button
@@ -35,7 +35,7 @@
                 android:layout_below="@+id/b1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFFFFF"
+                android:background="@color/accent_material_light"
                 android:textSize="30sp"
                 android:text="Example Button"/>
             <TextView

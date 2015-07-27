@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="accent">#eeff41</color>
-    <color name="accentLight">#F4FF81</color>
+    <color name="accentLight">#FFEB3B</color>
+    <color name="actionBar">#2196F3</color>
+    <color name="statusBar">#1976D2</color>
 </resources>

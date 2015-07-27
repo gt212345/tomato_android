@@ -1,4 +1,4 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;

@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -34,7 +36,6 @@ import java.util.ArrayList;
  */
 public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener{
 //    private View rootView;
-
     ListView marketList;
     MarketListAdapter adapter;
     ArrayList<ListItem> items;
@@ -46,6 +47,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_marketlist,container,false);
+        getActivity().setTitle("Market Lists");
 //        this.rootView = rootView;
         handler = new Handler(Looper.getMainLooper());
 //        items = createDummyList();
@@ -58,7 +60,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if(firstVisibleItem + visibleItemCount >= totalItemCount && adapter != null && isMore) {
+                if (firstVisibleItem + visibleItemCount >= totalItemCount && adapter != null && isMore) {
 //                    dummyLoadMore(items);
 //                    adapter.notifyDataSetChanged();
                 }
@@ -73,14 +75,18 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                     public void run() {
                         pullRefreshLayout.setRefreshing(false);
                     }
-                },2000);
+                }, 2000);
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList());
-//        adapter = new MarketListAdapter(getActivity(),items);
         marketList.setAdapter(adapter);
         marketList.setOnItemClickListener(this);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     ArrayList<ListItem> createDummyList() {
@@ -139,7 +145,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
             @Override
             public void run() {
                 String Action = Utilities.ACTION + "GetAutoRunList";
-                String Params = Utilities.PARAMS + "{\"uid\":\"4\",\"token\":\"123\",\"filterName\":\"facebook\",\"page\":\"1\",\"count\":\"10\"}";
+                String Params = Utilities.PARAMS + "{\"uid\":\"4\",\"token\":\"123\",\"filterName\":\"\",\"page\":\"1\",\"count\":\"10\"}";
                 JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
                 if (Utilities.getResponseCode() == 200) {
                     try {

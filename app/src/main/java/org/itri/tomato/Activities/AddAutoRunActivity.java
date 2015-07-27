@@ -1,5 +1,6 @@
 package org.itri.tomato.Activities;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.os.Build;
@@ -8,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,8 +25,10 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
-import org.itri.tomato.Fragments.MyAutoRunListFragment;
+import org.itri.tomato.Fragments.AutoRunFragment;
 import org.itri.tomato.R;
+
+import java.lang.annotation.Target;
 
 public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
     //home button ID
@@ -72,6 +77,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     Toast toast;
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,10 +85,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         ID = getIntent().getExtras().getInt("id");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
-        mActionBarSize = 48;
-
+        mActionBarSize = 125;/**/
+        setTitle("Published AutoRun");
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         setContentView(R.layout.activity_addautorun);
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         /**
          * init UI
          */
@@ -164,14 +174,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         ViewHelper.setAlpha(mOverlayView, ScrollUtils.getFloat((float) scrollY / flexibleRange, 0, 1));
 
         // Scale title text
-        float scale = 1 + ScrollUtils.getFloat((flexibleRange - scrollY) / flexibleRange, 0, MAX_TEXT_SCALE_DELTA);
+        float scale = (float)0.95 + ScrollUtils.getFloat((flexibleRange - scrollY) / flexibleRange, 0, MAX_TEXT_SCALE_DELTA);
         ViewHelper.setPivotX(mTitleView, 0);
         ViewHelper.setPivotY(mTitleView, 0);
         ViewHelper.setScaleX(mTitleView, scale);
         ViewHelper.setScaleY(mTitleView, scale);
 
         // Translate title text
-        int maxTitleTranslationY = (int) (mFlexibleSpaceImageHeight - mTitleView.getHeight() * scale);
+        int maxTitleTranslationY = (int) (mFlexibleSpaceImageHeight - (mTitleView.getHeight()) * scale) + 40 /*set here*/;
         int titleTranslationY = maxTitleTranslationY - scrollY;
         ViewHelper.setTranslationY(mTitleView, titleTranslationY);
 
