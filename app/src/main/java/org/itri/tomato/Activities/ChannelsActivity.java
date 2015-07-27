@@ -1,12 +1,16 @@
 package org.itri.tomato.Activities;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
@@ -19,8 +23,13 @@ import java.util.ArrayList;
 
 public class ChannelsActivity extends ToolbarControlBaseActivity<ObservableGridView> {
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected int getLayoutResId() {
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         return R.layout.activity_channels;
     }
 

@@ -2,13 +2,18 @@ package org.itri.tomato.Fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +44,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     ListView marketList;
     MarketListAdapter adapter;
     ArrayList<ListItem> items;
+    ArrayList<Bitmap> bitmaps;
     PullRefreshLayout pullRefreshLayout;
     Handler handler;
     boolean isMore = true;
@@ -47,6 +53,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_marketlist,container,false);
+        createDummyList();
         getActivity().setTitle("Market Lists");
 //        this.rootView = rootView;
         handler = new Handler(Looper.getMainLooper());
@@ -73,6 +80,9 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+                        marketList.setAdapter(adapter);
+                        adapter.notifyDataSetChanged();
                         pullRefreshLayout.setRefreshing(false);
                     }
                 }, 2000);
@@ -81,31 +91,83 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
         adapter = new MarketListAdapter(getActivity(), getAutoRunList());
         marketList.setAdapter(adapter);
         marketList.setOnItemClickListener(this);
+        adapter.notifyDataSetChanged();
         return rootView;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
-    ArrayList<ListItem> createDummyList() {
-        ArrayList<ListItem> items = new ArrayList<>();
-        for (int i = 0;i<10;i++) {
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true, false));
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true, false));
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!",true, false));
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!",true, false));
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_market, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        //TODO create own icons
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
         }
-        return items;
+        if (id == R.id.action_search) {
+            //TODO override search behave
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    void createDummyList() {
+        bitmaps = new ArrayList<>();
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.raining));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.home));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.fb));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.person));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.title));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.person));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
     }
 
     void dummyLoadMore(ArrayList<ListItem> items) {
@@ -151,11 +213,11 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                     try {
                         JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
-                        for (int i = 0 ; i < jsonArray.length() ; i ++) {
-                            /* TODO Load image */
-                            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                                    R.drawable.youtube), BitmapFactory.decodeResource(getActivity().getResources(),
-                                    R.drawable.instagram), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
+                        int a = 0;
+                        for (int i = 0 ; i < jsonArray.length() ; i++) {
+                            int t = a + 1;
+                            items.add(new ListItem(bitmaps.get(a), bitmaps.get(t), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
+                            a += 2;
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

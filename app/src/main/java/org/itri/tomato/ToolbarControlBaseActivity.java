@@ -3,7 +3,9 @@ package org.itri.tomato;
 /**
  * Created by heiruwu on 7/24/15.
  */
+import android.annotation.TargetApi;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,12 +25,14 @@ public abstract class ToolbarControlBaseActivity<S extends Scrollable> extends A
     private Toolbar mToolbar;
     private S mScrollable;
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResId());
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setElevation(10);
         setSupportActionBar(mToolbar);
 
         mScrollable = createScrollable();
