@@ -4,17 +4,15 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -24,7 +22,7 @@ import android.widget.ListView;
 import com.baoyz.widget.PullRefreshLayout;
 
 import org.itri.tomato.Activities.AddAutoRunActivity;
-import org.itri.tomato.AutoRunOnClickListener;
+import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
@@ -39,14 +37,15 @@ import java.util.ArrayList;
 /**
  * Created by hrw on 15/7/9.
  */
-public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener{
-//    private View rootView;
+public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener, DataRetrieveListener{
+    private View rootView;
     ListView marketList;
     MarketListAdapter adapter;
     ArrayList<ListItem> items;
     ArrayList<Bitmap> bitmaps;
     PullRefreshLayout pullRefreshLayout;
     Handler handler;
+    DataRetrieveListener listener;
     boolean isMore = true;
 
     @Nullable
@@ -54,8 +53,9 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_marketlist,container,false);
         createDummyList();
+        listener = MarketListFragment.this;
         getActivity().setTitle("Market Lists");
-//        this.rootView = rootView;
+        this.rootView = rootView;
         handler = new Handler(Looper.getMainLooper());
 //        items = createDummyList();
         marketList = (ListView) rootView.findViewById(R.id.marketList);
@@ -81,17 +81,12 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                     @Override
                     public void run() {
                         adapter = new MarketListAdapter(getActivity(), getAutoRunList());
-                        marketList.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
                         pullRefreshLayout.setRefreshing(false);
                     }
                 }, 2000);
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList());
-        marketList.setAdapter(adapter);
-        marketList.setOnItemClickListener(this);
-        adapter.notifyDataSetChanged();
         return rootView;
     }
 
@@ -219,6 +214,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                             items.add(new ListItem(bitmaps.get(a), bitmaps.get(t), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
                             a += 2;
                         }
+                        listener.onFinish();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -226,5 +222,17 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
             }
         }).start();
         return items;
+    }
+
+    @Override
+    public void onFinish() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                marketList.setAdapter(adapter);
+                marketList.setOnItemClickListener(MarketListFragment.this);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 }

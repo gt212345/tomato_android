@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/service1"
             android:adjustViewBounds="true"
-            android:scaleType="centerInside"
+            android:scaleType="fitCenter"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:layout_width="0dp"
@@ -24,7 +24,7 @@
         <ImageView
             android:id="@+id/service2"
             android:adjustViewBounds="true"
-            android:scaleType="centerInside"
+            android:scaleType="fitCenter"
             android:layout_width="0dp"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
