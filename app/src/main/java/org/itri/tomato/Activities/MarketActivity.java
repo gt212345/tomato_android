@@ -160,15 +160,15 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     ArrayList<ListItem> createDummyList() {
         ArrayList<ListItem> items = new ArrayList<>();
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.email), null, "Market List",false, false));
+                R.drawable.marketlist), null, "Market List",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.fb), null, "My AutoRuns",false, false));
+                R.drawable.my), null, "My AutoRuns",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.github), null, "Channels",false, false));
+                R.drawable.channels), null, "Channels",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.email), null, "Settings",false, false));
+                R.drawable.settings), null, "Settings",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.youtube), null, "Log out", false, false));
+                R.drawable.logout), null, "Log out", false, false));
         return items;
     }
 
