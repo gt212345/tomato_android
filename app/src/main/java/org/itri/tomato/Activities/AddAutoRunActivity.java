@@ -3,8 +3,10 @@ package org.itri.tomato.Activities;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +29,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.itri.tomato.Fragments.AutoRunFragment;
 import org.itri.tomato.R;
+import org.itri.tomato.Utilities;
 
 import java.lang.annotation.Target;
 
@@ -38,7 +41,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     FragmentManager fragmentManager;
     Fragment fragment;
-
+    SharedPreferences sharedPreferences;
     /**
      * For DropBox API
      */
@@ -81,6 +84,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         fragmentManager = getFragmentManager();
         ID = getIntent().getExtras().getInt("id");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
@@ -89,10 +93,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         setTitle("Published AutoRun");
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         setContentView(R.layout.activity_addautorun);
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        }
         /**
          * init UI
          */
@@ -107,7 +113,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(AddAutoRunActivity.this, "FAB is clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddAutoRunActivity.this, "AutoRun added", Toast.LENGTH_SHORT).show();
             }
         });
         mFabMargin = getResources().getDimensionPixelSize(R.dimen.margin_standard);

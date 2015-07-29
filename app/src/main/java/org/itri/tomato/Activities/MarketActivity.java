@@ -52,6 +52,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle toggle;
     Toolbar toolbar;
+    SharedPreferences sharedPreferences;
 
     /**
      * Google Cloud Messaging
@@ -106,10 +107,13 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market);
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        }
         APITest();
         ListView sideView = (ListView) findViewById(R.id.drawer_view);
         sideView.setOnItemClickListener(this);
@@ -160,13 +164,13 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     ArrayList<ListItem> createDummyList() {
         ArrayList<ListItem> items = new ArrayList<>();
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.marketlist), null, "Market List",false, false));
+                R.drawable.marketlist), null, "Market List", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.my), null, "My AutoRuns",false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.channels), null, "Channels",false, false));
+                R.drawable.channels), null, "Channels", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.settings), null, "Settings",false, false));
+                R.drawable.settings), null, "Settings", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.logout), null, "Log out", false, false));
         return items;

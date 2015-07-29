@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -18,18 +20,23 @@ import com.github.ksoichiro.android.observablescrollview.ObservableGridView;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 import org.itri.tomato.ToolbarControlBaseActivity;
+import org.itri.tomato.Utilities;
 
 import java.util.ArrayList;
 
 public class ChannelsActivity extends ToolbarControlBaseActivity<ObservableGridView> {
+    SharedPreferences sharedPreferences;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected int getLayoutResId() {
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        }
         return R.layout.activity_channels;
     }
 

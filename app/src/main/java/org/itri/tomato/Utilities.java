@@ -26,6 +26,7 @@ public class Utilities {
     public static final String USER_ACCOUNT = "userAccount";
     public static final String USER_PASSWORD = "userPassword";
     public static final String HAS_ACCOUNT = "hasAccount";
+    public static final String SDK_VERSION = "sdkVersion";
 
     /**
      * For Server API
