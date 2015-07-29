@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * method is used for checking valid email id format.
      *
-     * @param email
+     * @param email input
      * @return boolean true for valid false for invalid
      */
     private static boolean isEmailValid(String email) {

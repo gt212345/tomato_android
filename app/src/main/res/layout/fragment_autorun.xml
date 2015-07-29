@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="none">
@@ -22,9 +24,16 @@
                 android:layout_alignParentTop="true"
                 android:text="Settings"/>
 
+            <com.google.android.gms.maps.MapView
+                android:layout_below="@id/exS"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:id="@+id/map"
+                />
+
             <Button
                 android:id="@+id/b2"
-                android:layout_below="@+id/exS"
+                android:layout_below="@+id/map"
                 android:elevation="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,31 +44,12 @@
             <TextView
                 android:id="@+id/t2"
                 android:layout_below="@+id/b2"
-                android:textSize="30sp"
+                android:textSize="35sp"
                 android:gravity="center"
                 android:background="#FFFFFF"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
-                Example content Example content Example content Example content Example content
                 Example content Example content Example content Example content Example content
                 Example content Example content Example content Example content Example content
                 Example content Example content Example content Example content Example content
