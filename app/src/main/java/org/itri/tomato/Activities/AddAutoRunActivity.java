@@ -27,11 +27,9 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
-import org.itri.tomato.Fragments.AutoRunFragment;
+import org.itri.tomato.Fragments.MapFragment;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
-
-import java.lang.annotation.Target;
 
 public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
     //home button ID
@@ -139,7 +137,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         });
         switch (ID) {
             case 0:
-                fragment = new AutoRunFragment();
+                fragment = new MapFragment();
                 fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
                 break;
             case 1:

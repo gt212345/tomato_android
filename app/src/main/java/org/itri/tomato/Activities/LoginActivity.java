@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -50,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
                 progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
+                timerDelayRemoveDialog(5000, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
@@ -184,4 +186,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void timerDelayRemoveDialog(long time, final ProgressDialog d){
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                d.dismiss();
+                Toast.makeText(LoginActivity.this, "Server not responding", Toast.LENGTH_SHORT).show();
+            }
+        }, time);
+    }
+
 }
