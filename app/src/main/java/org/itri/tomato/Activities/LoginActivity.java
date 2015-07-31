@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
                 progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
-                timerDelayRemoveDialog(5, progressDialog);
+                timerDelayRemoveDialog(5000, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
@@ -82,6 +82,7 @@ public class LoginActivity extends AppCompatActivity {
             UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT,null);
             UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
             progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
+            timerDelayRemoveDialog(5, progressDialog);
             loginThread = new Thread(loginRunnable);
             loginThread.start();
         }
