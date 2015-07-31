@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
             UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT,null);
             UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
             progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
-            timerDelayRemoveDialog(5, progressDialog);
+            timerDelayRemoveDialog(5000, progressDialog);
             loginThread = new Thread(loginRunnable);
             loginThread.start();
         }
@@ -188,11 +188,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    public void timerDelayRemoveDialog(long time, final ProgressDialog d){
+    public void timerDelayRemoveDialog(long time, final ProgressDialog dialog){
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                d.dismiss();
-                Toast.makeText(LoginActivity.this, "Server not responding", Toast.LENGTH_SHORT).show();
+                if(dialog.isShowing()) {
+                    Toast.makeText(LoginActivity.this, "Server not responding", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                }
             }
         }, time);
     }

@@ -137,18 +137,18 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
             public void run() {
-//                mScrollView.scrollTo(0, mFlexibleSpaceImageHeight - mActionBarSize);
+                mScrollView.scrollTo(0, mFlexibleSpaceImageHeight - mActionBarSize);
 
                 // If you'd like to start from scrollY == 0, don't write like this:
                 //mScrollView.scrollTo(0, 0);
                 // The initial scrollY is 0, so it won't invoke onScrollChanged().
                 // To do this, use the following:
-                //onScrollChanged(0, false, false);
+//                onScrollChanged(0, false, false);
 
                 // You can also achieve it with the following codes.
                 // This causes scroll change from 1 to 0.
-                mScrollView.scrollTo(0, 1);
-                mScrollView.scrollTo(0, 0);
+//                mScrollView.scrollTo(0, 1);
+//                mScrollView.scrollTo(0, 0);
             }
         });
     }
