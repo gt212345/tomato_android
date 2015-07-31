@@ -33,12 +33,22 @@ android:layout_height="match_parent">
                 android:layout_height="@dimen/flexible_space_image_height"
                 android:background="@android:color/transparent" />
 
-
-            <FrameLayout
-                android:id="@+id/container"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:id="@+id/viewGroup"
+                    android:background="#FFFFFFFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+
+                </LinearLayout>
+
+            </ScrollView>
 
 
         </LinearLayout>

@@ -3,23 +3,31 @@ package org.itri.tomato.Activities;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import org.itri.tomato.Fragments.DialogFragment;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ActionMenuView;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dropbox.client2.DropboxAPI;
-import com.dropbox.client2.android.AndroidAuthSession;
-import com.facebook.CallbackManager;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -27,38 +35,23 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
 
-import org.itri.tomato.Fragments.MapFragment;
+import org.itri.tomato.AutoRunItem;
+import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks {
+import java.util.ArrayList;
+
+public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener, DialogFragment.CheckBoxListener {
     //home button ID
     private static final int home = 16908332;
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
 
-    FragmentManager fragmentManager;
-    Fragment fragment;
     SharedPreferences sharedPreferences;
-    /**
-     * For DropBox API
-     */
-    private final static String APP_KEY = "v6muq2c27l4zfsi";
-    private final static String APP_SECRET = "dgs7aafbchna97t";
-    private DropboxAPI<AndroidAuthSession> mDBApi;
-    private static String db_access_token;
-
-    /**
-     * For Facebook API
-     */
-    private CallbackManager callbackManager;
-    private static String fb_access_token;
-
-    /**
-     * For Server API
-     */
-    private String Action = "&action=";
-    private String Params = "&params=";
 
 
     //floating view
@@ -75,28 +68,51 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     private int ID;
 
-
+    boolean isMapCreated = false;
     Toast toast;
+    LinearLayout layout;
+    String description;
+    ArrayList<AutoRunItem> autoRunItems;
+    DataRetrieveListener dataRetrieveListener;
+    LinearLayout mapLayout;
+    TextView mapTV;
+    Button mapBT;
+    TextView lat;
+    TextView lng;
+    TextView weather;
+    String[] parts;
+    String latStr;
+    String lngStr;
+    ProgressDialog progressDialog;
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_addautorun);
+        dataRetrieveListener = AddAutoRunActivity.this;
+        new Thread(getAutoRunSettings).start();
+        progressDialog = ProgressDialog.show(this, "Loading", "Please wait......", false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        fragmentManager = getFragmentManager();
-        ID = getIntent().getExtras().getInt("id");
+        ID = getIntent().getExtras().getInt("autoRunId");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 125;/**/
         setTitle("Published AutoRun");
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        setContentView(R.layout.activity_addautorun);
         if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         /**
          * init UI
          */
@@ -135,35 +151,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 mScrollView.scrollTo(0, 0);
             }
         });
-        switch (ID) {
-            case 0:
-                fragment = new MapFragment();
-                fragmentManager.beginTransaction().replace(R.id.container, fragment).commit();
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_auto_run, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == home) {
-            finish();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -213,7 +200,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         } else {
             showFab();
         }
-
     }
 
     @Override
@@ -242,4 +228,178 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     }
 
+    private void startActivity() {
+        Intent intent = new Intent();
+        intent.setClass(AddAutoRunActivity.this, MapActivity.class);
+        startActivityForResult(intent, 200);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 200) {
+            lat.setText(latStr);
+            lng.setText(lngStr);
+            lat.append(": " + String.valueOf(data.getDoubleExtra("lat", 0)));
+            lng.append(": " + String.valueOf(data.getDoubleExtra("lng", 0)));
+            lat.setTextSize(20);
+            lng.setTextSize(20);
+            lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+            lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        }
+    }
+
+    Runnable getAutoRunSettings = new Runnable() {
+        @Override
+        public void run() {
+            autoRunItems = new ArrayList<>();
+            String Action = Utilities.ACTION + "GetAutoRunByIdSampleF";
+            String Params = Utilities.PARAMS + "{}";
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+            try {
+                JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
+                description = jsonRes.getString("autorunDesc");
+                JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
+                JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
+                for (int i = 0; i < jsonWhen.length(); i ++) {
+                    autoRunItems.add(new AutoRunItem(
+                            jsonWhen.getJSONObject(i).getString("agentId"),
+                            jsonWhen.getJSONObject(i).getString("display"),
+                            jsonWhen.getJSONObject(i).getString("option"),
+                            jsonWhen.getJSONObject(i).getString("conditionType"),
+                            jsonWhen.getJSONObject(i).getString("condition"),
+                            jsonWhen.getJSONObject(i).getString("agent_parameter")
+                    ));
+                }
+                dataRetrieveListener.onFinish();
+            } catch (JSONException e) {
+                Log.w("Json", e.toString());
+            }
+        }
+    };
+
+    @Override
+    public void onFinish() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                layout = (LinearLayout) findViewById(R.id.viewGroup);
+                TextView title = new TextView(getApplicationContext());
+                title.setText("Settings");
+                title.setGravity(Gravity.CENTER);
+                title.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                title.setTextSize(40);
+                TextView des = new TextView(getApplicationContext());
+                des.setText(description);
+                des.setGravity(Gravity.CENTER);
+                des.setTextSize(20);
+                des.setTextColor(Color.BLACK);
+                TextView when = new TextView(getApplicationContext());
+                when.setText("When:");
+                when.setTextSize(30);
+                when.setTextColor(Color.BLACK);
+                if(autoRunItems.size() != 0) {
+                    layout.addView(des);
+                    layout.addView(title);
+                    layout.addView(when);
+                    for(AutoRunItem item : autoRunItems) {
+                        switch (item.getConditionType()) {
+                            case "map":
+                                if(!isMapCreated) {
+                                    mapLayout = new LinearLayout(getApplicationContext());
+                                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                    layout.addView(mapLayout);
+                                    mapTV = new TextView(getApplicationContext());
+                                    mapTV.setText("Please select region:");
+                                    mapTV.setGravity(Gravity.CENTER_VERTICAL);
+                                    mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    mapTV.setTextSize(20);
+                                    LinearLayout.LayoutParams params;
+                                    params = new LinearLayout.LayoutParams(
+                                            0,
+                                            LinearLayout.LayoutParams.MATCH_PARENT,
+                                            3.0f
+                                    );
+                                    mapTV.setLayoutParams(params);
+                                    mapBT = new Button(getApplicationContext());
+                                    mapBT.setText("Map");
+                                    params = new LinearLayout.LayoutParams(
+                                            0,
+                                            LinearLayout.LayoutParams.MATCH_PARENT,
+                                            1.0f
+                                    );
+                                    mapBT.setLayoutParams(params);
+                                    mapLayout.addView(mapTV);
+                                    mapLayout.addView(mapBT);
+                                    mapBT.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            startActivity();
+                                        }
+                                    });
+                                    lat = new TextView(getApplicationContext());
+                                    lng = new TextView(getApplicationContext());
+                                    layout.addView(lat);
+                                    layout.addView(lng);
+                                    latStr = item.getDisplay();
+                                    isMapCreated = true;
+                                } else {
+                                    lngStr = item.getDisplay();
+                                }
+                                break;
+                            case "checkbox":
+                                String condition = item.getCondition();
+                                parts = condition.split("\\|");
+                                mapLayout = new LinearLayout(getApplicationContext());
+                                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                layout.addView(mapLayout);
+                                mapTV = new TextView(getApplicationContext());
+                                mapTV.setText("Please select Weather types");
+                                mapTV.setGravity(Gravity.CENTER_VERTICAL);
+                                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                mapTV.setTextSize(20);
+                                LinearLayout.LayoutParams params;
+                                params = new LinearLayout.LayoutParams(
+                                        0,
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        3.0f
+                                );
+                                mapTV.setLayoutParams(params);
+                                mapBT = new Button(getApplicationContext());
+                                mapBT.setText("Click");
+                                params = new LinearLayout.LayoutParams(
+                                        0,
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        1.0f
+                                );
+                                mapBT.setLayoutParams(params);
+                                weather = new TextView(getApplicationContext());
+                                mapLayout.addView(mapTV);
+                                mapLayout.addView(mapBT);
+                                layout.addView(weather);
+                                mapBT.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        DialogFragment dialogFragment = DialogFragment.newInstance(parts);
+                                        dialogFragment.show(getFragmentManager(), "Choose Weather Types");
+                                    }
+                                });
+                                break;
+                        }
+                    }
+                    progressDialog.dismiss();
+                }
+
+            }
+        });}
+
+    @Override
+    public void onFinished(ArrayList<String> Strings) {
+        weather.setText("Weather types choosen:\n");
+        for (String tmp : Strings) {
+            weather.append(tmp + "\n");
+        }
+        weather.setTextSize(20);
+        weather.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+    }
 }

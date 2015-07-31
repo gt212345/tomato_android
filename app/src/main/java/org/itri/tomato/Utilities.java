@@ -33,7 +33,7 @@ public class Utilities {
      */
     public static final String ACTION = "&action=";
     public static final String PARAMS = "&params=";
-    public static final String API_URL = "http://210.61.209.197/~n100/Tomato_sample/tomato_api.php";
+    public static final String API_URL = "http://210.61.209.197/TomatoX/tomato_api.php";
     public static final String SENDER_ID = "948528150442";
     public static final String TYPE = "android";
 

@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
                 progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
-                timerDelayRemoveDialog(5000, progressDialog);
+                timerDelayRemoveDialog(5, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {

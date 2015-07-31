@@ -46,12 +46,14 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     PullRefreshLayout pullRefreshLayout;
     Handler handler;
     DataRetrieveListener listener;
+    ArrayList<Integer> autoRunIDs;
     boolean isMore = true;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_marketlist,container,false);
+        autoRunIDs = new ArrayList<Integer>();
         createDummyList();
         listener = MarketListFragment.this;
         getActivity().setTitle("Market Lists");
@@ -189,9 +191,8 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        //TODO switch{} view
         Intent intent = new Intent();
-        intent.putExtra("id", position);
+        intent.putExtra("autuRunId", autoRunIDs.get(position));
         intent.putExtra("content", items.get(position).getContent());
         intent.setClass(getActivity(), AddAutoRunActivity.class);
         startActivity(intent);
@@ -209,9 +210,10 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
                         JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
                         int a = 0;
-                        for (int i = 0 ; i < jsonArray.length() ; i++) {
+                        for (int i = 0; i < jsonArray.length(); i++) {
                             int t = a + 1;
                             items.add(new ListItem(bitmaps.get(a), bitmaps.get(t), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
+                            autoRunIDs.add(jsonArray.getJSONObject(i).getInt("autorunId"));
                             a += 2;
                         }
                         listener.onFinish();
