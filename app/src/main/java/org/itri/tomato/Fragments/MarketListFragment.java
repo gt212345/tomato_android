@@ -192,7 +192,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Intent intent = new Intent();
-        intent.putExtra("autuRunId", autoRunIDs.get(position));
+        intent.putExtra("autoRunId", autoRunIDs.get(position));
         intent.putExtra("content", items.get(position).getContent());
         intent.setClass(getActivity(), AddAutoRunActivity.class);
         startActivity(intent);

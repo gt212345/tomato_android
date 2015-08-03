@@ -1,32 +1,29 @@
 package org.itri.tomato.Activities;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
-import org.itri.tomato.Fragments.DialogFragment;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ActionMenuView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +36,7 @@ import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
+import org.itri.tomato.Fragments.DialogFragment;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 import org.json.JSONArray;
@@ -46,7 +44,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -79,7 +76,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Toast toast;
     LinearLayout layout;
     String description;
-    ArrayList<AutoRunItem> autoRunItems;
+    ArrayList<AutoRunItem> autoRunItemsWhen;
+    ArrayList<AutoRunItem> autoRunItemsDo;
     DataRetrieveListener dataRetrieveListener;
     LinearLayout mapLayout;
     TextView mapTV, lat, lng, weather, region;
@@ -90,6 +88,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     ProgressDialog progressDialog;
     Geocoder geocoder;
     List<Address> addressList;
+    String Globaltext;
+    String Globaltext1;
+    EditText text;
 
     double latD = 0;
     double lngD = 0;
@@ -101,8 +102,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addautorun);
         dataRetrieveListener = AddAutoRunActivity.this;
-        new Thread(getAutoRunSettings).start();
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+        new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ID = getIntent().getExtras().getInt("autoRunId");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
@@ -137,7 +138,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mFabMargin = getResources().getDimensionPixelSize(R.dimen.margin_standard);
         ViewHelper.setScaleX(mFab, 0);
         ViewHelper.setScaleY(mFab, 0);
-
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
             public void run() {
@@ -269,8 +269,17 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Runnable getAutoRunSettings = new Runnable() {
         @Override
         public void run() {
-            autoRunItems = new ArrayList<>();
-            String Action = Utilities.ACTION + "GetAutoRunByIdSampleF";
+            autoRunItemsWhen = new ArrayList<>();
+            autoRunItemsDo = new ArrayList<>();
+            String Action;
+            switch (ID) {
+                case 2:
+                    Action = Utilities.ACTION + "GetAutoRunByIdSampleS";
+                    break;
+                default:
+                    Action = Utilities.ACTION + "GetAutoRunByIdSampleF";
+                    break;
+            }
             String Params = Utilities.PARAMS + "{}";
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
@@ -279,7 +288,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
                 JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
                 for (int i = 0; i < jsonWhen.length(); i ++) {
-                    autoRunItems.add(new AutoRunItem(
+                    autoRunItemsWhen.add(new AutoRunItem(
                             jsonWhen.getJSONObject(i).getString("agentId"),
                             jsonWhen.getJSONObject(i).getString("display"),
                             jsonWhen.getJSONObject(i).getString("option"),
@@ -288,8 +297,20 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             jsonWhen.getJSONObject(i).getString("agent_parameter")
                     ));
                 }
+                JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
+                for (int i = 0; i < jsonDo.length(); i ++) {
+                    autoRunItemsDo.add(new AutoRunItem(
+                            jsonDo.getJSONObject(i).getString("agentId"),
+                            jsonDo.getJSONObject(i).getString("display"),
+                            jsonDo.getJSONObject(i).getString("option"),
+                            jsonDo.getJSONObject(i).getString("conditionType"),
+                            jsonDo.getJSONObject(i).getString("condition"),
+                            jsonDo.getJSONObject(i).getString("agent_parameter")
+                    ));
+                }
                 dataRetrieveListener.onFinish();
             } catch (JSONException e) {
+                progressDialog.cancel();
                 Log.w("Json", e.toString());
             }
         }
@@ -315,11 +336,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 when.setText("When:");
                 when.setTextSize(30);
                 when.setTextColor(Color.BLACK);
-                if (autoRunItems.size() != 0) {
+                if (autoRunItemsWhen.size() != 0) {
                     layout.addView(des);
                     layout.addView(title);
                     layout.addView(when);
-                    for (AutoRunItem item : autoRunItems) {
+                    for (AutoRunItem item : autoRunItemsWhen) {
                         switch (item.getConditionType()) {
                             case "map":
                                 if (!isMapCreated) {
@@ -381,7 +402,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                                 layout.addView(mapLayout);
                                 mapTV = new TextView(getApplicationContext());
-                                mapTV.setText("請選擇天氣型態:");
+                                mapTV.setText(item.getDisplay());
                                 mapTV.setGravity(Gravity.CENTER_VERTICAL);
                                 mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                                 mapTV.setTextSize(20);
@@ -404,29 +425,167 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 mapLayout.addView(mapTV);
                                 mapLayout.addView(mapBT);
                                 layout.addView(weather);
+                                Globaltext1 = item.getDisplay();
                                 mapBT.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         DialogFragment dialogFragment = DialogFragment.newInstance(parts);
-                                        dialogFragment.show(getFragmentManager(), "選擇天氣型態");
+                                        dialogFragment.show(getFragmentManager(), Globaltext1);
                                     }
                                 });
                                 break;
+                            case "text":
+
+                                break;
                         }
                     }
-                    TextView overlay = new TextView(getApplicationContext());
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            1000
-                    );
-                    overlay.setLayoutParams(params);
-                    layout.addView(overlay);
-                    progressDialog.dismiss();
-                    onScrollChanged(0, false, false);
                 }
+                if(autoRunItemsDo.size() != 0) {
+                    TextView Do = new TextView(getApplicationContext());
+                    Do.setText("Do:");
+                    Do.setTextSize(30);
+                    Do.setTextColor(Color.BLACK);
+                    layout.addView(Do);
+                    for (AutoRunItem item : autoRunItemsDo) {
+                        switch (item.getConditionType()) {
+                            case "map":
+                                if (!isMapCreated) {
+                                    mapLayout = new LinearLayout(getApplicationContext());
+                                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                    layout.addView(mapLayout);
+                                    mapTV = new TextView(getApplicationContext());
+                                    mapTV.setText("請選擇位置:");
+                                    mapTV.setGravity(Gravity.CENTER_VERTICAL);
+                                    mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    mapTV.setTextSize(20);
+                                    LinearLayout.LayoutParams params;
+                                    params = new LinearLayout.LayoutParams(
+                                            0,
+                                            LinearLayout.LayoutParams.MATCH_PARENT,
+                                            3.0f
+                                    );
+                                    mapTV.setLayoutParams(params);
+                                    mapBT = new Button(getApplicationContext());
+                                    mapBT.setText("地圖");
+                                    params = new LinearLayout.LayoutParams(
+                                            0,
+                                            LinearLayout.LayoutParams.MATCH_PARENT,
+                                            1.0f
+                                    );
+                                    mapBT.setLayoutParams(params);
+                                    mapLayout.addView(mapTV);
+                                    mapLayout.addView(mapBT);
+                                    mapBT.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            startActivity();
+                                        }
+                                    });
+                                    region = new TextView(getApplicationContext());
+                                    lat = new TextView(getApplicationContext());
+                                    lng = new TextView(getApplicationContext());
+                                    layout.addView(region);
+                                    layout.addView(lat);
+                                    layout.addView(lng);
+                                    lat.setText(item.getDisplay() + ": ");
+                                    latStr = item.getDisplay();
+                                    region.setTextSize(20);
+                                    lat.setTextSize(20);
+                                    lng.setTextSize(20);
+                                    region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    isMapCreated = true;
+                                } else {
+                                    lngStr = item.getDisplay();
+                                    lng.setText(item.getDisplay() + ": ");
+                                }
+                                break;
+                            case "checkbox":
+                                String condition = item.getCondition();
+                                parts = condition.split("\\|");
+                                mapLayout = new LinearLayout(getApplicationContext());
+                                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                                layout.addView(mapLayout);
+                                mapTV = new TextView(getApplicationContext());
+                                mapTV.setText(item.getDisplay());
+                                mapTV.setGravity(Gravity.CENTER_VERTICAL);
+                                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                mapTV.setTextSize(20);
+                                LinearLayout.LayoutParams params;
+                                params = new LinearLayout.LayoutParams(
+                                        0,
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        3.0f
+                                );
+                                mapTV.setLayoutParams(params);
+                                mapBT = new Button(getApplicationContext());
+                                mapBT.setText("展開");
+                                params = new LinearLayout.LayoutParams(
+                                        0,
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        1.0f
+                                );
+                                mapBT.setLayoutParams(params);
+                                weather = new TextView(getApplicationContext());
+                                mapLayout.addView(mapTV);
+                                mapLayout.addView(mapBT);
+                                layout.addView(weather);
+                                Globaltext1 = item.getDisplay();
+                                mapBT.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        DialogFragment dialogFragment = DialogFragment.newInstance(parts);
+                                        dialogFragment.show(getFragmentManager(), Globaltext1);
+                                    }
+                                });
+                                break;
+                            case "text":
+                                text = new EditText(getApplicationContext());
+                                text.setHint(item.getDisplay());
+                                text.setTextSize(20);
+                                params = new LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                );
+                                text.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
+                                text.setInputType(InputType.TYPE_CLASS_PHONE);
+                                text.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                text.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                text.setLayoutParams(params);
+                                text.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+                                    }
+
+                                    @Override
+                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable editable) {
+                                        Globaltext = text.getText().toString();
+                                    }
+                                });
+                                layout.addView(text);
+                                break;
+                        }
+                    }
+                }
+                TextView overlay = new TextView(getApplicationContext());
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1000
+                );
+                overlay.setLayoutParams(params);
+                layout.addView(overlay);
+                progressDialog.dismiss();
+                onScrollChanged(0, false, false);
             }
-        });}
+        });
+    }
 
     @Override
     public void onFinished(ArrayList<String> Strings) {
