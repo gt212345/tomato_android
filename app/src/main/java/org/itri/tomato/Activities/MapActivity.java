@@ -34,11 +34,15 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ScrollView scrollView;
     GoogleMap googleMap;
     Marker marker;
+    double latD = 0;
+    double lngD = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        latD = getIntent().getDoubleExtra("Lat", latD);
+        lngD = getIntent().getDoubleExtra("Lng", lngD);
         Button apply = (Button) findViewById(R.id.apply);
         apply.setOnClickListener(this);
         scrollView = (ScrollView) findViewById(R.id.scrollView);
@@ -100,12 +104,20 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googleMap.getUiSettings().setZoomGesturesEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setOnMapClickListener(this);
-        marker = googleMap.addMarker(new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .title("You are HERE!!"));
         if (location != null) {
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14);
-            googleMap.animateCamera(cameraUpdate);
+            if(latD != 0 && lngD != 0) {
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latD, lngD), 14);
+                googleMap.animateCamera(cameraUpdate);
+                marker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(latD, lngD))
+                        .title("先前選擇"));
+            } else {
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 14);
+                googleMap.animateCamera(cameraUpdate);
+                marker = googleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(location.getLatitude(), location.getLongitude()))
+                        .title("你在這裡!!"));
+            }
         }
     }
 

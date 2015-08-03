@@ -91,6 +91,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Geocoder geocoder;
     List<Address> addressList;
 
+    double latD = 0;
+    double lngD = 0;
+
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -106,7 +109,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 125;/**/
         setTitle("Published AutoRun");
-        geocoder = new Geocoder(this, Locale.getDefault());
+        geocoder = new Geocoder(this, Locale.TAIWAN);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
@@ -114,12 +117,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         }
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         /**
          * init UI
          */
@@ -144,13 +141,13 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
             public void run() {
-                mScrollView.scrollTo(0, mFlexibleSpaceImageHeight - mActionBarSize);
+//                mScrollView.scrollTo(0, mFlexibleSpaceImageHeight - mActionBarSize);
 
                 // If you'd like to start from scrollY == 0, don't write like this:
                 //mScrollView.scrollTo(0, 0);
                 // The initial scrollY is 0, so it won't invoke onScrollChanged().
                 // To do this, use the following:
-//                onScrollChanged(0, false, false);
+                onScrollChanged(0, false, false);
 
                 // You can also achieve it with the following codes.
                 // This causes scroll change from 1 to 0.
@@ -158,6 +155,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 //                mScrollView.scrollTo(0, 0);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -237,6 +239,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     private void startActivity() {
         Intent intent = new Intent();
+        if(latD != 0 && lngD != 0) {
+            intent.putExtra("Lat", latD);
+            intent.putExtra("Lng", lngD);
+        }
         intent.setClass(AddAutoRunActivity.this, MapActivity.class);
         startActivityForResult(intent, 200);
     }
@@ -244,16 +250,16 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        double latD = roundDown5(data.getDoubleExtra("lat", 0));
-        double lngD = roundDown5(data.getDoubleExtra("lng", 0));
         if (resultCode == RESULT_OK && requestCode == 200) {
+            latD = roundDown5(data.getDoubleExtra("lat", 0));
+            lngD = roundDown5(data.getDoubleExtra("lng", 0));
             lat.setText(latStr + ": ");
             lng.setText(lngStr + ": ");
             lat.append(String.valueOf(latD));
             lng.append(String.valueOf(lngD));
             try {
                 addressList = geocoder.getFromLocation(latD, lngD, 1);
-                region.setText(addressList.get(0).getCountryName() + addressList.get(0).getLocality() + addressList.get(0).getFeatureName());
+                region.setText(addressList.get(0).getAddressLine(0));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -408,7 +414,15 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 break;
                         }
                     }
+                    TextView overlay = new TextView(getApplicationContext());
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            1000
+                    );
+                    overlay.setLayoutParams(params);
+                    layout.addView(overlay);
                     progressDialog.dismiss();
+                    onScrollChanged(0, false, false);
                 }
 
             }
@@ -416,7 +430,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onFinished(ArrayList<String> Strings) {
-        weather.setText("選擇的天氣型態:\n");
+        weather.setText("");
         for (String tmp : Strings) {
             weather.append(tmp + "\n");
         }
@@ -425,8 +439,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     public static double roundDown5(double d) {
-        return Math.floor(d * 1e3) / 1e3;
+        return Math.floor(d * 1e5) / 1e5;
     }
-
 
 }

@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
-                progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
+                progressDialog = ProgressDialog.show(LoginActivity.this, "登入中", "請稍候......", true);
                 timerDelayRemoveDialog(10000, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
@@ -67,12 +67,12 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
-                progressDialog = ProgressDialog.show(LoginActivity.this, "Creating Account", "please wait......", true);
+                progressDialog = ProgressDialog.show(LoginActivity.this, "創建帳號中", "請稍候......", true);
                 timerDelayRemoveDialog(10000, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "帳號或密碼錯誤", Toast.LENGTH_SHORT).show();
                     }
                 });
                 loginThread = new Thread(createRunnable);
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         if(sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
             UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT,null);
             UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
-            progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
+            progressDialog = ProgressDialog.show(LoginActivity.this, "登入中", "請稍候......", true);
             timerDelayRemoveDialog(10000, progressDialog);
             loginThread = new Thread(loginRunnable);
             loginThread.start();
@@ -194,7 +194,7 @@ public class LoginActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 if(dialog.isShowing()) {
-                    Toast.makeText(LoginActivity.this, "Server not responding", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "伺服器異常", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     if(sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                         editAccount.setText(sharedPreferences.getString(Utilities.USER_ACCOUNT, null));
