@@ -24,7 +24,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.itri.tomato.R;
 
 
-
 /**
  * Created by heiruwu on 7/24/15.
  */
@@ -105,7 +104,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         googleMap.setOnMapClickListener(this);
         if (location != null) {
-            if(latD != 0 && lngD != 0) {
+            if (latD != 0 && lngD != 0) {
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(latD, lngD), 14);
                 googleMap.animateCamera(cameraUpdate);
                 marker = googleMap.addMarker(new MarkerOptions()

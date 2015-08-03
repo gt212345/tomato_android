@@ -42,7 +42,7 @@ public class Utilities {
     public static JSONObject API_CONNECT(String Action, String Params, boolean hasInput) {
         try {
             URL url = new URL(Utilities.API_URL);
-            String out = Action+Params;
+            String out = Action + Params;
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
@@ -52,7 +52,7 @@ public class Utilities {
             outputStream.write(out.getBytes());
             outputStream.flush();
             outputStream.close();
-            if(hasInput) {
+            if (hasInput) {
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
                 StringBuilder stringBuilder = new StringBuilder();
@@ -70,7 +70,7 @@ public class Utilities {
                     return null;
                 }
             } else {
-                return  null;
+                return null;
             }
         } catch (MalformedURLException e) {
             e.printStackTrace();

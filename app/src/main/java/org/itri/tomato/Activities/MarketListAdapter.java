@@ -22,7 +22,7 @@ public class MarketListAdapter extends BaseAdapter {
     ViewHolder viewHolder;
 
     private class ViewHolder {
-        ImageView image1,image2;
+        ImageView image1, image2;
         TextView content;
     }
 
@@ -49,7 +49,7 @@ public class MarketListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
-        if(items.get(position).isHas2Image()) {
+        if (items.get(position).isHas2Image()) {
             if (convertView == null) {
                 view = li.inflate(R.layout.item_marketlist, null);
                 viewHolder = new ViewHolder();
@@ -66,7 +66,7 @@ public class MarketListAdapter extends BaseAdapter {
             viewHolder.image2.setImageBitmap(item.getImage2());
             viewHolder.content.setText(item.getContent());
             return view;
-        } else if (!items.get(position).isChannels()){
+        } else if (!items.get(position).isChannels()) {
             if (convertView == null) {
                 view = li.inflate(R.layout.item_drawerlist, null);
                 viewHolder = new ViewHolder();

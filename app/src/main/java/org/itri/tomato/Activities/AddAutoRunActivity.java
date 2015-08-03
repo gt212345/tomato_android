@@ -112,7 +112,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         setTitle("Published AutoRun");
         geocoder = new Geocoder(this, Locale.TAIWAN);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -158,11 +158,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
         // Translate overlay and image
         float flexibleRange = mFlexibleSpaceImageHeight - mActionBarSize;
@@ -174,7 +169,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         ViewHelper.setAlpha(mOverlayView, ScrollUtils.getFloat((float) scrollY / flexibleRange, 0, 1));
 
         // Scale title text
-        float scale = (float)0.95 + ScrollUtils.getFloat((flexibleRange - scrollY) / flexibleRange, 0, MAX_TEXT_SCALE_DELTA);
+        float scale = (float) 0.95 + ScrollUtils.getFloat((flexibleRange - scrollY) / flexibleRange, 0, MAX_TEXT_SCALE_DELTA);
         ViewHelper.setPivotX(mTitleView, 0);
         ViewHelper.setPivotY(mTitleView, 0);
         ViewHelper.setScaleX(mTitleView, scale);
@@ -239,7 +234,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     private void startActivity() {
         Intent intent = new Intent();
-        if(latD != 0 && lngD != 0) {
+        if (latD != 0 && lngD != 0) {
             intent.putExtra("Lat", latD);
             intent.putExtra("Lng", lngD);
         }
@@ -287,7 +282,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 description = jsonRes.getString("autorunDesc");
                 JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
                 JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
-                for (int i = 0; i < jsonWhen.length(); i ++) {
+                for (int i = 0; i < jsonWhen.length(); i++) {
                     autoRunItemsWhen.add(new AutoRunItem(
                             jsonWhen.getJSONObject(i).getString("agentId"),
                             jsonWhen.getJSONObject(i).getString("display"),
@@ -298,7 +293,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     ));
                 }
                 JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
-                for (int i = 0; i < jsonDo.length(); i ++) {
+                for (int i = 0; i < jsonDo.length(); i++) {
                     autoRunItemsDo.add(new AutoRunItem(
                             jsonDo.getJSONObject(i).getString("agentId"),
                             jsonDo.getJSONObject(i).getString("display"),
@@ -440,7 +435,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         }
                     }
                 }
-                if(autoRunItemsDo.size() != 0) {
+                if (autoRunItemsDo.size() != 0) {
                     TextView Do = new TextView(getApplicationContext());
                     Do.setText("Do:");
                     Do.setTextSize(30);

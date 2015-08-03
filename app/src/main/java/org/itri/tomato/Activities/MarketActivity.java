@@ -46,7 +46,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Timer;
 
-public class MarketActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class MarketActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     FragmentManager fragmentManager;
     Fragment fragment;
     DrawerLayout drawerLayout;
@@ -108,7 +108,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_market);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -117,15 +117,15 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         APITest();
         ListView sideView = (ListView) findViewById(R.id.drawer_view);
         sideView.setOnItemClickListener(this);
-        MarketListAdapter adapter = new MarketListAdapter(this,createDummyList());
+        MarketListAdapter adapter = new MarketListAdapter(this, createDummyList());
         sideView.setAdapter(adapter);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.inflateMenu(R.menu.menu_market);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("Market List");
-        drawerLayout = (DrawerLayout)findViewById(R.id.drawer);
-        toggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar, R.string.drawer_open, R.string.drawer_close){
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
@@ -152,7 +152,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 boolean sentToken = sharedPreferences
                         .getBoolean(Utilities.SENT_TOKEN_TO_SERVER, false);
                 if (sentToken) {
-                    Log.i("Server","registered");
+                    Log.i("Server", "registered");
                 } else {
                     Log.i("Server", "registration failed");
                 }
@@ -166,7 +166,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.marketlist), null, "Market List", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.my), null, "My AutoRuns",false, false));
+                R.drawable.my), null, "My AutoRuns", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.channels), null, "Channels", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
@@ -176,16 +176,16 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         return items;
     }
 
-    private void APITest () {
+    private void APITest() {
         int code = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (GooglePlayServicesUtil.isUserRecoverableError(code)) {
-            GooglePlayServicesUtil.getErrorDialog(code,this,200);
+            GooglePlayServicesUtil.getErrorDialog(code, this, 200);
         }
         if (code == ConnectionResult.SUCCESS) {
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
         } else {
-            Toast.makeText(this,"請更新 Google Play Service!!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "請更新 Google Play Service!!", Toast.LENGTH_SHORT).show();
         }
     }
 

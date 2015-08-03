@@ -28,6 +28,7 @@ public class RegistrationIntentService extends IntentService {
 
 
     SharedPreferences sharedPreferences;
+
     public RegistrationIntentService() {
         super(TAG);
     }
@@ -70,13 +71,13 @@ public class RegistrationIntentService extends IntentService {
         // Add custom implementation, as needed.
         String UID = sharedPreferences.getString(Utilities.USER_ID, null);
         String TOKEN = sharedPreferences.getString(Utilities.USER_TOKEN, null);
-        if (!sharedPreferences.getBoolean(Utilities.SENT_TOKEN_TO_SERVER,false)) {
+        if (!sharedPreferences.getBoolean(Utilities.SENT_TOKEN_TO_SERVER, false)) {
             String Action = Utilities.ACTION + "PostGCMDataByDevice";
             String Params = Utilities.PARAMS + "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"regId\":\"" + token + "\",\"type\":\"" + Utilities.TYPE + "\"}";
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
                 JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                Log.w("status",jsonObjectTmp.getString("status"));
+                Log.w("status", jsonObjectTmp.getString("status"));
                 if (jsonObjectTmp.getString("status").equals("200")) {
                     Log.w(TAG, "success");
                     sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, true).apply();

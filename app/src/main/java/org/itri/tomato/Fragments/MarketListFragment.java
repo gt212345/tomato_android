@@ -37,7 +37,7 @@ import java.util.ArrayList;
 /**
  * Created by hrw on 15/7/9.
  */
-public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener, DataRetrieveListener{
+public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener, DataRetrieveListener {
     private View rootView;
     ListView marketList;
     MarketListAdapter adapter;
@@ -52,7 +52,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_marketlist,container,false);
+        View rootView = inflater.inflate(R.layout.fragment_marketlist, container, false);
         autoRunIDs = new ArrayList<Integer>();
         createDummyList();
         listener = MarketListFragment.this;
@@ -168,24 +168,24 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
     }
 
     void dummyLoadMore(ArrayList<ListItem> items) {
-        for (int i = 0;i<5;i++) {
-            if(items.size() > 70) {
+        for (int i = 0; i < 5; i++) {
+            if (items.size() > 70) {
                 isMore = false;
             } else {
                 isMore = true;
             }
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!",true, false));
+                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!", true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.",true, false));
+                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.", true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!",true, false));
+                    R.drawable.youtube), "This AutoRun script will do nothing!", true, false));
             items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
                     R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!",true, false));
+                    R.drawable.gplus), "This AutoRun script will do nothing!", true, false));
         }
     }
 
@@ -197,6 +197,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
         intent.setClass(getActivity(), AddAutoRunActivity.class);
         startActivity(intent);
     }
+
     private ArrayList<ListItem> getAutoRunList() {
         items = new ArrayList<>();
         new Thread(new Runnable() {

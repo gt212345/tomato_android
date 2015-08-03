@@ -79,8 +79,8 @@ public class LoginActivity extends AppCompatActivity {
                 loginThread.start();
             }
         });
-        if(sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
-            UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT,null);
+        if (sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+            UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT, null);
             UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
             progressDialog = ProgressDialog.show(LoginActivity.this, "登入中", "請稍候......", true);
             timerDelayRemoveDialog(10000, progressDialog);
@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
     Runnable loginRunnable = new Runnable() {
         @Override
         public void run() {
-            if(isEmailValid(UserAccount)) {
+            if (isEmailValid(UserAccount)) {
                 String Action = Utilities.ACTION + "Login";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
                 jsonObject = Utilities.API_CONNECT(Action, Params, true);
@@ -123,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (jsonObjectTmp.getString("status").equals("200")) {
                                 if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                                     sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
-                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD,UserPassword).apply();
+                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();
                                     sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                                 }
                                 Log.i("uid", jsonObjectTmp.get("uid").toString());
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
     Runnable createRunnable = new Runnable() {
         @Override
         public void run() {
-            if(isEmailValid(UserAccount)) {
+            if (isEmailValid(UserAccount)) {
                 String Action = Utilities.ACTION + "CreateAccount";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
                 jsonObject = Utilities.API_CONNECT(Action, Params, true);
@@ -164,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (jsonObjectTmp.getString("status").equals("200")) {
                                 if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                                     sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
-                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD,UserPassword).apply();
+                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();
                                     sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                                 }
                                 Log.i("uid", jsonObjectTmp.get("uid").toString());
@@ -190,13 +190,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    public void timerDelayRemoveDialog(long time, final ProgressDialog dialog){
+    public void timerDelayRemoveDialog(long time, final ProgressDialog dialog) {
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                if(dialog.isShowing()) {
+                if (dialog.isShowing()) {
                     Toast.makeText(LoginActivity.this, "伺服器異常", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
-                    if(sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+                    if (sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                         editAccount.setText(sharedPreferences.getString(Utilities.USER_ACCOUNT, null));
                         editPass.setText(sharedPreferences.getString(Utilities.USER_PASSWORD, null));
                     }

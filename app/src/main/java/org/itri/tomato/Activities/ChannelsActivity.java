@@ -31,7 +31,7 @@ public class ChannelsActivity extends ToolbarControlBaseActivity<ObservableGridV
     @Override
     protected int getLayoutResId() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -70,7 +70,7 @@ public class ChannelsActivity extends ToolbarControlBaseActivity<ObservableGridV
 
     ArrayList<ListItem> createDummyList() {
         ArrayList<ListItem> items = new ArrayList<>();
-        for (int i = 0;i<20;i++) {
+        for (int i = 0; i < 20; i++) {
             items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                     R.drawable.fb), null, null, false, true));
             items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),

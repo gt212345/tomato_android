@@ -51,7 +51,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_dialog, null);
         LinearLayout layout = (LinearLayout) view.findViewById(R.id.layout);
-        for (int i = 0 ; i < counts ; i ++) {
+        for (int i = 0; i < counts; i++) {
             CheckBox checkBox = new CheckBox(getActivity());
             checkBox.setText(names.get(i));
             checkBox.setOnCheckedChangeListener(this);
@@ -71,7 +71,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-        if(isChecked) {
+        if (isChecked) {
             checks.add(compoundButton.getText().toString());
         } else {
             checks.remove(compoundButton.getText().toString());

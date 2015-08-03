@@ -27,7 +27,7 @@ public class ListItem {
     }
 
     public Bitmap getImage2() {
-        if(has2Image) {
+        if (has2Image) {
             return image2;
         } else {
             return null;

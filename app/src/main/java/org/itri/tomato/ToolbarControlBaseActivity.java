@@ -3,6 +3,7 @@ package org.itri.tomato;
 /**
  * Created by heiruwu on 7/24/15.
  */
+
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -35,7 +36,7 @@ public abstract class ToolbarControlBaseActivity<S extends Scrollable> extends A
         setContentView(getLayoutResId());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             mToolbar.setElevation(10);
         }
         setSupportActionBar(mToolbar);

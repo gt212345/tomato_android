@@ -28,7 +28,7 @@ public class GCMTestActivity extends AppCompatActivity {
             Log.d(TAG, "from " + from + ": " + message);
         }
         TextView gcmMsg = (TextView) findViewById(R.id.gcmMsg);
-        gcmMsg.setText(gcmMsg.getText().toString()+"\n: " + intent.getStringExtra("message"));
+        gcmMsg.setText(gcmMsg.getText().toString() + "\n: " + intent.getStringExtra("message"));
     }
 
 }

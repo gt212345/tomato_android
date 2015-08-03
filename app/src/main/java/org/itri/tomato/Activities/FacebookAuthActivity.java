@@ -36,7 +36,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_facebook_auth);
-        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button_fb);
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button_fb);
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
