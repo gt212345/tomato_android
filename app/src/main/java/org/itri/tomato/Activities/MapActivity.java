@@ -1,5 +1,6 @@
 package org.itri.tomato.Activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;

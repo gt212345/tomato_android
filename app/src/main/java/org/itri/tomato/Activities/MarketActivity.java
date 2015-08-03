@@ -182,9 +182,10 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
             GooglePlayServicesUtil.getErrorDialog(code,this,200);
         }
         if (code == ConnectionResult.SUCCESS) {
-            Toast.makeText(this,"Google API Available",Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, RegistrationIntentService.class);
             startService(intent);
+        } else {
+            Toast.makeText(this,"請更新 Google Play Service!!",Toast.LENGTH_SHORT).show();
         }
     }
 

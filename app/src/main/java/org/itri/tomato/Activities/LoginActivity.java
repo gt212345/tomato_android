@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
                 progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
-                timerDelayRemoveDialog(5000, progressDialog);
+                timerDelayRemoveDialog(10000, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserAccount = editAccount.getText().toString();
                 UserPassword = editPass.getText().toString();
                 progressDialog = ProgressDialog.show(LoginActivity.this, "Creating Account", "please wait......", true);
+                timerDelayRemoveDialog(10000, progressDialog);
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
@@ -82,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
             UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT,null);
             UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
             progressDialog = ProgressDialog.show(LoginActivity.this, "Logging in", "please wait......", true);
-            timerDelayRemoveDialog(5000, progressDialog);
+            timerDelayRemoveDialog(10000, progressDialog);
             loginThread = new Thread(loginRunnable);
             loginThread.start();
         }
@@ -135,10 +136,11 @@ public class LoginActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                                 finish();
                             } else {
+                                Log.w("Login", "!200");
                                 progressDialog.cancel();
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.w("Login", e.toString());
                         }
                     }
                 }
@@ -194,6 +196,10 @@ public class LoginActivity extends AppCompatActivity {
                 if(dialog.isShowing()) {
                     Toast.makeText(LoginActivity.this, "Server not responding", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
+                    if(sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+                        editAccount.setText(sharedPreferences.getString(Utilities.USER_ACCOUNT, null));
+                        editPass.setText(sharedPreferences.getString(Utilities.USER_PASSWORD, null));
+                    }
                 }
             }
         }, time);

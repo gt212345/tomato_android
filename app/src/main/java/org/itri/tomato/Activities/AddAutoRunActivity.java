@@ -7,6 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Build;
 import android.os.Bundle;
 import org.itri.tomato.Fragments.DialogFragment;
@@ -43,9 +45,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener, DialogFragment.CheckBoxListener {
+public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener
+        , DialogFragment.CheckBoxListener {
     //home button ID
     private static final int home = 16908332;
     //floating view scale
@@ -75,15 +82,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     ArrayList<AutoRunItem> autoRunItems;
     DataRetrieveListener dataRetrieveListener;
     LinearLayout mapLayout;
-    TextView mapTV;
+    TextView mapTV, lat, lng, weather, region;
     Button mapBT;
-    TextView lat;
-    TextView lng;
-    TextView weather;
     String[] parts;
     String latStr;
     String lngStr;
     ProgressDialog progressDialog;
+    Geocoder geocoder;
+    List<Address> addressList;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -93,13 +99,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         setContentView(R.layout.activity_addautorun);
         dataRetrieveListener = AddAutoRunActivity.this;
         new Thread(getAutoRunSettings).start();
-        progressDialog = ProgressDialog.show(this, "Loading", "Please wait......", false);
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ID = getIntent().getExtras().getInt("autoRunId");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 125;/**/
         setTitle("Published AutoRun");
+        geocoder = new Geocoder(this, Locale.getDefault());
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if(sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
@@ -237,15 +244,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        double latD = roundDown5(data.getDoubleExtra("lat", 0));
+        double lngD = roundDown5(data.getDoubleExtra("lng", 0));
         if (resultCode == RESULT_OK && requestCode == 200) {
-            lat.setText(latStr);
-            lng.setText(lngStr);
-            lat.append(": " + String.valueOf(data.getDoubleExtra("lat", 0)));
-            lng.append(": " + String.valueOf(data.getDoubleExtra("lng", 0)));
-            lat.setTextSize(20);
-            lng.setTextSize(20);
-            lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-            lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+            lat.setText(latStr + ": ");
+            lng.setText(lngStr + ": ");
+            lat.append(String.valueOf(latD));
+            lng.append(String.valueOf(lngD));
+            try {
+                addressList = geocoder.getFromLocation(latD, lngD, 1);
+                region.setText(addressList.get(0).getCountryName() + addressList.get(0).getLocality() + addressList.get(0).getFeatureName());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -285,7 +296,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             public void run() {
                 layout = (LinearLayout) findViewById(R.id.viewGroup);
                 TextView title = new TextView(getApplicationContext());
-                title.setText("Settings");
+                title.setText("設定");
                 title.setGravity(Gravity.CENTER);
                 title.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 title.setTextSize(40);
@@ -298,19 +309,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 when.setText("When:");
                 when.setTextSize(30);
                 when.setTextColor(Color.BLACK);
-                if(autoRunItems.size() != 0) {
+                if (autoRunItems.size() != 0) {
                     layout.addView(des);
                     layout.addView(title);
                     layout.addView(when);
-                    for(AutoRunItem item : autoRunItems) {
+                    for (AutoRunItem item : autoRunItems) {
                         switch (item.getConditionType()) {
                             case "map":
-                                if(!isMapCreated) {
+                                if (!isMapCreated) {
                                     mapLayout = new LinearLayout(getApplicationContext());
                                     mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                                     layout.addView(mapLayout);
                                     mapTV = new TextView(getApplicationContext());
-                                    mapTV.setText("Please select region:");
+                                    mapTV.setText("請選擇位置:");
                                     mapTV.setGravity(Gravity.CENTER_VERTICAL);
                                     mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                                     mapTV.setTextSize(20);
@@ -322,7 +333,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                     );
                                     mapTV.setLayoutParams(params);
                                     mapBT = new Button(getApplicationContext());
-                                    mapBT.setText("Map");
+                                    mapBT.setText("地圖");
                                     params = new LinearLayout.LayoutParams(
                                             0,
                                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -337,14 +348,24 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                             startActivity();
                                         }
                                     });
+                                    region = new TextView(getApplicationContext());
                                     lat = new TextView(getApplicationContext());
                                     lng = new TextView(getApplicationContext());
+                                    layout.addView(region);
                                     layout.addView(lat);
                                     layout.addView(lng);
+                                    lat.setText(item.getDisplay() + ": ");
                                     latStr = item.getDisplay();
+                                    region.setTextSize(20);
+                                    lat.setTextSize(20);
+                                    lng.setTextSize(20);
+                                    region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                                     isMapCreated = true;
                                 } else {
                                     lngStr = item.getDisplay();
+                                    lng.setText(item.getDisplay() + ": ");
                                 }
                                 break;
                             case "checkbox":
@@ -354,7 +375,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                                 layout.addView(mapLayout);
                                 mapTV = new TextView(getApplicationContext());
-                                mapTV.setText("Please select Weather types");
+                                mapTV.setText("請選擇天氣型態:");
                                 mapTV.setGravity(Gravity.CENTER_VERTICAL);
                                 mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                                 mapTV.setTextSize(20);
@@ -366,7 +387,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 );
                                 mapTV.setLayoutParams(params);
                                 mapBT = new Button(getApplicationContext());
-                                mapBT.setText("Click");
+                                mapBT.setText("展開");
                                 params = new LinearLayout.LayoutParams(
                                         0,
                                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -381,7 +402,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                     @Override
                                     public void onClick(View view) {
                                         DialogFragment dialogFragment = DialogFragment.newInstance(parts);
-                                        dialogFragment.show(getFragmentManager(), "Choose Weather Types");
+                                        dialogFragment.show(getFragmentManager(), "選擇天氣型態");
                                     }
                                 });
                                 break;
@@ -395,11 +416,17 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onFinished(ArrayList<String> Strings) {
-        weather.setText("Weather types choosen:\n");
+        weather.setText("選擇的天氣型態:\n");
         for (String tmp : Strings) {
             weather.append(tmp + "\n");
         }
         weather.setTextSize(20);
         weather.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
     }
+
+    public static double roundDown5(double d) {
+        return Math.floor(d * 1e3) / 1e3;
+    }
+
+
 }

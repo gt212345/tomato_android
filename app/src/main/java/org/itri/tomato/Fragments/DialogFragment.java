@@ -26,8 +26,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
 
     ArrayList<String> checks;
 
-    public interface CheckBoxListener
-    {
+    public interface CheckBoxListener {
         void onFinished(ArrayList<String> Strings);
     }
 
