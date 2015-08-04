@@ -55,7 +55,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         autoRunIDs = new ArrayList<Integer>();
         createDummyList();
         listener = AutoRunListFragment.this;
-        getActivity().setTitle("AutoRun Lists");
+        getActivity().setTitle("AutoRun List");
         this.rootView = rootView;
         handler = new Handler(Looper.getMainLooper());
 //        items = createDummyList();
@@ -78,13 +78,12 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                handler.postDelayed(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
                         adapter = new MarketListAdapter(getActivity(), getAutoRunList());
-                        pullRefreshLayout.setRefreshing(false);
                     }
-                }, 2000);
+                });
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList());
@@ -234,6 +233,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                 marketList.setAdapter(adapter);
                 marketList.setOnItemClickListener(AutoRunListFragment.this);
                 adapter.notifyDataSetChanged();
+                pullRefreshLayout.setRefreshing(false);
             }
         });
     }

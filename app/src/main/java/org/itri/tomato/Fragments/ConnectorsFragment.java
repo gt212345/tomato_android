@@ -20,7 +20,7 @@ public class ConnectorsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_connectors, container, false);
-        getActivity().setTitle("Connectors");
+        getActivity().setTitle("Connector List");
         ImageView fb = (ImageView) rootView.findViewById(R.id.fbIcon);
         ImageView db = (ImageView) rootView.findViewById(R.id.dbIcon);
         fb.setOnClickListener(new View.OnClickListener() {

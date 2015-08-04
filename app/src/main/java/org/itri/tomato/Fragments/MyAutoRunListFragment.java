@@ -26,7 +26,7 @@ public class MyAutoRunListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_myautorunlist, container, false);
 //        this.rootView = rootView;
         ListView autoRunList = (ListView) rootView.findViewById(R.id.autoRunList);
-        getActivity().setTitle("My AutoRun Lists");
+        getActivity().setTitle("My AutoRun List");
         return rootView;
     }
 }

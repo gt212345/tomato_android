@@ -39,7 +39,7 @@ import org.itri.tomato.Services.RegistrationIntentService;
 
 import java.util.ArrayList;
 
-public class MarketActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class AutoRunActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     FragmentManager fragmentManager;
     Fragment fragment;
     DrawerLayout drawerLayout;
@@ -89,7 +89,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, false).apply();
                 drawerLayout.closeDrawers();
                 intent = new Intent();
-                intent.setClass(MarketActivity.this, LoginActivity.class);
+                intent.setClass(AutoRunActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
                 break;
@@ -117,7 +117,6 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         toolbar.inflateMenu(R.menu.menu_market);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle("Market List");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -158,15 +157,15 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
     ArrayList<ListItem> createDummyList() {
         ArrayList<ListItem> items = new ArrayList<>();
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.marketlist), null, "Market List", false, false));
+                R.drawable.marketlist), null, "AutoRun List", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.my), null, "My AutoRuns", false, false));
+                R.drawable.my), null, "My AutoRun List", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.channels), null, "Channels", false, false));
+                R.drawable.channels), null, "Connector List", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.settings), null, "Settings", false, false));
+                R.drawable.settings), null, "Log", false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.logout), null, "Log out", false, false));
+                R.drawable.logout), null, "Sign out", false, false));
         return items;
     }
 

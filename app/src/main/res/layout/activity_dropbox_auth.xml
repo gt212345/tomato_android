@@ -8,34 +8,34 @@
 
     <Button
         android:id="@+id/login_button_db"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:text="Connect"/>
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        android:text="Enable"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Status:"
-        android:id="@+id/status"
-        android:textSize="20sp"
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/dbIcon"
+        android:src="@drawable/dropbox"
+        android:layout_marginTop="67dp"
         android:layout_alignParentTop="true"
-        android:layout_alignLeft="@+id/login_button_db"
-        android:layout_alignStart="@+id/login_button_db"
-        android:layout_marginTop="130dp" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="20sp"
-        android:text="Disable"
-        android:id="@+id/able"
-        android:layout_alignTop="@+id/status"
-        android:layout_toRightOf="@+id/status"
-        android:layout_toEndOf="@+id/status" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:text="Dropbox, a free service that lets people bring their documents,
+         photos and videos everywhere and share them easily."
+        android:id="@+id/textView"
+        android:layout_alignTop="@+id/dbIcon"
+        android:layout_toRightOf="@+id/dbIcon"
+        android:layout_toEndOf="@+id/login_button_db" />
 
 </RelativeLayout>

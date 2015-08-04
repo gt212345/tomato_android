@@ -1,5 +1,6 @@
 package org.itri.tomato.Activities;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,12 +38,19 @@ public class LoginActivity extends AppCompatActivity {
     Thread loginThread;
     ProgressDialog progressDialog;
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.edit().putInt(Utilities.SDK_VERSION, Build.VERSION.SDK_INT).apply();
+        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
+        }
         editAccount = (EditText) findViewById(R.id.editAccount);
         editPass = (EditText) findViewById(R.id.editPass);
         Button login = (Button) findViewById(R.id.login);
@@ -55,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        Toast.makeText(LoginActivity.this, "Account invalid", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "帳號或密碼錯誤", Toast.LENGTH_SHORT).show();
                     }
                 });
                 loginThread = new Thread(loginRunnable);
@@ -72,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                 progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialogInterface) {
-                        Toast.makeText(LoginActivity.this, "帳號或密碼錯誤", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "帳號格式錯誤或已使用", Toast.LENGTH_SHORT).show();
                     }
                 });
                 loginThread = new Thread(createRunnable);
@@ -131,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                                 sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
                                 sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
                                 Intent intent = new Intent();
-                                intent.setClass(LoginActivity.this, MarketActivity.class);
+                                intent.setClass(LoginActivity.this, AutoRunActivity.class);
                                 startActivity(intent);
                                 progressDialog.dismiss();
                                 finish();
@@ -172,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
                                 sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
                                 sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
                                 Intent intent = new Intent();
-                                intent.setClass(LoginActivity.this, MarketActivity.class);
+                                intent.setClass(LoginActivity.this, AutoRunActivity.class);
                                 startActivity(intent);
                                 progressDialog.dismiss();
                                 finish();
@@ -208,7 +218,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        progressDialog.cancel();
+        progressDialog.dismiss();
     }
 
 }
