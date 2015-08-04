@@ -10,14 +10,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import org.itri.tomato.Activities.GCMTestActivity;
+import org.itri.tomato.Activities.LoginActivity;
 import org.itri.tomato.Activities.MarketActivity;
 import org.itri.tomato.R;
 
 public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerService {
     private static final String TAG = "GcmListenerService";
+    static final int NOTIFY_ID = 0;
+    public static int numMessage = 0;
 
     @Override
     public void onMessageReceived(String from, Bundle data) {
@@ -41,25 +45,33 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
 
     private void sendNotification(String message, String from) {
         Intent intent = new Intent(this, GCMTestActivity.class);
+        numMessage = 0;
         intent.putExtra("from", from);
         intent.putExtra("message", message);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(LoginActivity.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_school_white_48dp)
-                .setContentTitle("GCM Message")
+                .setContentTitle("Tomato Message")
                 .setContentText(message)
-                .setAutoCancel(true)
+                .setNumber(++numMessage)
                 .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setAutoCancel(true)
+                .setContentIntent(resultPendingIntent);
 
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(NOTIFY_ID /* ID of notification */, notificationBuilder.build());
     }
 }

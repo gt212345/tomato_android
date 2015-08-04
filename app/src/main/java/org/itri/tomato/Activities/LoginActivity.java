@@ -205,4 +205,10 @@ public class LoginActivity extends AppCompatActivity {
         }, time);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        progressDialog.cancel();
+    }
+
 }

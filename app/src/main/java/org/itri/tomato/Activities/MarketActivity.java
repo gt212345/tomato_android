@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -21,8 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,18 +29,15 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
+import org.itri.tomato.Fragments.ConnectorsFragment;
 import org.itri.tomato.Fragments.MyAutoRunListFragment;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.Utilities;
 import org.itri.tomato.R;
-import org.itri.tomato.Fragments.MarketListFragment;
+import org.itri.tomato.Fragments.AutoRunListFragment;
 import org.itri.tomato.Services.RegistrationIntentService;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Timer;
 
 public class MarketActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     FragmentManager fragmentManager;
@@ -66,7 +59,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         switch (position) {
             case 0:
                 drawerLayout.closeDrawers();
-                fragment = new MarketListFragment();
+                fragment = new AutoRunListFragment();
                 fragmentTransaction.replace(R.id.container, fragment);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
@@ -79,10 +72,11 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
                 fragmentTransaction.commit();
                 break;
             case 2:
-                intent = new Intent();
-                intent.setClass(MarketActivity.this, ChannelsActivity.class);
-                startActivity(intent);
                 drawerLayout.closeDrawers();
+                fragment = new ConnectorsFragment();
+                fragmentTransaction.replace(R.id.container, fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
                 break;
             case 3:
                 drawerLayout.closeDrawers();
@@ -140,7 +134,7 @@ public class MarketActivity extends AppCompatActivity implements AdapterView.OnI
         drawerLayout.setDrawerListener(toggle);
         fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        fragment = new MarketListFragment();
+        fragment = new AutoRunListFragment();
         transaction.replace(R.id.container, fragment);
         transaction.addToBackStack(null);
         transaction.commit();

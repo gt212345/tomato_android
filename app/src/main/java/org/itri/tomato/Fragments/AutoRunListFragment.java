@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,7 +36,7 @@ import java.util.ArrayList;
 /**
  * Created by hrw on 15/7/9.
  */
-public class MarketListFragment extends Fragment implements AdapterView.OnItemClickListener, DataRetrieveListener {
+public class AutoRunListFragment extends Fragment implements AdapterView.OnItemClickListener, DataRetrieveListener {
     private View rootView;
     ListView marketList;
     MarketListAdapter adapter;
@@ -55,8 +54,8 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
         View rootView = inflater.inflate(R.layout.fragment_marketlist, container, false);
         autoRunIDs = new ArrayList<Integer>();
         createDummyList();
-        listener = MarketListFragment.this;
-        getActivity().setTitle("Market Lists");
+        listener = AutoRunListFragment.this;
+        getActivity().setTitle("AutoRun Lists");
         this.rootView = rootView;
         handler = new Handler(Looper.getMainLooper());
 //        items = createDummyList();
@@ -132,31 +131,31 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.home));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.email));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.dropbox));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.fb));
+                R.drawable.ring));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.person));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.person));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.title));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.noti));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.person));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.noti));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.email));
+                R.drawable.title));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.ring));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.dropbox));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
@@ -233,7 +232,7 @@ public class MarketListFragment extends Fragment implements AdapterView.OnItemCl
             @Override
             public void run() {
                 marketList.setAdapter(adapter);
-                marketList.setOnItemClickListener(MarketListFragment.this);
+                marketList.setOnItemClickListener(AutoRunListFragment.this);
                 adapter.notifyDataSetChanged();
             }
         });

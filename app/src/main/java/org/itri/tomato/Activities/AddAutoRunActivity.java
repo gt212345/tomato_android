@@ -256,7 +256,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 addressList = geocoder.getFromLocation(latD, lngD, 1);
                 region.setText(addressList.get(0).getAddressLine(0));
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.w("Region", e.toString());
             }
         }
     }
@@ -327,112 +327,16 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 des.setGravity(Gravity.CENTER);
                 des.setTextSize(20);
                 des.setTextColor(Color.BLACK);
-                TextView when = new TextView(getApplicationContext());
-                when.setText("When:");
-                when.setTextSize(30);
-                when.setTextColor(Color.BLACK);
+                layout.addView(des);
+                layout.addView(title);
                 if (autoRunItemsWhen.size() != 0) {
-                    layout.addView(des);
-                    layout.addView(title);
+                    TextView when = new TextView(getApplicationContext());
+                    when.setText("When:");
+                    when.setTextSize(30);
+                    when.setTextColor(Color.BLACK);
                     layout.addView(when);
                     for (AutoRunItem item : autoRunItemsWhen) {
-                        switch (item.getConditionType()) {
-                            case "map":
-                                if (!isMapCreated) {
-                                    mapLayout = new LinearLayout(getApplicationContext());
-                                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                    layout.addView(mapLayout);
-                                    mapTV = new TextView(getApplicationContext());
-                                    mapTV.setText("請選擇位置:");
-                                    mapTV.setGravity(Gravity.CENTER_VERTICAL);
-                                    mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    mapTV.setTextSize(20);
-                                    LinearLayout.LayoutParams params;
-                                    params = new LinearLayout.LayoutParams(
-                                            0,
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            3.0f
-                                    );
-                                    mapTV.setLayoutParams(params);
-                                    mapBT = new Button(getApplicationContext());
-                                    mapBT.setText("地圖");
-                                    params = new LinearLayout.LayoutParams(
-                                            0,
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            1.0f
-                                    );
-                                    mapBT.setLayoutParams(params);
-                                    mapLayout.addView(mapTV);
-                                    mapLayout.addView(mapBT);
-                                    mapBT.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            startActivity();
-                                        }
-                                    });
-                                    region = new TextView(getApplicationContext());
-                                    lat = new TextView(getApplicationContext());
-                                    lng = new TextView(getApplicationContext());
-                                    layout.addView(region);
-                                    layout.addView(lat);
-                                    layout.addView(lng);
-                                    lat.setText(item.getDisplay() + ": ");
-                                    latStr = item.getDisplay();
-                                    region.setTextSize(20);
-                                    lat.setTextSize(20);
-                                    lng.setTextSize(20);
-                                    region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    isMapCreated = true;
-                                } else {
-                                    lngStr = item.getDisplay();
-                                    lng.setText(item.getDisplay() + ": ");
-                                }
-                                break;
-                            case "checkbox":
-                                String condition = item.getCondition();
-                                parts = condition.split("\\|");
-                                mapLayout = new LinearLayout(getApplicationContext());
-                                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                layout.addView(mapLayout);
-                                mapTV = new TextView(getApplicationContext());
-                                mapTV.setText(item.getDisplay());
-                                mapTV.setGravity(Gravity.CENTER_VERTICAL);
-                                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                mapTV.setTextSize(20);
-                                LinearLayout.LayoutParams params;
-                                params = new LinearLayout.LayoutParams(
-                                        0,
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        3.0f
-                                );
-                                mapTV.setLayoutParams(params);
-                                mapBT = new Button(getApplicationContext());
-                                mapBT.setText("展開");
-                                params = new LinearLayout.LayoutParams(
-                                        0,
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        1.0f
-                                );
-                                mapBT.setLayoutParams(params);
-                                weather = new TextView(getApplicationContext());
-                                mapLayout.addView(mapTV);
-                                mapLayout.addView(mapBT);
-                                layout.addView(weather);
-                                Globaltext1 = item.getDisplay();
-                                mapBT.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        DialogFragment dialogFragment = DialogFragment.newInstance(parts);
-                                        dialogFragment.show(getFragmentManager(), Globaltext1);
-                                    }
-                                });
-                                break;
-                            case "text":
-
-                                break;
-                        }
+                        createView(item);
                     }
                 }
                 if (autoRunItemsDo.size() != 0) {
@@ -442,131 +346,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     Do.setTextColor(Color.BLACK);
                     layout.addView(Do);
                     for (AutoRunItem item : autoRunItemsDo) {
-                        switch (item.getConditionType()) {
-                            case "map":
-                                if (!isMapCreated) {
-                                    mapLayout = new LinearLayout(getApplicationContext());
-                                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                    layout.addView(mapLayout);
-                                    mapTV = new TextView(getApplicationContext());
-                                    mapTV.setText("請選擇位置:");
-                                    mapTV.setGravity(Gravity.CENTER_VERTICAL);
-                                    mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    mapTV.setTextSize(20);
-                                    LinearLayout.LayoutParams params;
-                                    params = new LinearLayout.LayoutParams(
-                                            0,
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            3.0f
-                                    );
-                                    mapTV.setLayoutParams(params);
-                                    mapBT = new Button(getApplicationContext());
-                                    mapBT.setText("地圖");
-                                    params = new LinearLayout.LayoutParams(
-                                            0,
-                                            LinearLayout.LayoutParams.MATCH_PARENT,
-                                            1.0f
-                                    );
-                                    mapBT.setLayoutParams(params);
-                                    mapLayout.addView(mapTV);
-                                    mapLayout.addView(mapBT);
-                                    mapBT.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            startActivity();
-                                        }
-                                    });
-                                    region = new TextView(getApplicationContext());
-                                    lat = new TextView(getApplicationContext());
-                                    lng = new TextView(getApplicationContext());
-                                    layout.addView(region);
-                                    layout.addView(lat);
-                                    layout.addView(lng);
-                                    lat.setText(item.getDisplay() + ": ");
-                                    latStr = item.getDisplay();
-                                    region.setTextSize(20);
-                                    lat.setTextSize(20);
-                                    lng.setTextSize(20);
-                                    region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                    isMapCreated = true;
-                                } else {
-                                    lngStr = item.getDisplay();
-                                    lng.setText(item.getDisplay() + ": ");
-                                }
-                                break;
-                            case "checkbox":
-                                String condition = item.getCondition();
-                                parts = condition.split("\\|");
-                                mapLayout = new LinearLayout(getApplicationContext());
-                                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
-                                layout.addView(mapLayout);
-                                mapTV = new TextView(getApplicationContext());
-                                mapTV.setText(item.getDisplay());
-                                mapTV.setGravity(Gravity.CENTER_VERTICAL);
-                                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                mapTV.setTextSize(20);
-                                LinearLayout.LayoutParams params;
-                                params = new LinearLayout.LayoutParams(
-                                        0,
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        3.0f
-                                );
-                                mapTV.setLayoutParams(params);
-                                mapBT = new Button(getApplicationContext());
-                                mapBT.setText("展開");
-                                params = new LinearLayout.LayoutParams(
-                                        0,
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        1.0f
-                                );
-                                mapBT.setLayoutParams(params);
-                                weather = new TextView(getApplicationContext());
-                                mapLayout.addView(mapTV);
-                                mapLayout.addView(mapBT);
-                                layout.addView(weather);
-                                Globaltext1 = item.getDisplay();
-                                mapBT.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        DialogFragment dialogFragment = DialogFragment.newInstance(parts);
-                                        dialogFragment.show(getFragmentManager(), Globaltext1);
-                                    }
-                                });
-                                break;
-                            case "text":
-                                text = new EditText(getApplicationContext());
-                                text.setHint(item.getDisplay());
-                                text.setTextSize(20);
-                                params = new LinearLayout.LayoutParams(
-                                        LinearLayout.LayoutParams.MATCH_PARENT,
-                                        LinearLayout.LayoutParams.WRAP_CONTENT
-                                );
-                                text.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
-                                text.setInputType(InputType.TYPE_CLASS_PHONE);
-                                text.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                text.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                                text.setLayoutParams(params);
-                                text.addTextChangedListener(new TextWatcher() {
-                                    @Override
-                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                    }
-
-                                    @Override
-                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                    }
-
-                                    @Override
-                                    public void afterTextChanged(Editable editable) {
-                                        Globaltext = text.getText().toString();
-                                    }
-                                });
-                                layout.addView(text);
-                                break;
-                        }
+                        createView(item);
                     }
                 }
                 TextView overlay = new TextView(getApplicationContext());
@@ -594,6 +374,145 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     public static double roundDown5(double d) {
         return Math.floor(d * 1e5) / 1e5;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        progressDialog.cancel();
+    }
+
+    private void createView (AutoRunItem item) {
+        switch (item.getConditionType()) {
+            case "map":
+                if (!isMapCreated) {
+                    mapLayout = new LinearLayout(getApplicationContext());
+                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    layout.addView(mapLayout);
+                    mapTV = new TextView(getApplicationContext());
+                    mapTV.setText("請選擇位置:");
+                    mapTV.setGravity(Gravity.CENTER_VERTICAL);
+                    mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    mapTV.setTextSize(20);
+                    LinearLayout.LayoutParams params;
+                    params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            3.0f
+                    );
+                    mapTV.setLayoutParams(params);
+                    mapBT = new Button(getApplicationContext());
+                    mapBT.setText("地圖");
+                    params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            1.0f
+                    );
+                    mapBT.setLayoutParams(params);
+                    mapLayout.addView(mapTV);
+                    mapLayout.addView(mapBT);
+                    mapBT.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            startActivity();
+                        }
+                    });
+                    region = new TextView(getApplicationContext());
+                    lat = new TextView(getApplicationContext());
+                    lng = new TextView(getApplicationContext());
+                    layout.addView(region);
+                    layout.addView(lat);
+                    layout.addView(lng);
+                    lat.setText(item.getDisplay() + ": ");
+                    latStr = item.getDisplay();
+                    region.setTextSize(20);
+                    lat.setTextSize(20);
+                    lng.setTextSize(20);
+                    region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    isMapCreated = true;
+                } else {
+                    lngStr = item.getDisplay();
+                    lng.setText(item.getDisplay() + ": ");
+                }
+                break;
+            case "checkbox":
+                String condition = item.getCondition();
+                parts = condition.split("\\|");
+                mapLayout = new LinearLayout(getApplicationContext());
+                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                layout.addView(mapLayout);
+                mapTV = new TextView(getApplicationContext());
+                mapTV.setText(item.getDisplay() + ":");
+                mapTV.setGravity(Gravity.CENTER_VERTICAL);
+                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                mapTV.setTextSize(20);
+                LinearLayout.LayoutParams params;
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        3.0f
+                );
+                mapTV.setLayoutParams(params);
+                mapBT = new Button(getApplicationContext());
+                mapBT.setText("展開");
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                mapBT.setLayoutParams(params);
+                weather = new TextView(getApplicationContext());
+                mapLayout.addView(mapTV);
+                mapLayout.addView(mapBT);
+                layout.addView(weather);
+                Globaltext1 = item.getDisplay();
+                mapBT.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        DialogFragment dialogFragment = DialogFragment.newInstance(parts);
+                        dialogFragment.show(getFragmentManager(), Globaltext1);
+                    }
+                });
+                break;
+            case "text":
+                mapTV = new TextView(getApplicationContext());
+                mapTV.setText(item.getDisplay() + ":");
+                mapTV.setTextSize(20);
+                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                layout.addView(mapTV);
+                text = new EditText(getApplicationContext());
+                text.setHint(item.getCondition());
+                text.setTextSize(20);
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                text.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
+                text.setInputType(InputType.TYPE_CLASS_PHONE);
+                text.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                text.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                text.setLayoutParams(params);
+                text.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        Globaltext = text.getText().toString();
+                    }
+                });
+                layout.addView(text);
+                break;
+        }
     }
 
 }

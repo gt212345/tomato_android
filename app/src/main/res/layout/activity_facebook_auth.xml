@@ -14,4 +14,27 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Status:"
+        android:id="@+id/status"
+        android:textSize="20sp"
+        android:layout_above="@+id/login_button_fb"
+        android:layout_toLeftOf="@+id/login_button_fb"
+        android:layout_toStartOf="@+id/login_button_fb"
+        android:layout_marginBottom="107dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="20sp"
+        android:text="Disable"
+        android:id="@+id/able"
+        android:layout_alignTop="@+id/status"
+        android:layout_toRightOf="@+id/login_button_fb"
+        android:layout_toEndOf="@+id/login_button_fb" />
+
 </RelativeLayout>
