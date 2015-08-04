@@ -12,4 +12,6 @@
     <string name="title_activity_channels">ChannelsActivity</string>
     <string name="title_activity_facebook_auth">FacebookAuthActivity</string>
     <string name="title_activity_dropbox_auth">DropboxAuthActivity</string>
+    <string name="search_hint">Connector name</string>
+    <string name="title_activity_search">SearchActivity</string>
 </resources>

@@ -4,8 +4,10 @@ import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.SearchManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -15,10 +17,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -39,7 +44,7 @@ import org.itri.tomato.Services.RegistrationIntentService;
 
 import java.util.ArrayList;
 
-public class AutoRunActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class AutoRunActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
     FragmentManager fragmentManager;
     Fragment fragment;
     DrawerLayout drawerLayout;
@@ -54,7 +59,6 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent intent;
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         switch (position) {
             case 0:
@@ -82,16 +86,29 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
                 drawerLayout.closeDrawers();
                 break;
             case 4:
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                sharedPreferences.edit().remove(Utilities.USER_ACCOUNT).apply();
-                sharedPreferences.edit().remove(Utilities.USER_PASSWORD).apply();
-                sharedPreferences.edit().remove(Utilities.HAS_ACCOUNT).apply();
-                sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, false).apply();
-                drawerLayout.closeDrawers();
-                intent = new Intent();
-                intent.setClass(AutoRunActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                new AlertDialog.Builder(AutoRunActivity.this)
+                        .setMessage("Are you sure you want to sign out?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(AutoRunActivity.this);
+                                sharedPreferences.edit().remove(Utilities.USER_ACCOUNT).apply();
+                                sharedPreferences.edit().remove(Utilities.USER_PASSWORD).apply();
+                                sharedPreferences.edit().remove(Utilities.HAS_ACCOUNT).apply();
+                                sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, false).apply();
+                                drawerLayout.closeDrawers();
+                                Intent intent = new Intent();
+                                intent.setClass(AutoRunActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("Later", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .show();
                 break;
         }
     }
@@ -100,7 +117,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_market);
+        setContentView(R.layout.activity_autorun);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
@@ -111,10 +128,9 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
         APITest();
         ListView sideView = (ListView) findViewById(R.id.drawer_view);
         sideView.setOnItemClickListener(this);
-        MarketListAdapter adapter = new MarketListAdapter(this, createDummyList());
+        MarketListAdapter adapter = new MarketListAdapter(this, createDrawerMenu());
         sideView.setAdapter(adapter);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.menu_market);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -133,10 +149,12 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
         drawerLayout.setDrawerListener(toggle);
         fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        fragment = new AutoRunListFragment();
-        transaction.replace(R.id.container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        if (savedInstanceState == null) {
+            fragment = new AutoRunListFragment();
+            transaction.replace(R.id.container, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -154,7 +172,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
-    ArrayList<ListItem> createDummyList() {
+    ArrayList<ListItem> createDrawerMenu() {
         ArrayList<ListItem> items = new ArrayList<>();
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.marketlist), null, "AutoRun List", false, false));
@@ -195,4 +213,25 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
         super.onPause();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_autorun, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(this);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.w("Query", query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.w("Query", newText);
+        return false;
+    }
 }

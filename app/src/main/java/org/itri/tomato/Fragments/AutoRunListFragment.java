@@ -96,31 +96,6 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_market, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //TODO create own icons
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.action_search) {
-            //TODO override search behave
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     void createDummyList() {
         bitmaps = new ArrayList<>();
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
