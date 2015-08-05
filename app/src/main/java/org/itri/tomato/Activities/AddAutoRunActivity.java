@@ -1,17 +1,21 @@
 package org.itri.tomato.Activities;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -22,7 +26,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +35,6 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
-import com.nineoldandroids.view.ViewPropertyAnimator;
 
 import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
@@ -50,8 +52,6 @@ import java.util.Locale;
 
 public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener
         , DialogFragment.CheckBoxListener {
-    //home button ID
-    private static final int home = 16908332;
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
 
@@ -59,16 +59,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
 
     //floating view
-    private View mFab;
     private View mImageView;
     private View mOverlayView;
     private ObservableScrollView mScrollView;
     private TextView mTitleView;
     private int mActionBarSize;
-    private int mFlexibleSpaceShowFabOffset;
     private int mFlexibleSpaceImageHeight;
-    private int mFabMargin;
-    private boolean mFabIsShown;
 
     private int ID;
 
@@ -92,6 +88,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     String Globaltext1;
     EditText text;
 
+    LocationManager manager;
+    Toolbar toolbar;
     double latD = 0;
     double lngD = 0;
 
@@ -101,15 +99,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addautorun);
+        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         dataRetrieveListener = AddAutoRunActivity.this;
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ID = getIntent().getExtras().getInt("autoRunId");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
-        mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(R.dimen.flexible_space_show_fab_offset);
         mActionBarSize = 125;/**/
-        setTitle("Published AutoRun");
         geocoder = new Geocoder(this, Locale.TAIWAN);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
@@ -121,23 +118,21 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         /**
          * init UI
          */
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         mImageView = findViewById(R.id.image);
         mOverlayView = findViewById(R.id.overlay);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
         mScrollView.setScrollViewCallbacks(this);
         mTitleView = (TextView) findViewById(R.id.title);
-        mTitleView.setText(getTitle());
         setTitle(null);
-        mFab = findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(AddAutoRunActivity.this, "AutoRun added", Toast.LENGTH_SHORT).show();
-            }
-        });
-        mFabMargin = getResources().getDimensionPixelSize(R.dimen.margin_standard);
-        ViewHelper.setScaleX(mFab, 0);
-        ViewHelper.setScaleY(mFab, 0);
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
             public void run() {
@@ -180,30 +175,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         int titleTranslationY = maxTitleTranslationY - scrollY;
         ViewHelper.setTranslationY(mTitleView, titleTranslationY);
 
-        // Translate FAB
-        int maxFabTranslationY = mFlexibleSpaceImageHeight - mFab.getHeight() / 2;
-        float fabTranslationY = ScrollUtils.getFloat(
-                -scrollY + mFlexibleSpaceImageHeight - mFab.getHeight() / 2,
-                mActionBarSize - mFab.getHeight() / 2,
-                maxFabTranslationY);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            // On pre-honeycomb, ViewHelper.setTranslationX/Y does not set margin,
-            // which causes FAB's OnClickListener not working.
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFab.getLayoutParams();
-            lp.leftMargin = mOverlayView.getWidth() - mFabMargin - mFab.getWidth();
-            lp.topMargin = (int) fabTranslationY;
-            mFab.requestLayout();
-        } else {
-            ViewHelper.setTranslationX(mFab, mOverlayView.getWidth() - mFabMargin - mFab.getWidth());
-            ViewHelper.setTranslationY(mFab, fabTranslationY);
-        }
-
-        // Show/hide FAB
-        if (fabTranslationY < mFlexibleSpaceShowFabOffset) {
-            hideFab();
-        } else {
-            showFab();
-        }
     }
 
     @Override
@@ -216,30 +187,20 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     }
 
-    private void showFab() {
-        if (!mFabIsShown) {
-            ViewPropertyAnimator.animate(mFab).cancel();
-            ViewPropertyAnimator.animate(mFab).scaleX(1).scaleY(1).setDuration(200).start();
-            mFabIsShown = true;
-        }
-    }
-
-    private void hideFab() {
-        if (mFabIsShown) {
-            ViewPropertyAnimator.animate(mFab).cancel();
-            ViewPropertyAnimator.animate(mFab).scaleX(0).scaleY(0).setDuration(200).start();
-            mFabIsShown = false;
-        }
-    }
 
     private void startActivity() {
-        Intent intent = new Intent();
-        if (latD != 0 && lngD != 0) {
-            intent.putExtra("Lat", latD);
-            intent.putExtra("Lng", lngD);
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            toast.setText("Enable Location first");
+            toast.show();
+        } else {
+            Intent intent = new Intent();
+            if (latD != 0 && lngD != 0) {
+                intent.putExtra("Lat", latD);
+                intent.putExtra("Lng", lngD);
+            }
+            intent.setClass(AddAutoRunActivity.this, MapActivity.class);
+            startActivityForResult(intent, 200);
         }
-        intent.setClass(AddAutoRunActivity.this, MapActivity.class);
-        startActivityForResult(intent, 200);
     }
 
     @Override
@@ -280,6 +241,13 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             try {
                 JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
                 description = jsonRes.getString("autorunDesc");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTitleView.setText(description);
+                        setTitle(description);
+                    }
+                });
                 JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
                 JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
                 for (int i = 0; i < jsonWhen.length(); i++) {
@@ -322,12 +290,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 title.setGravity(Gravity.CENTER);
                 title.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 title.setTextSize(40);
-                TextView des = new TextView(getApplicationContext());
-                des.setText(description);
-                des.setGravity(Gravity.CENTER);
-                des.setTextSize(20);
-                des.setTextColor(Color.BLACK);
-                layout.addView(des);
+//                TextView des = new TextView(getApplicationContext());
+//                des.setText(description);
+//                des.setGravity(Gravity.CENTER);
+//                des.setTextSize(20);
+//                des.setTextColor(Color.BLACK);
+//                layout.addView(des);
                 layout.addView(title);
                 if (autoRunItemsWhen.size() != 0) {
                     TextView when = new TextView(getApplicationContext());
@@ -352,10 +320,18 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 TextView overlay = new TextView(getApplicationContext());
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        1000
+                        800
                 );
                 overlay.setLayoutParams(params);
                 layout.addView(overlay);
+                Button apply = new Button(getApplicationContext());
+                apply.setTextSize(20);
+                apply.setText("Add");
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                apply.setLayoutParams(params);
+                layout.addView(apply);
                 progressDialog.dismiss();
                 onScrollChanged(0, false, false);
             }
@@ -382,10 +358,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         progressDialog.cancel();
     }
 
-    private void createView (AutoRunItem item) {
+    private void createView(AutoRunItem item) {
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
+                    checkGps();
                     mapLayout = new LinearLayout(getApplicationContext());
                     mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                     layout.addView(mapLayout);
@@ -412,8 +389,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     mapLayout.addView(mapTV);
                     mapLayout.addView(mapBT);
                     mapBT.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                            @Override
+                            public void onClick(View view) {
                             startActivity();
                         }
                     });
@@ -512,6 +489,27 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 });
                 layout.addView(text);
                 break;
+        }
+    }
+
+    private void checkGps() {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 

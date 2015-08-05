@@ -90,12 +90,6 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         return rootView;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
     void createDummyList() {
         bitmaps = new ArrayList<>();
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
@@ -125,11 +119,15 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.dropbox));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.fb_auth));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.dropbox));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.ring));
+                R.drawable.noti));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
@@ -176,6 +174,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         new Thread(new Runnable() {
             @Override
             public void run() {
+                pullRefreshLayout.setRefreshing(true);
                 String Action = Utilities.ACTION + "GetAutoRunList";
                 String Params = Utilities.PARAMS + "{\"uid\":\"4\",\"token\":\"123\",\"filterName\":\"\",\"page\":\"1\",\"count\":\"10\"}";
                 JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);

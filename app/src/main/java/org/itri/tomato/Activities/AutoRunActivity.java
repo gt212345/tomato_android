@@ -106,6 +106,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
                         .setNegativeButton("Later", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                drawerLayout.closeDrawers();
                             }
                         })
                         .show();
