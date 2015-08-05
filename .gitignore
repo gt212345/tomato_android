@@ -3,7 +3,6 @@
 /.idea/workspace.xml
 /.idea/librarieis
 #IntelliJ IDEA
-.idea
 *.iml
 classes
 app/app.iml
@@ -18,5 +17,4 @@ tomato_android.iml
 /captures
 tomato_android.iml
 .idea/modules.xml
-app/app.iml
 
