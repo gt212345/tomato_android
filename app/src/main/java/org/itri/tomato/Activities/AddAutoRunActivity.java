@@ -51,10 +51,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener
-        , DialogFragment.CheckBoxListener {
+        , DialogFragment.CheckBoxListener, DialogFragment.RadioButtonListener {
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
-
     SharedPreferences sharedPreferences;
 
 
@@ -72,22 +71,18 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Toast toast;
     LinearLayout layout;
     String description;
-    ArrayList<AutoRunItem> autoRunItemsWhen;
-    ArrayList<AutoRunItem> autoRunItemsDo;
+    ArrayList<AutoRunItem> autoRunItemsWhen, autoRunItemsDo;
     DataRetrieveListener dataRetrieveListener;
     LinearLayout mapLayout;
-    TextView mapTV, lat, lng, weather, region;
-    Button mapBT;
+    TextView weightTv, lat, lng, check, radio, region;
+    Button weightBt;
     String[] parts;
-    String latStr;
-    String lngStr;
+    String latStr, lngStr;
     ProgressDialog progressDialog;
     Geocoder geocoder;
     List<Address> addressList;
-    String Globaltext;
-    String Globaltext1;
-    EditText text;
-
+    String phoneStr, emailStr, textStr, numberStr, passStr, dialogStr;
+    EditText phone, text, number, pass, email;
     LocationManager manager;
     Toolbar toolbar;
     double latD = 0;
@@ -150,6 +145,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 //                mScrollView.scrollTo(0, 0);
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        progressDialog.cancel();
     }
 
     @Override
@@ -290,12 +291,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 title.setGravity(Gravity.CENTER);
                 title.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 title.setTextSize(40);
-//                TextView des = new TextView(getApplicationContext());
-//                des.setText(description);
-//                des.setGravity(Gravity.CENTER);
-//                des.setTextSize(20);
-//                des.setTextColor(Color.BLACK);
-//                layout.addView(des);
                 layout.addView(title);
                 if (autoRunItemsWhen.size() != 0) {
                     TextView when = new TextView(getApplicationContext());
@@ -339,26 +334,27 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    public void onFinished(ArrayList<String> Strings) {
-        weather.setText("");
+    public void onCheckFinished(ArrayList<String> Strings) {
+        check.setText("");
         for (String tmp : Strings) {
-            weather.append(tmp + "\n");
+            check.append(tmp + "\n");
         }
-        weather.setTextSize(20);
-        weather.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-    }
-
-    public static double roundDown5(double d) {
-        return Math.floor(d * 1e5) / 1e5;
+        check.setTextSize(20);
+        check.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        progressDialog.cancel();
+    public void onRadioFinished(String string) {
+        radio.setText("");
+        radio.append(string);
+        radio.setTextSize(20);
+        radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
     }
 
+
     private void createView(AutoRunItem item) {
+        String condition;
+        LinearLayout.LayoutParams params;
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
@@ -366,31 +362,30 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     mapLayout = new LinearLayout(getApplicationContext());
                     mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                     layout.addView(mapLayout);
-                    mapTV = new TextView(getApplicationContext());
-                    mapTV.setText("請選擇位置:");
-                    mapTV.setGravity(Gravity.CENTER_VERTICAL);
-                    mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                    mapTV.setTextSize(20);
-                    LinearLayout.LayoutParams params;
+                    weightTv = new TextView(getApplicationContext());
+                    weightTv.setText("請選擇位置:");
+                    weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                    weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    weightTv.setTextSize(20);
                     params = new LinearLayout.LayoutParams(
                             0,
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             3.0f
                     );
-                    mapTV.setLayoutParams(params);
-                    mapBT = new Button(getApplicationContext());
-                    mapBT.setText("地圖");
+                    weightTv.setLayoutParams(params);
+                    weightBt = new Button(getApplicationContext());
+                    weightBt.setText("地圖");
                     params = new LinearLayout.LayoutParams(
                             0,
                             LinearLayout.LayoutParams.MATCH_PARENT,
                             1.0f
                     );
-                    mapBT.setLayoutParams(params);
-                    mapLayout.addView(mapTV);
-                    mapLayout.addView(mapBT);
-                    mapBT.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
+                    weightBt.setLayoutParams(params);
+                    mapLayout.addView(weightTv);
+                    mapLayout.addView(weightBt);
+                    weightBt.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
                             startActivity();
                         }
                     });
@@ -415,79 +410,124 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 }
                 break;
             case "checkbox":
-                String condition = item.getCondition();
+                condition = item.getCondition();
                 parts = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
-                mapTV = new TextView(getApplicationContext());
-                mapTV.setText(item.getDisplay() + ":");
-                mapTV.setGravity(Gravity.CENTER_VERTICAL);
-                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                mapTV.setTextSize(20);
-                LinearLayout.LayoutParams params;
+                weightTv = new TextView(getApplicationContext());
+                weightTv.setText(item.getDisplay() + ":");
+                weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                weightTv.setTextSize(20);
                 params = new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         3.0f
                 );
-                mapTV.setLayoutParams(params);
-                mapBT = new Button(getApplicationContext());
-                mapBT.setText("展開");
+                weightTv.setLayoutParams(params);
+                weightBt = new Button(getApplicationContext());
+                weightBt.setText("展開");
                 params = new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         1.0f
                 );
-                mapBT.setLayoutParams(params);
-                weather = new TextView(getApplicationContext());
-                mapLayout.addView(mapTV);
-                mapLayout.addView(mapBT);
-                layout.addView(weather);
-                Globaltext1 = item.getDisplay();
-                mapBT.setOnClickListener(new View.OnClickListener() {
+                weightBt.setLayoutParams(params);
+                check = new TextView(getApplicationContext());
+                mapLayout.addView(weightTv);
+                mapLayout.addView(weightBt);
+                layout.addView(check);
+                dialogStr = item.getDisplay();
+                weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DialogFragment dialogFragment = DialogFragment.newInstance(parts);
-                        dialogFragment.show(getFragmentManager(), Globaltext1);
+                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX);
+                        dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
                 break;
-            case "text":
-                mapTV = new TextView(getApplicationContext());
-                mapTV.setText(item.getDisplay() + ":");
-                mapTV.setTextSize(20);
-                mapTV.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                layout.addView(mapTV);
-                text = new EditText(getApplicationContext());
-                text.setHint(item.getCondition());
-                text.setTextSize(20);
+            case "phone":
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
-                text.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
-                text.setInputType(InputType.TYPE_CLASS_PHONE);
-                text.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                text.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                text.setLayoutParams(params);
-                text.addTextChangedListener(new TextWatcher() {
+                phone = new EditText(getApplicationContext());
+                createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE);
+                break;
+            case "email":
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                email = new EditText(getApplicationContext());
+                createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                break;
+            case "number":
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                number = new EditText(getApplicationContext());
+                createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER);
+                break;
+            case "pass":
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                pass = new EditText(getApplicationContext());
+                createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                break;
+            case "text":
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                text = new EditText(getApplicationContext());
+                createEdit(item, params, text, InputType.TYPE_CLASS_TEXT);
+                break;
+            case "radio":
+                condition = item.getCondition();
+                parts = condition.split("\\|");
+                mapLayout = new LinearLayout(getApplicationContext());
+                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                layout.addView(mapLayout);
+                weightTv = new TextView(getApplicationContext());
+                weightTv.setText(item.getDisplay() + ":");
+                weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                weightTv.setTextSize(20);
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        3.0f
+                );
+                weightTv.setLayoutParams(params);
+                weightBt = new Button(getApplicationContext());
+                weightBt.setText("展開");
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                weightBt.setLayoutParams(params);
+                radio = new TextView(getApplicationContext());
+                mapLayout.addView(weightTv);
+                mapLayout.addView(weightBt);
+                layout.addView(radio);
+                dialogStr = item.getDisplay();
+                weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        Globaltext = text.getText().toString();
+                    public void onClick(View view) {
+                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON);
+                        dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
-                layout.addView(text);
+                break;
+            case "richtext":
+                break;
+            case "schedule":
                 break;
         }
     }
@@ -511,6 +551,58 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             final AlertDialog alert = builder.create();
             alert.show();
         }
+    }
+
+    private void createEdit(AutoRunItem item, LinearLayout.LayoutParams param,final EditText editText, final int inputType) {
+        weightTv = new TextView(getApplicationContext());
+        weightTv.setText(item.getDisplay() + ":");
+        weightTv.setTextSize(20);
+        weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        layout.addView(weightTv);
+        editText.setHint(item.getCondition());
+        editText.setTextSize(20);
+        editText.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
+        editText.setInputType(inputType);
+        editText.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        editText.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        editText.setLayoutParams(param);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                switch (inputType) {
+                    case InputType.TYPE_CLASS_PHONE:
+                        phoneStr = editText.getText().toString();
+                        break;
+                    case InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS:
+                        emailStr = editText.getText().toString();
+                        break;
+                    case InputType.TYPE_CLASS_NUMBER:
+                        numberStr = editText.getText().toString();
+                        break;
+                    case InputType.TYPE_TEXT_VARIATION_PASSWORD:
+                        passStr = editText.getText().toString();
+                        break;
+                    case InputType.TYPE_CLASS_TEXT:
+                        textStr = editText.getText().toString();
+                        break;
+                }
+            }
+        });
+        layout.addView(editText);
+    }
+
+    public static double roundDown5(double d) {
+        return Math.floor(d * 1e5) / 1e5;
     }
 
 }

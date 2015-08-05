@@ -27,6 +27,8 @@ public class Utilities {
     public static final String USER_PASSWORD = "userPassword";
     public static final String HAS_ACCOUNT = "hasAccount";
     public static final String SDK_VERSION = "sdkVersion";
+    public static final int CHECK_BOX = 1;
+    public static final int RADIO_BUTTON = 2;
 
     /**
      * For Server API
