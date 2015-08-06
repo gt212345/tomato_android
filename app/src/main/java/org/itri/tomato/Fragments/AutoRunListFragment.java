@@ -202,7 +202,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                 String Action = Utilities.ACTION + "GetAutoRunList";
                 String Params = Utilities.PARAMS + "{\"uid\":\"4\",\"token\":\"123\",\"filterName\":\"" + filterName + "\",\"page\":\"1\",\"count\":\"10\"}";
                 JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
-                if (Utilities.getResponseCode() == 200) {
+                if (Utilities.getResponseCode().equals("true")) {
                     try {
                         JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));

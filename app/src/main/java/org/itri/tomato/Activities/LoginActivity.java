@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
                 String Action = Utilities.ACTION + "Login";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
                 jsonObject = Utilities.API_CONNECT(Action, Params, true);
-                if (Utilities.getResponseCode() == 200) {
+                if (Utilities.getResponseCode().equals("true")) {
                     if (jsonObject != null) {
                         try {
                             JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
                 String Action = Utilities.ACTION + "CreateAccount";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
                 jsonObject = Utilities.API_CONNECT(Action, Params, true);
-                if (Utilities.getResponseCode() == 200) {
+                if (Utilities.getResponseCode().equals("true")) {
                     if (jsonObject != null) {
                         try {
                             JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));

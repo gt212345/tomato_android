@@ -40,7 +40,7 @@ public class Utilities {
     public static final String SENDER_ID = "948528150442";
     public static final String TYPE = "android";
 
-    private static int responseCode = 0;
+    private static String responseCode;
 
     public static JSONObject API_CONNECT(String Action, String Params, boolean hasInput) {
         try {
@@ -65,8 +65,8 @@ public class Utilities {
                 }
                 inputStream.close();
                 JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-                responseCode = httpURLConnection.getResponseCode();
-                if (httpURLConnection.getResponseCode() == 200) {
+                responseCode = jsonObject.getString("status");
+                if (responseCode.equals("true")) {
                     return jsonObject;
                 } else {
                     Log.w("Connection", "failed");
@@ -87,7 +87,7 @@ public class Utilities {
         return null;
     }
 
-    public static int getResponseCode() {
+    public static String getResponseCode() {
         return responseCode;
     }
 }

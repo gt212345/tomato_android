@@ -93,6 +93,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng, jsonCheck, jsonPhone, jsonEmail, jsonRadio, jsonText, jsonNum, jsonPass, jsonRich, jsonSch;
     String jsonPara;
+    boolean okToAdd = false;
+    int counts;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -288,6 +290,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             jsonDo.getJSONObject(i).getString("agent_parameter")
                     ));
                 }
+                counts = jsonWhen.length() + jsonDo.length();
                 dataRetrieveListener.onFinish();
             } catch (JSONException e) {
                 progressDialog.cancel();
@@ -750,9 +753,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         tmp.add(jsonNum);
         tmp.add(jsonSch);
         for (JSONObject object : tmp) {
-            if (object != null) {
+            if (object != null && object.length() == 4) {
                 jsonArray.put(object);
             }
+        }
+        if (jsonArray.length() != counts) {
+            toast.setText("Settings not complete!!");
+            toast.show();
+            return;
         }
         JSONObject jsonObject = new JSONObject();
         try {
@@ -761,6 +769,18 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             jsonObject.put("autorunId", id);
             jsonObject.put("autorunPara", jsonArray);
             jsonPara = jsonObject.toString();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String Action = Utilities.ACTION + "AddUserAutoRun";
+                    String Params = Utilities.PARAMS + jsonPara;
+                    Utilities.API_CONNECT(Action, Params, true);
+                    if (Utilities.getResponseCode().equals("true")) {
+                        toast.setText("Add Succeed");
+                        toast.show();
+                    }
+                }
+            }).start();
             Log.w("Json", jsonPara);
         } catch (JSONException e) {
             e.printStackTrace();
