@@ -26,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,7 +94,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng, jsonCheck, jsonPhone, jsonEmail, jsonRadio, jsonText, jsonNum, jsonPass, jsonRich, jsonSch;
     String jsonPara;
-    boolean okToAdd = false;
     int counts;
 
 
@@ -105,6 +105,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         dataRetrieveListener = AddAutoRunActivity.this;
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+        mImageView = findViewById(R.id.image);
         new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         ID = getIntent().getExtras().getInt("autoRunId");
@@ -130,7 +131,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 finish();
             }
         });
-        mImageView = findViewById(R.id.image);
         mOverlayView = findViewById(R.id.overlay);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
         mScrollView.setScrollViewCallbacks(this);
@@ -241,6 +241,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     Runnable getAutoRunSettings = new Runnable() {
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void run() {
             autoRunItemsWhen = new ArrayList<>();
@@ -249,6 +250,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             switch (ID) {
                 case 2:
                     Action = Utilities.ACTION + "GetAutoRunByIdSampleS";
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ((ImageView) mImageView).setImageDrawable(getResources().getDrawable(R.drawable.back2));
+                        }
+                    });
                     break;
                 default:
                     Action = Utilities.ACTION + "GetAutoRunByIdSampleF";

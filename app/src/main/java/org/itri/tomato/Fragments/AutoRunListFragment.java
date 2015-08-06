@@ -47,11 +47,10 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
     private View rootView;
     ListView marketList;
     MarketListAdapter adapter;
-    ArrayList<ListItem> items;
     ArrayList<Bitmap> bitmaps;
     PullRefreshLayout pullRefreshLayout;
-    Handler handler;
     DataRetrieveListener listener;
+    ArrayList<ListItem> items;
     ArrayList<Integer> autoRunIDs;
     DialogFragment dialogFragment;
     SearchView searchView;
@@ -76,7 +75,6 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         listener = AutoRunListFragment.this;
         getActivity().setTitle("AutoRun List");
         this.rootView = rootView;
-        handler = new Handler(Looper.getMainLooper());
 //        items = createDummyList();
         marketList = (ListView) rootView.findViewById(R.id.marketList);
         marketList.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -97,12 +95,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
-                    }
-                });
+                adapter = new MarketListAdapter(getActivity(), getAutoRunList());
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList());

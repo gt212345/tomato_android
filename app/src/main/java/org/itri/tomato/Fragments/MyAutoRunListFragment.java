@@ -1,32 +1,180 @@
 package org.itri.tomato.Fragments;
 
 import android.app.Fragment;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.baoyz.widget.PullRefreshLayout;
+
+import org.itri.tomato.Activities.MarketListAdapter;
+import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
+import org.itri.tomato.Utilities;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 /**
  * Created by heiruwu on 7/16/15.
  */
-public class MyAutoRunListFragment extends Fragment {
+public class MyAutoRunListFragment extends Fragment implements DataRetrieveListener, AdapterView.OnItemClickListener {
+    SharedPreferences sharedPreferences;
+    ListView autoRunList;
+    ArrayList<Bitmap> bitmaps;
     ArrayList<ListItem> listItems;
+    ArrayList<Integer> autoRunIDs;
+    ArrayList<Boolean> able;
+    DataRetrieveListener listener;
+    PullRefreshLayout pullRefreshLayout;
+    MarketListAdapter adapter;
 //    private View rootView;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_myautorunlist, container, false);
-//        this.rootView = rootView;
-        ListView autoRunList = (ListView) rootView.findViewById(R.id.autoRunList);
+        setHasOptionsMenu(true);
         getActivity().setTitle("My AutoRun List");
+//        this.rootView = rootView;
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        createDummyList();
+        autoRunList = (ListView) rootView.findViewById(R.id.autoRunList);
+        autoRunIDs = new ArrayList<>();
+        listener = MyAutoRunListFragment.this;
+        pullRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.pullRefreshLayout);
+        pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+            }
+        });
+        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
         return rootView;
+    }
+
+    @Override
+    public void onFinish() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                autoRunList.setAdapter(adapter);
+                autoRunList.setOnItemClickListener(MyAutoRunListFragment.this);
+                adapter.notifyDataSetChanged();
+                pullRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    private ArrayList<ListItem> getAutoRunList() {
+        listItems = new ArrayList<>();
+        able = new ArrayList<>();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullRefreshLayout.setRefreshing(true);
+                    }
+                });
+                String Action = Utilities.ACTION + "GetUserAutoRunList";
+                JSONObject para = new JSONObject();
+                try {
+                    para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                    para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String Params = Utilities.PARAMS + para.toString();
+                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                if (Utilities.getResponseCode().equals("true")) {
+                    try {
+                        JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
+                        JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
+                        int a = 0;
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            int t = a + 1;
+                            listItems.add(new ListItem(bitmaps.get(a), bitmaps.get(t), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
+                            autoRunIDs.add(jsonArray.getJSONObject(i).getInt("userautorunId"));
+                            if (jsonArray.getJSONObject(i).getString("enable").equals("on")) {
+                                able.add(true);
+                            } else {
+                                able.add(false);
+                            }
+                            a += 2;
+                        }
+                        listener.onFinish();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+        return listItems;
+    }
+
+    void createDummyList() {
+        bitmaps = new ArrayList<>();
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.raining));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.home));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.person));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.person));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.title));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.title));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.fb_auth));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.email));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.ring));
     }
 }
