@@ -68,6 +68,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private int ID;
 
     boolean isMapCreated = false;
+    DialogFragment dialogFragment;
     Toast toast;
     LinearLayout layout;
     String description;
@@ -151,6 +152,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     protected void onPause() {
         super.onPause();
         progressDialog.cancel();
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
+        }
     }
 
     @Override
@@ -442,7 +446,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -520,7 +524,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -560,7 +564,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     }
 
-    private void createEdit(final AutoRunItem item, LinearLayout.LayoutParams param,final EditText editText, final int inputType) {
+    private void createEdit(final AutoRunItem item, LinearLayout.LayoutParams param, final EditText editText, final int inputType) {
         weightTv = new TextView(getApplicationContext());
         weightTv.setText(item.getDisplay() + ":");
         weightTv.setTextSize(20);
@@ -607,7 +611,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 }
             }
         });
-        if(inputType == InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS){
+        if (inputType == InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) {
             LinearLayout orientLayout = new LinearLayout(getApplicationContext());
             orientLayout.setOrientation(LinearLayout.HORIZONTAL);
             Button richBt = new Button(getApplicationContext());
@@ -634,10 +638,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             .show();
                 }
             });
-        }  else {
+        } else {
             editText.setHint(item.getCondition());
             layout.addView(editText);
         }
+        editText.clearFocus();
     }
 
     public static double roundDown5(double d) {

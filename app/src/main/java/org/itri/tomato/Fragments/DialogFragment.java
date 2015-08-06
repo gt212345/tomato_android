@@ -1,12 +1,17 @@
 package org.itri.tomato.Fragments;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Layout;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -15,6 +20,7 @@ import android.widget.RadioGroup;
 
 import org.itri.tomato.Activities.AddAutoRunActivity;
 import org.itri.tomato.R;
+import org.itri.tomato.Utilities;
 
 import java.util.ArrayList;
 
@@ -126,6 +132,20 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                 break;
         }
         return builder.create();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        int type = getArguments().getInt("type");
+        if (type == Utilities.SEARCH_DIALOG) {
+            Window window = getDialog().getWindow();
+            window.setGravity(Gravity.TOP | Gravity.RIGHT);
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.x = -100;
+            params.y = 100;
+            window.setAttributes(params);
+        }
     }
 
     @Override

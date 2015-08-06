@@ -53,9 +53,18 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
     Handler handler;
     DataRetrieveListener listener;
     ArrayList<Integer> autoRunIDs;
+    DialogFragment dialogFragment;
     SearchView searchView;
     String filterName = "";
     boolean isMore = true;
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (dialogFragment != null) {
+            dialogFragment.dismiss();
+        }
+    }
 
     @Nullable
     @Override
@@ -236,7 +245,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 String[] parts = {"Weather", "Notification", "Mail", "Dropbox", "Facebook", "Location", "Phone"};
-                DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.SEARCH_DIALOG, AutoRunListFragment.this);
+                dialogFragment = DialogFragment.newInstance(parts, Utilities.SEARCH_DIALOG, AutoRunListFragment.this);
                 dialogFragment.show(getFragmentManager(), "");
                 return true;
             }
@@ -257,9 +266,9 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public void onClick(View view) {
-        String[] parts = {"Weather", "Notification", "Mail", "Dropbox", "Facebook", "Location", "Phone"};
-        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.SEARCH_DIALOG, AutoRunListFragment.this);
-        dialogFragment.show(getFragmentManager(), "");
+//        String[] parts = {"Weather", "Notification", "Mail", "Dropbox", "Facebook", "Location", "Phone"};
+//        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.SEARCH_DIALOG, AutoRunListFragment.this);
+//        dialogFragment.show(getFragmentManager(), "");
     }
 
 }
