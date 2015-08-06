@@ -29,6 +29,7 @@ public class Utilities {
     public static final String SDK_VERSION = "sdkVersion";
     public static final int CHECK_BOX = 1;
     public static final int RADIO_BUTTON = 2;
+    public static final int SEARCH_DIALOG = 3;
 
     /**
      * For Server API

@@ -2,13 +2,11 @@ package org.itri.tomato.Fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
@@ -28,9 +26,12 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
 
     ArrayList<String> checks;
     String string;
-
+    RadioGroup radioGroup;
+    static Fragment fragment;
     private static final int CHECK_BOX = 1;
     private static final int RADIO_BUTTON = 2;
+    private static final int SEARCH_DIALOG = 3;
+
 
     public interface CheckBoxListener {
         void onCheckFinished(ArrayList<String> Strings);
@@ -41,11 +42,12 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     }
 
 
-    public static DialogFragment newInstance(String[] parts, int type) {
+    public static DialogFragment newInstance(String[] parts, int type, Fragment f) {
         DialogFragment dialogFragment = new DialogFragment();
         Bundle args = new Bundle();
         args.putStringArray("parts", parts);
         args.putInt("type", type);
+        fragment = f;
         dialogFragment.setArguments(args);
         return dialogFragment;
     }
@@ -81,7 +83,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                 }).setNegativeButton("Cancel", null);
                 break;
             case RADIO_BUTTON:
-                RadioGroup radioGroup = new RadioGroup(getActivity());
+                radioGroup = new RadioGroup(getActivity());
                 radioGroup.setOrientation(LinearLayout.VERTICAL);
                 layout.addView(radioGroup);
                 for (int i = 0; i < counts; i++) {
@@ -98,6 +100,30 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     }
                 }).setNegativeButton("Cancel", null);
                 break;
+            case SEARCH_DIALOG:
+                radioGroup = new RadioGroup(getActivity());
+                radioGroup.setOrientation(LinearLayout.VERTICAL);
+                layout.addView(radioGroup);
+                for (int i = 0; i < counts; i++) {
+                    RadioButton radioButton = new RadioButton(getActivity());
+                    radioButton.setText(names.get(i));
+                    radioButton.setOnCheckedChangeListener(this);
+                    radioGroup.addView(radioButton);
+                }
+                builder.setView(view).setPositiveButton("Search", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        RadioButtonListener listener = (AutoRunListFragment) fragment;
+                        listener.onRadioFinished(string);
+                    }
+                }).setNegativeButton("Clear", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        RadioButtonListener listener = (AutoRunListFragment) fragment;
+                        listener.onRadioFinished("");
+                    }
+                });
+                break;
         }
         return builder.create();
     }
@@ -111,4 +137,5 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
             checks.remove(compoundButton.getText().toString());
         }
     }
+
 }

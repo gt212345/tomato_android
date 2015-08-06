@@ -81,8 +81,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     ProgressDialog progressDialog;
     Geocoder geocoder;
     List<Address> addressList;
-    String phoneStr, emailStr, textStr, numberStr, passStr, dialogStr;
-    EditText phone, text, number, pass, email;
+    String phoneStr, emailStr, textStr, numberStr, passStr, richStr, dialogStr;
+    EditText phone, text, number, pass, email, rich;
     LocationManager manager;
     Toolbar toolbar;
     double latD = 0;
@@ -442,7 +442,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX);
+                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -520,12 +520,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON);
+                        DialogFragment dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
                 break;
             case "richtext":
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        3.0f
+                );
+                rich = new EditText(getApplicationContext());
+                createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                 break;
             case "schedule":
                 break;
@@ -553,13 +560,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     }
 
-    private void createEdit(AutoRunItem item, LinearLayout.LayoutParams param,final EditText editText, final int inputType) {
+    private void createEdit(final AutoRunItem item, LinearLayout.LayoutParams param,final EditText editText, final int inputType) {
         weightTv = new TextView(getApplicationContext());
         weightTv.setText(item.getDisplay() + ":");
         weightTv.setTextSize(20);
         weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         layout.addView(weightTv);
-        editText.setHint(item.getCondition());
         editText.setTextSize(20);
         editText.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
         editText.setInputType(inputType);
@@ -595,10 +601,43 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_CLASS_TEXT:
                         textStr = editText.getText().toString();
                         break;
+                    case InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
+                        richStr = editText.getText().toString();
+                        break;
                 }
             }
         });
-        layout.addView(editText);
+        if(inputType == InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS){
+            LinearLayout orientLayout = new LinearLayout(getApplicationContext());
+            orientLayout.setOrientation(LinearLayout.HORIZONTAL);
+            Button richBt = new Button(getApplicationContext());
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    0,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1.0f
+            );
+            richBt.setLayoutParams(params);
+            richBt.setText("提示");
+            layout.addView(orientLayout);
+            orientLayout.addView(editText);
+            orientLayout.addView(richBt);
+            richBt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new android.support.v7.app.AlertDialog.Builder(AddAutoRunActivity.this)
+                            .setMessage(item.getCondition())
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .show();
+                }
+            });
+        }  else {
+            editText.setHint(item.getCondition());
+            layout.addView(editText);
+        }
     }
 
     public static double roundDown5(double d) {

@@ -35,6 +35,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.itri.tomato.Fragments.ConnectorsFragment;
+import org.itri.tomato.Fragments.DialogFragment;
 import org.itri.tomato.Fragments.MyAutoRunListFragment;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.Utilities;
@@ -44,7 +45,7 @@ import org.itri.tomato.Services.RegistrationIntentService;
 
 import java.util.ArrayList;
 
-public class AutoRunActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, SearchView.OnQueryTextListener {
+public class AutoRunActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     FragmentManager fragmentManager;
     Fragment fragment;
     DrawerLayout drawerLayout;
@@ -56,6 +57,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
      * Google Cloud Messaging
      */
     private BroadcastReceiver broadcastReceiver;
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -214,25 +216,4 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
         super.onPause();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_autorun, menu);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setOnQueryTextListener(this);
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        Log.w("Query", query);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        Log.w("Query", newText);
-        return false;
-    }
 }
