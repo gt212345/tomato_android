@@ -34,6 +34,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
+import com.google.gson.JsonNull;
 import com.nineoldandroids.view.ViewHelper;
 
 import org.itri.tomato.AutoRunItem;
@@ -51,7 +52,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener
-        , DialogFragment.CheckBoxListener, DialogFragment.RadioButtonListener {
+        , DialogFragment.CheckBoxListener, DialogFragment.RadioButtonListener, View.OnClickListener {
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
     SharedPreferences sharedPreferences;
@@ -66,6 +67,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private int mFlexibleSpaceImageHeight;
 
     private int ID;
+
+    String id;
 
     boolean isMapCreated = false;
     DialogFragment dialogFragment;
@@ -88,6 +91,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Toolbar toolbar;
     double latD = 0;
     double lngD = 0;
+    JSONObject jsonMapLat, jsonMapLng, jsonCheck, jsonPhone, jsonEmail, jsonRadio, jsonText, jsonNum, jsonPass, jsonRich, jsonSch;
+    String jsonPara;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -221,8 +226,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             try {
                 addressList = geocoder.getFromLocation(latD, lngD, 1);
                 region.setText(addressList.get(0).getAddressLine(0));
+                jsonMapLat.put("value", String.valueOf(latD));
+                jsonMapLat.put("agent_parameter", "options");
+                jsonMapLng.put("value", String.valueOf(lngD));
+                jsonMapLng.put("agent_parameter", "options");
             } catch (IOException e) {
                 Log.w("Region", e.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -246,6 +257,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             try {
                 JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
                 description = jsonRes.getString("autorunDesc");
+                id = jsonRes.getString("autorunId");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -330,6 +342,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
                 apply.setLayoutParams(params);
+                apply.setOnClickListener(AddAutoRunActivity.this);
                 layout.addView(apply);
                 progressDialog.dismiss();
                 onScrollChanged(0, false, false);
@@ -340,8 +353,16 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     public void onCheckFinished(ArrayList<String> Strings) {
         check.setText("");
+        String temp = "";
         for (String tmp : Strings) {
             check.append(tmp + "\n");
+            temp += tmp + "|";
+        }
+        try {
+            jsonCheck.put("value", temp.substring(0, temp.length() - 1));
+            jsonCheck.put("agent_parameter", "options");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         check.setTextSize(20);
         check.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
@@ -353,6 +374,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         radio.append(string);
         radio.setTextSize(20);
         radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        try {
+            jsonRadio.put("value", string);
+            jsonRadio.put("agent_parameter", "options");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -362,6 +389,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
+                    jsonMapLat = new JSONObject();
+                    jsonMapLng = new JSONObject();
+                    putJson(jsonMapLat, item);
+                    putJson(jsonMapLng, item);
                     checkGps();
                     mapLayout = new LinearLayout(getApplicationContext());
                     mapLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -414,6 +445,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 }
                 break;
             case "checkbox":
+                jsonCheck = new JSONObject();
+                putJson(jsonCheck, item);
                 condition = item.getCondition();
                 parts = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
@@ -452,6 +485,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 });
                 break;
             case "phone":
+                jsonPhone = new JSONObject();
+                putJson(jsonPhone, item);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -460,6 +495,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE);
                 break;
             case "email":
+                jsonEmail = new JSONObject();
+                putJson(jsonEmail, item);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -468,6 +505,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 break;
             case "number":
+                jsonNum = new JSONObject();
+                putJson(jsonNum, item);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -476,6 +515,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER);
                 break;
             case "pass":
+                jsonPass = new JSONObject();
+                putJson(jsonPass, item);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -484,6 +525,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 break;
             case "text":
+                jsonText = new JSONObject();
+                putJson(jsonText, item);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
@@ -492,6 +535,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT);
                 break;
             case "radio":
+                jsonRadio = new JSONObject();
+                putJson(jsonRadio, item);
                 condition = item.getCondition();
                 parts = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
@@ -530,6 +575,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 });
                 break;
             case "richtext":
+                jsonRich = new JSONObject();
+                putJson(jsonRich, item);
                 params = new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -539,6 +586,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                 break;
             case "schedule":
+                jsonSch = new JSONObject();
+                putJson(jsonSch, item);
                 break;
         }
     }
@@ -592,21 +641,57 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 switch (inputType) {
                     case InputType.TYPE_CLASS_PHONE:
                         phoneStr = editText.getText().toString();
+                        try {
+                            jsonPhone.put("value", phoneStr);
+                            jsonPhone.put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS:
                         emailStr = editText.getText().toString();
+                        try {
+                            jsonEmail.put("value", emailStr);
+                            jsonEmail.put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case InputType.TYPE_CLASS_NUMBER:
                         numberStr = editText.getText().toString();
+                        try {
+                            jsonNum.put("value", numberStr);
+                            jsonNum.put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case InputType.TYPE_TEXT_VARIATION_PASSWORD:
                         passStr = editText.getText().toString();
+                        try {
+                            jsonPass.put("value", passStr);
+                            jsonPass.put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case InputType.TYPE_CLASS_TEXT:
                         textStr = editText.getText().toString();
+                        try {
+                            jsonText.put("value", textStr);
+                            jsonText.put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
                         richStr = editText.getText().toString();
+                        try {
+                            jsonRich.put("value", richStr);
+                            jsonRich.put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                 }
             }
@@ -649,4 +734,45 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         return Math.floor(d * 1e5) / 1e5;
     }
 
+    @Override
+    public void onClick(View view) {
+        JSONArray jsonArray = new JSONArray();
+        ArrayList<JSONObject> tmp = new ArrayList<>();
+        tmp.add(jsonMapLat);
+        tmp.add(jsonMapLng);
+        tmp.add(jsonCheck);
+        tmp.add(jsonRadio);
+        tmp.add(jsonText);
+        tmp.add(jsonPhone);
+        tmp.add(jsonPass);
+        tmp.add(jsonRich);
+        tmp.add(jsonEmail);
+        tmp.add(jsonNum);
+        tmp.add(jsonSch);
+        for (JSONObject object : tmp) {
+            if (object != null) {
+                jsonArray.put(object);
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+            jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+            jsonObject.put("autorunId", id);
+            jsonObject.put("autorunPara", jsonArray);
+            jsonPara = jsonObject.toString();
+            Log.w("Json", jsonPara);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void putJson(JSONObject object, AutoRunItem item) {
+        try {
+            object.put("agentId", item.getAgentId());
+            object.put("option", item.getOption());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
