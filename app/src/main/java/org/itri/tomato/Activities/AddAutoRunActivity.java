@@ -1,6 +1,7 @@
 package org.itri.tomato.Activities;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -24,6 +25,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -304,6 +306,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             @Override
             public void run() {
                 layout = (LinearLayout) findViewById(R.id.viewGroup);
+                layout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        hideSoftKeyboard(AddAutoRunActivity.this);
+                    }
+                });
                 TextView title = new TextView(getApplicationContext());
                 title.setText("設定");
                 title.setGravity(Gravity.CENTER);
@@ -794,4 +802,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             e.printStackTrace();
         }
     }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
 }
