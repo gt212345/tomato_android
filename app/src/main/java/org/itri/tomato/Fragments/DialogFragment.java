@@ -31,6 +31,7 @@ import java.util.ArrayList;
 public class DialogFragment extends android.app.DialogFragment implements CompoundButton.OnCheckedChangeListener {
 
     ArrayList<String> checks;
+    int num;
     String string;
     RadioGroup radioGroup;
     static Fragment fragment;
@@ -40,19 +41,20 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
 
 
     public interface CheckBoxListener {
-        void onCheckFinished(ArrayList<String> Strings);
+        void onCheckFinished(ArrayList<String> Strings, int num);
     }
 
     public interface RadioButtonListener {
-        void onRadioFinished(String String);
+        void onRadioFinished(String String, int num);
     }
 
 
-    public static DialogFragment newInstance(String[] parts, int type, Fragment f) {
+    public static DialogFragment newInstance(String[] parts, int type, Fragment f, int num) {
         DialogFragment dialogFragment = new DialogFragment();
         Bundle args = new Bundle();
         args.putStringArray("parts", parts);
         args.putInt("type", type);
+        args.putInt("num", num);
         fragment = f;
         dialogFragment.setArguments(args);
         return dialogFragment;
@@ -62,6 +64,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int counts = getArguments().getStringArray("parts").length;
         int type = getArguments().getInt("type");
+        num = getArguments().getInt("num");
         ArrayList<String> names = new ArrayList<>();
         checks = new ArrayList<>();
         for (String tmp : getArguments().getStringArray("parts")) {
@@ -84,7 +87,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         CheckBoxListener listener = (AddAutoRunActivity) getActivity();
-                        listener.onCheckFinished(checks);
+                        listener.onCheckFinished(checks, num);
                     }
                 }).setNegativeButton("Cancel", null);
                 break;
@@ -102,7 +105,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         RadioButtonListener listener = (AddAutoRunActivity) getActivity();
-                        listener.onRadioFinished(string);
+                        listener.onRadioFinished(string, num);
                     }
                 }).setNegativeButton("Cancel", null);
                 break;
@@ -120,13 +123,13 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         RadioButtonListener listener = (AutoRunListFragment) fragment;
-                        listener.onRadioFinished(string);
+                        listener.onRadioFinished(string, num);
                     }
                 }).setNegativeButton("Clear", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         RadioButtonListener listener = (AutoRunListFragment) fragment;
-                        listener.onRadioFinished("all");
+                        listener.onRadioFinished("all", num);
                     }
                 });
                 break;

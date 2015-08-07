@@ -89,12 +89,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Geocoder geocoder;
     List<Address> addressList;
     String phoneStr, emailStr, textStr, numberStr, passStr, richStr, dialogStr;
+    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, schList;
     EditText phone, text, number, pass, email, rich;
     LocationManager manager;
     Toolbar toolbar;
+    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countSch = 0;
     double latD = 0;
     double lngD = 0;
-    JSONObject jsonMapLat, jsonMapLng, jsonCheck, jsonPhone, jsonEmail, jsonRadio, jsonText, jsonNum, jsonPass, jsonRich, jsonSch;
+    JSONObject jsonMapLat, jsonMapLng;
     String jsonPara;
     int counts;
 
@@ -256,6 +258,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            Log.w(TAG,para.toString());
             String Params = Utilities.PARAMS + para.toString();
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
@@ -306,6 +309,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                createList();
                 layout = (LinearLayout) findViewById(R.id.viewGroup);
                 layout.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -362,7 +366,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    public void onCheckFinished(ArrayList<String> Strings) {
+    public void onCheckFinished(ArrayList<String> Strings, int num) {
         check.setText("");
         String temp = "";
         for (String tmp : Strings) {
@@ -370,8 +374,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             temp += tmp + "|";
         }
         try {
-            jsonCheck.put("value", temp.substring(0, temp.length() - 1));
-            jsonCheck.put("agent_parameter", "options");
+            checkList.get(num).put("value", temp.substring(0, temp.length() - 1));
+            checkList.get(num).put("agent_parameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -380,14 +384,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    public void onRadioFinished(String string) {
+    public void onRadioFinished(String string, int num) {
         radio.setText("");
         radio.append(string);
         radio.setTextSize(20);
         radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         try {
-            jsonRadio.put("value", string);
-            jsonRadio.put("agent_parameter", "options");
+            radioList.get(num).put("value", string);
+            radioList.get(num).put("agent_parameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -456,8 +460,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 }
                 break;
             case "checkbox":
-                jsonCheck = new JSONObject();
-                putJson(jsonCheck, item);
+                checkList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 parts = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
@@ -490,64 +493,59 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck++);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
                 break;
             case "phone":
-                jsonPhone = new JSONObject();
-                putJson(jsonPhone, item);
+                phoneList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 phone = new EditText(getApplicationContext());
-                createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE);
+                createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE, countPhone++);
                 break;
             case "email":
-                jsonEmail = new JSONObject();
-                putJson(jsonEmail, item);
+                ++countEmail;
+                emailList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 email = new EditText(getApplicationContext());
-                createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, countEmail);
                 break;
             case "number":
-                jsonNum = new JSONObject();
-                putJson(jsonNum, item);
+                numList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 number = new EditText(getApplicationContext());
-                createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER);
+                createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
                 break;
             case "pass":
-                jsonPass = new JSONObject();
-                putJson(jsonPass, item);
+                passList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 pass = new EditText(getApplicationContext());
-                createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD, countPass++);
                 break;
             case "text":
-                jsonText = new JSONObject();
-                putJson(jsonText, item);
+                textList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 text = new EditText(getApplicationContext());
-                createEdit(item, params, text, InputType.TYPE_CLASS_TEXT);
+                createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
                 break;
             case "radio":
-                jsonRadio = new JSONObject();
-                putJson(jsonRadio, item);
+                radioList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 parts = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
@@ -580,25 +578,26 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio++);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
                 break;
             case "richtext":
-                jsonRich = new JSONObject();
-                putJson(jsonRich, item);
+                richList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         3.0f
                 );
                 rich = new EditText(getApplicationContext());
-                createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich++);
                 break;
             case "schedule":
-                jsonSch = new JSONObject();
-                putJson(jsonSch, item);
+                schList.add(putJson(new JSONObject(), item));
+                break;
+            case "key":
+                counts--;
                 break;
         }
     }
@@ -624,7 +623,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     }
 
-    private void createEdit(final AutoRunItem item, LinearLayout.LayoutParams param, final EditText editText, final int inputType) {
+    private void createEdit(final AutoRunItem item, LinearLayout.LayoutParams param, final EditText editText, final int inputType, final int num) {
         weightTv = new TextView(getApplicationContext());
         weightTv.setText(item.getDisplay() + ":");
         weightTv.setTextSize(20);
@@ -651,10 +650,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             public void afterTextChanged(Editable editable) {
                 switch (inputType) {
                     case InputType.TYPE_CLASS_PHONE:
-                        phoneStr = editText.getText().toString();
                         try {
-                            jsonPhone.put("value", phoneStr);
-                            jsonPhone.put("agent_parameter", "options");
+                            phoneList.get(num).put("value", editText.getText().toString());
+                            phoneList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -662,8 +660,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS:
                         emailStr = editText.getText().toString();
                         try {
-                            jsonEmail.put("value", emailStr);
-                            jsonEmail.put("agent_parameter", "options");
+                            emailList.get(num).put("value", editText.getText().toString());
+                            emailList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -671,8 +669,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_CLASS_NUMBER:
                         numberStr = editText.getText().toString();
                         try {
-                            jsonNum.put("value", numberStr);
-                            jsonNum.put("agent_parameter", "options");
+                            numList.get(num).put("value", editText.getText().toString());
+                            numList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -680,8 +678,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_TEXT_VARIATION_PASSWORD:
                         passStr = editText.getText().toString();
                         try {
-                            jsonPass.put("value", passStr);
-                            jsonPass.put("agent_parameter", "options");
+                            passList.get(num).put("value", editText.getText().toString());
+                            passList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -689,8 +687,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_CLASS_TEXT:
                         textStr = editText.getText().toString();
                         try {
-                            jsonText.put("value", textStr);
-                            jsonText.put("agent_parameter", "options");
+                            textList.get(num).put("value", editText.getText().toString());
+                            textList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -698,8 +696,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
                         richStr = editText.getText().toString();
                         try {
-                            jsonRich.put("value", richStr);
-                            jsonRich.put("agent_parameter", "options");
+                            richList.get(num).put("value", editText.getText().toString());
+                            richList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -751,22 +749,25 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         ArrayList<JSONObject> tmp = new ArrayList<>();
         tmp.add(jsonMapLat);
         tmp.add(jsonMapLng);
-        tmp.add(jsonCheck);
-        tmp.add(jsonRadio);
-        tmp.add(jsonText);
-        tmp.add(jsonPhone);
-        tmp.add(jsonPass);
-        tmp.add(jsonRich);
-        tmp.add(jsonEmail);
-        tmp.add(jsonNum);
-        tmp.add(jsonSch);
-        Log.w(TAG, "ph" + phoneStr + "\n" + "em" + emailStr + "\n" + "text" + textStr + "\n" + "num" + numberStr + "\n" + "pass" + passStr + "\n" + " rich" + richStr);
+        iterateList(tmp, checkList);
+        iterateList(tmp, radioList);
+        iterateList(tmp, phoneList);
+        iterateList(tmp, emailList);
+        iterateList(tmp, passList);
+        iterateList(tmp, textList);
+        iterateList(tmp, richList);
+        iterateList(tmp, numList);
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 4) {
                 jsonArray.put(object);
             }
         }
         if (jsonArray.length() != counts) {
+            try {
+                Log.w(TAG,"\n" + jsonArray.getJSONObject(0).getString("option") + "\n" + jsonArray.getJSONObject(1).getString("option") + "\n" + jsonArray.getJSONObject(2).getString("option"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             toast.setText("Settings not complete!!");
             toast.show();
             return;
@@ -800,18 +801,37 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     }
 
-    private void putJson(JSONObject object, AutoRunItem item) {
+    private JSONObject putJson(JSONObject object, AutoRunItem item) {
         try {
             object.put("agentId", item.getAgentId());
             object.put("option", item.getOption());
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return object;
     }
 
     public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
+
+    private void iterateList(ArrayList<JSONObject> main, ArrayList<JSONObject> sub) {
+        for (JSONObject object : sub) {
+            main.add(object);
+        }
+    }
+
+    private void createList() {
+        checkList = new ArrayList<>();
+        radioList = new ArrayList<>();
+        phoneList = new ArrayList<>();
+        emailList = new ArrayList<>();
+        textList = new ArrayList<>();
+        numList = new ArrayList<>();
+        passList = new ArrayList<>();
+        richList = new ArrayList<>();
+        schList = new ArrayList<>();
     }
 
 }

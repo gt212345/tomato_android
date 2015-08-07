@@ -68,6 +68,7 @@ public class Utilities {
                 JSONObject response = new JSONObject(jsonObject.getString("response"));
                 responseCode = response.getString("status");
                 if (responseCode.equals("true")) {
+                    Log.i(Action, responseCode);
                     return jsonObject;
                 } else {
                     Log.w(Action , "failed");

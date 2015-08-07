@@ -170,7 +170,6 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
                     para.put("userautorunId", id);
                     para.put("enable", able ? "on" : "off");
-                    Log.w(TAG, para.toString());
                 } catch (JSONException e) {
                     Log.w(TAG, e.toString());
                 }

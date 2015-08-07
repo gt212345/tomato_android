@@ -77,7 +77,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancewe) {
         View rootView = inflater.inflate(R.layout.fragment_marketlist, container, false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         setHasOptionsMenu(true);
@@ -261,7 +261,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
     }
 
     @Override
-    public void onRadioFinished(String query) {
+    public void onRadioFinished(String query, int num) {
 //        searchView.clearFocus();
         filterName = query;
         adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
