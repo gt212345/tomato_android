@@ -65,12 +65,12 @@ public class Utilities {
                 }
                 inputStream.close();
                 JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-                responseCode = jsonObject.getString("status");
-//                Log.w("response", responseCode);
+                JSONObject response = new JSONObject(jsonObject.getString("response"));
+                responseCode = response.getString("status");
                 if (responseCode.equals("true")) {
                     return jsonObject;
                 } else {
-                    Log.w("Connection", "failed");
+                    Log.w(Action , "failed");
                     return null;
                 }
             } else {

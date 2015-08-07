@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (jsonObject != null) {
                         try {
                             JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                            if (jsonObjectTmp.getString("status").equals("200")) {
+                            if (jsonObjectTmp.getString("status").equals("true")) {
                                 if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                                     sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
                                     sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();

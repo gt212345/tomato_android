@@ -12,9 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.Switch;
 
 import com.baoyz.widget.PullRefreshLayout;
 
@@ -32,8 +30,7 @@ import java.util.ArrayList;
 /**
  * Created by heiruwu on 7/16/15.
  */
-public class MyAutoRunListFragment extends Fragment implements DataRetrieveListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener,
-        MarketListAdapter.toggleListener {
+public class MyAutoRunListFragment extends Fragment implements DataRetrieveListener, AdapterView.OnItemClickListener, MarketListAdapter.toggleListener {
     SharedPreferences sharedPreferences;
     ListView autoRunList;
     ArrayList<Bitmap> bitmaps;
@@ -43,7 +40,6 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     DataRetrieveListener listener;
     PullRefreshLayout pullRefreshLayout;
     MarketListAdapter adapter;
-    Switch aSwitch;
 //    private View rootView;
 
     private static final String TAG = "MyAutoRunListFragment";
@@ -162,25 +158,21 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        Log.w("", "it woks!!");
-    }
-
-    @Override
     public void onToggle(final int position, final boolean able) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 int id = autoRunIDs.get(position);
-                String Action = Utilities.ACTION + "SwitchUserAutoRunOnById";
+                String Action = Utilities.ACTION + "SwitchUserAutoRunById";
                 JSONObject para = new JSONObject();
                 try {
-                    para.put("uid", sharedPreferences.getString(Utilities.SENDER_ID, null));
+                    para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
                     para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
                     para.put("userautorunId", id);
                     para.put("enable", able ? "on" : "off");
+                    Log.w(TAG, para.toString());
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.w(TAG, e.toString());
                 }
                 String Para = Utilities.PARAMS + para.toString();
                 Utilities.API_CONNECT(Action, Para, true);

@@ -780,7 +780,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     }
                 }
             }).start();
-            Log.w("Json", jsonPara);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
