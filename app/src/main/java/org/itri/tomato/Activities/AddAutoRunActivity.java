@@ -258,7 +258,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.w(TAG,para.toString());
             String Params = Utilities.PARAMS + para.toString();
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
@@ -763,11 +762,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             }
         }
         if (jsonArray.length() != counts) {
-            try {
-                Log.w(TAG,"\n" + jsonArray.getJSONObject(0).getString("option") + "\n" + jsonArray.getJSONObject(1).getString("option") + "\n" + jsonArray.getJSONObject(2).getString("option"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
             toast.setText("Settings not complete!!");
             toast.show();
             return;
