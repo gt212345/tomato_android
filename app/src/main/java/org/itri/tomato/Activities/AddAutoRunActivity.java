@@ -58,6 +58,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         , DialogFragment.CheckBoxListener, DialogFragment.RadioButtonListener, View.OnClickListener {
     //floating view scale
     private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
+    private static final String TAG = "AddAutoRunActivity";
     SharedPreferences sharedPreferences;
 
 
@@ -759,6 +760,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         tmp.add(jsonEmail);
         tmp.add(jsonNum);
         tmp.add(jsonSch);
+        Log.w(TAG, "ph" + phoneStr + "\n" + "em" + emailStr + "\n" + "text" + textStr + "\n" + "num" + numberStr + "\n" + "pass" + passStr + "\n" + " rich" + richStr);
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 4) {
                 jsonArray.put(object);
@@ -788,7 +790,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     }
                 }
             }).start();
-
+            Intent intent = new Intent();
+            intent.putExtra("from", TAG);
+            intent.setClass(AddAutoRunActivity.this, AutoRunActivity.class);
+            startActivity(intent);
+            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }
