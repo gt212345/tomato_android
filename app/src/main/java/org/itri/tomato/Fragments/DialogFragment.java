@@ -126,7 +126,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         RadioButtonListener listener = (AutoRunListFragment) fragment;
-                        listener.onRadioFinished("");
+                        listener.onRadioFinished("all");
                     }
                 });
                 break;

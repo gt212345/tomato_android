@@ -178,15 +178,15 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
     ArrayList<ListItem> createDrawerMenu() {
         ArrayList<ListItem> items = new ArrayList<>();
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.marketlist), null, "AutoRun List", false, false));
+                R.drawable.marketlist), null, "AutoRun List", false, false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.my), null, "My AutoRun List", false, false));
+                R.drawable.my), null, "My AutoRun List", false, false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.channels), null, "Connector List", false, false));
+                R.drawable.channels), null, "Connector List", false, false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.settings), null, "Log", false, false));
+                R.drawable.settings), null, "Log", false, false, false));
         items.add(new ListItem(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.logout), null, "Sign out", false, false));
+                R.drawable.logout), null, "Sign out", false, false, false));
         return items;
     }
 

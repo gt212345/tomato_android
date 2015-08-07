@@ -80,10 +80,11 @@ android:layout_height="match_parent">
         android:gravity="center_vertical"
         android:layout_marginStart="50dp"
         android:layout_marginLeft="50dp"
-        android:maxLines="3"
+        android:layout_marginRight="80dp"
+        android:maxLines="4"
         android:minHeight="?attr/actionBarSize"
         android:textColor="@android:color/white"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <View
         android:layout_width="match_parent"

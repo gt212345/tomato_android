@@ -67,7 +67,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private int mActionBarSize;
     private int mFlexibleSpaceImageHeight;
 
-    private int ID;
 
     String id;
 
@@ -108,7 +107,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mImageView = findViewById(R.id.image);
         new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        ID = getIntent().getExtras().getInt("autoRunId");
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mActionBarSize = 125;/**/
         geocoder = new Geocoder(this, Locale.TAIWAN);
@@ -135,6 +133,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
         mScrollView.setScrollViewCallbacks(this);
         mTitleView = (TextView) findViewById(R.id.title);
+        mTitleView.setText("Add AutoRun");
         setTitle(null);
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
@@ -246,22 +245,16 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         public void run() {
             autoRunItemsWhen = new ArrayList<>();
             autoRunItemsDo = new ArrayList<>();
-            String Action;
-            switch (ID) {
-                case 2:
-                    Action = Utilities.ACTION + "GetAutoRunByIdSampleS";
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ((ImageView) mImageView).setImageDrawable(getResources().getDrawable(R.drawable.back2));
-                        }
-                    });
-                    break;
-                default:
-                    Action = Utilities.ACTION + "GetAutoRunByIdSampleF";
-                    break;
+            String Action = Utilities.ACTION + "GetAutoRunById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("autorunId", getIntent().getExtras().getInt("autoRunId"));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-            String Params = Utilities.PARAMS + "{}";
+            String Params = Utilities.PARAMS + para.toString();
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
                 JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
@@ -270,7 +263,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mTitleView.setText(description);
                         setTitle(description);
                     }
                 });

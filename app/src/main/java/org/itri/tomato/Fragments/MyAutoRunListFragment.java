@@ -7,11 +7,13 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Switch;
 
 import com.baoyz.widget.PullRefreshLayout;
 
@@ -41,6 +43,8 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     MarketListAdapter adapter;
 //    private View rootView;
 
+    private static final String TAG = "MyAutoRunListFragment";
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,7 +55,6 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         createDummyList();
         autoRunList = (ListView) rootView.findViewById(R.id.autoRunList);
-        autoRunIDs = new ArrayList<>();
         listener = MyAutoRunListFragment.this;
         pullRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.pullRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -85,6 +88,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     private ArrayList<ListItem> getAutoRunList() {
         listItems = new ArrayList<>();
         able = new ArrayList<>();
+        autoRunIDs = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -100,7 +104,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
                     para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.w("JSON", e.toString());
                 }
                 String Params = Utilities.PARAMS + para.toString();
                 JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
@@ -108,21 +112,19 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     try {
                         JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
-                        int a = 0;
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            int t = a + 1;
-                            listItems.add(new ListItem(bitmaps.get(a), bitmaps.get(t), jsonArray.getJSONObject(i).getString("autorunDesc"), true, false));
-                            autoRunIDs.add(jsonArray.getJSONObject(i).getInt("userautorunId"));
                             if (jsonArray.getJSONObject(i).getString("enable").equals("on")) {
                                 able.add(true);
                             } else {
                                 able.add(false);
                             }
-                            a += 2;
+                            listItems.add(new ListItem(bitmaps.get(jsonArray.getJSONObject(i).getInt("whenIconId") - 1), bitmaps.get(jsonArray.getJSONObject(i).getInt("doIconId") - 1)
+                                    , jsonArray.getJSONObject(i).getString("autorunDesc"), true, true, able.get(i)));
+                            autoRunIDs.add(jsonArray.getJSONObject(i).getInt("userautorunId"));
                         }
                         listener.onFinish();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.w("JSON", e.toString());
                     }
                 }
             }
@@ -139,42 +141,20 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.home));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.ring));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.person));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.person));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.noti));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.title));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.noti));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.title));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.ring));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.dropbox));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.fb_auth));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.dropbox));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.dropbox));
-        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.noti));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.email));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.ring));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.email));
+                R.drawable.fb));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
-                R.drawable.ring));
+                R.drawable.dropbox));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.noti));
     }
 }

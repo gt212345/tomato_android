@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.itri.tomato.ListItem;
@@ -24,6 +25,7 @@ public class MarketListAdapter extends BaseAdapter {
     private class ViewHolder {
         ImageView image1, image2;
         TextView content;
+        Switch aSwitch;
     }
 
     public MarketListAdapter(Context context, ArrayList<ListItem> items) {
@@ -49,7 +51,27 @@ public class MarketListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
-        if (items.get(position).isHas2Image()) {
+        if (items.get(position).isMy()) {
+            if (convertView == null) {
+                view = li.inflate(R.layout.item_marketlist, null);
+                viewHolder = new ViewHolder();
+                viewHolder.aSwitch = (Switch) view.findViewById(R.id.aSwitch);
+                viewHolder.image1 = (ImageView) view.findViewById(R.id.service1);
+                viewHolder.image2 = (ImageView) view.findViewById(R.id.service2);
+                viewHolder.content = (TextView) view.findViewById(R.id.content);
+                view.setTag(viewHolder);
+            } else {
+                view = convertView;
+                viewHolder = (ViewHolder) view.getTag();
+            }
+            ListItem item = items.get(position);
+            viewHolder.image1.setImageBitmap(item.getImage1());
+            viewHolder.image2.setImageBitmap(item.getImage2());
+            viewHolder.aSwitch.setVisibility(View.VISIBLE);
+            viewHolder.aSwitch.setChecked(item.getAble());
+            viewHolder.content.setText(item.getContent());
+            return view;
+        } else if (items.get(position).isHas2Image()) {
             if (convertView == null) {
                 view = li.inflate(R.layout.item_marketlist, null);
                 viewHolder = new ViewHolder();
@@ -66,7 +88,7 @@ public class MarketListAdapter extends BaseAdapter {
             viewHolder.image2.setImageBitmap(item.getImage2());
             viewHolder.content.setText(item.getContent());
             return view;
-        } else if (!items.get(position).isChannels()) {
+        } else {
             if (convertView == null) {
                 view = li.inflate(R.layout.item_drawerlist, null);
                 viewHolder = new ViewHolder();
@@ -80,19 +102,6 @@ public class MarketListAdapter extends BaseAdapter {
             ListItem item = items.get(position);
             viewHolder.image1.setImageBitmap(item.getImage1());
             viewHolder.content.setText(item.getContent());
-            return view;
-        } else {
-            if (convertView == null) {
-                view = li.inflate(R.layout.item_drawerlist, null);
-                viewHolder = new ViewHolder();
-                viewHolder.image1 = (ImageView) view.findViewById(R.id.icon);
-                view.setTag(viewHolder);
-            } else {
-                view = convertView;
-                viewHolder = (ViewHolder) view.getTag();
-            }
-            ListItem item = items.get(position);
-            viewHolder.image1.setImageBitmap(item.getImage1());
             return view;
         }
     }

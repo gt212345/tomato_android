@@ -11,15 +11,16 @@ public class ListItem {
     Bitmap image1;
     Bitmap image2;
     String content;
-    boolean isChannels;
+    boolean isMy, able;
     boolean has2Image;
 
-    public ListItem(Bitmap image1, Bitmap image2, String content, boolean has2Image, boolean isChannels) {
+    public ListItem(Bitmap image1, Bitmap image2, String content, boolean has2Image, boolean isMy, boolean able) {
         this.image1 = image1;
         this.image2 = image2;
         this.content = content;
         this.has2Image = has2Image;
-        this.isChannels = isChannels;
+        this.isMy = isMy;
+        this.able = able;
     }
 
     public Bitmap getImage1() {
@@ -42,7 +43,11 @@ public class ListItem {
         return has2Image;
     }
 
-    public boolean isChannels() {
-        return isChannels;
+    public boolean isMy() {
+        return isMy;
+    }
+
+    public boolean getAble() {
+        return able;
     }
 }
