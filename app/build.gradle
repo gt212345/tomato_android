@@ -1,12 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'itri'
+            keyPassword 'itrin100'
+            storeFile file('/Users/heiruwu/Keys/itriKey.jks')
+            storePassword 'itrin100'
+        }
+    }
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
-
     apply plugin: 'com.google.gms.google-services'
-
-
     defaultConfig {
         applicationId "org.itri.tomato"
         minSdkVersion 14
@@ -18,6 +23,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            signingConfig signingConfigs.config
         }
     }
 }
@@ -35,5 +43,4 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.5.+'
     compile 'com.android.support:support-v4:22.2.0'
     compile 'com.android.support:design:22.2.0'
-
 }

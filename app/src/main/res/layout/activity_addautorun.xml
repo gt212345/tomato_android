@@ -78,13 +78,13 @@ android:layout_height="match_parent">
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
         android:layout_marginRight="80dp"
-        android:maxLines="4"
+        android:maxLines="2"
         android:minHeight="?attr/actionBarSize"
         android:textColor="@android:color/white"
-        android:textSize="15sp" />
+        android:textSize="14sp" />
 
     <View
         android:layout_width="match_parent"

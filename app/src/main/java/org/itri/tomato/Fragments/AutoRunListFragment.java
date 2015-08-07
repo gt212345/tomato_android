@@ -106,10 +106,10 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+                adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
             }
         });
-        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+        adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
         return rootView;
     }
 
@@ -230,7 +230,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         filterName = parts[i];
-                        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+                        adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
                     }
                 });
                 AlertDialog alertDialog = builder.create();
@@ -264,7 +264,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
     public void onRadioFinished(String query) {
 //        searchView.clearFocus();
         filterName = query;
-        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+        adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
     }
 
     @Override

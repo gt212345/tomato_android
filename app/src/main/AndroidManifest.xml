@@ -25,7 +25,7 @@
             android:value="@string/facebook_app_id" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyA9zR3mt28m-I7F-19sAyWjji22DGaNCd8" />
+            android:value="AIzaSyDKU2ncbksPKIfCPinefo1eGWN1JftRWsQ" />
 
         <activity
             android:name=".Activities.AutoRunActivity"

@@ -1,14 +1,18 @@
 package org.itri.tomato.Activities;
 
+import android.app.Fragment;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.itri.tomato.Fragments.MyAutoRunListFragment;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
@@ -17,10 +21,23 @@ import java.util.ArrayList;
 /**
  * Created by hrw on 15/7/9.
  */
-public class MarketListAdapter extends BaseAdapter {
+public class MarketListAdapter extends BaseAdapter implements CompoundButton.OnCheckedChangeListener {
     LayoutInflater li;
+    Context context;
+    Fragment fragment;
     ArrayList<ListItem> items;
     ViewHolder viewHolder;
+    toggleListener listener;
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        listener = (MyAutoRunListFragment) fragment;
+        listener.onToggle((int)compoundButton.getTag(), b);
+    }
+
+    public interface toggleListener {
+        void onToggle(int position, boolean able);
+    }
 
     private class ViewHolder {
         ImageView image1, image2;
@@ -28,8 +45,10 @@ public class MarketListAdapter extends BaseAdapter {
         Switch aSwitch;
     }
 
-    public MarketListAdapter(Context context, ArrayList<ListItem> items) {
+    public MarketListAdapter(Context context, ArrayList<ListItem> items, Fragment fragment) {
+        this.context = context;
         this.items = items;
+        this.fragment = fragment;
         li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -56,6 +75,8 @@ public class MarketListAdapter extends BaseAdapter {
                 view = li.inflate(R.layout.item_marketlist, null);
                 viewHolder = new ViewHolder();
                 viewHolder.aSwitch = (Switch) view.findViewById(R.id.aSwitch);
+                viewHolder.aSwitch.setTag(position);
+                viewHolder.aSwitch.setOnCheckedChangeListener(this);
                 viewHolder.image1 = (ImageView) view.findViewById(R.id.service1);
                 viewHolder.image2 = (ImageView) view.findViewById(R.id.service2);
                 viewHolder.content = (TextView) view.findViewById(R.id.content);
@@ -105,4 +126,5 @@ public class MarketListAdapter extends BaseAdapter {
             return view;
         }
     }
+
 }

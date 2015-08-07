@@ -131,7 +131,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
         APITest();
         ListView sideView = (ListView) findViewById(R.id.drawer_view);
         sideView.setOnItemClickListener(this);
-        MarketListAdapter adapter = new MarketListAdapter(this, createDrawerMenu());
+        MarketListAdapter adapter = new MarketListAdapter(this, createDrawerMenu(), null);
         sideView.setAdapter(adapter);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

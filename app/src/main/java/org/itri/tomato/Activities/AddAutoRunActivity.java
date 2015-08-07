@@ -133,7 +133,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
         mScrollView.setScrollViewCallbacks(this);
         mTitleView = (TextView) findViewById(R.id.title);
-        mTitleView.setText("Add AutoRun");
         setTitle(null);
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
@@ -263,7 +262,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        setTitle(description);
+                        mTitleView.setText(description);
+                        setTitle("Add AutoRun");
                     }
                 });
                 JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));

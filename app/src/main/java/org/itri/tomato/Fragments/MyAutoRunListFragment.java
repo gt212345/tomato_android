@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 
@@ -31,7 +32,8 @@ import java.util.ArrayList;
 /**
  * Created by heiruwu on 7/16/15.
  */
-public class MyAutoRunListFragment extends Fragment implements DataRetrieveListener, AdapterView.OnItemClickListener {
+public class MyAutoRunListFragment extends Fragment implements DataRetrieveListener, AdapterView.OnItemClickListener, CompoundButton.OnCheckedChangeListener,
+        MarketListAdapter.toggleListener {
     SharedPreferences sharedPreferences;
     ListView autoRunList;
     ArrayList<Bitmap> bitmaps;
@@ -41,6 +43,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     DataRetrieveListener listener;
     PullRefreshLayout pullRefreshLayout;
     MarketListAdapter adapter;
+    Switch aSwitch;
 //    private View rootView;
 
     private static final String TAG = "MyAutoRunListFragment";
@@ -60,10 +63,10 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+                adapter = new MarketListAdapter(getActivity(), getAutoRunList(), MyAutoRunListFragment.this);
             }
         });
-        adapter = new MarketListAdapter(getActivity(), getAutoRunList());
+        adapter = new MarketListAdapter(getActivity(), getAutoRunList(), MyAutoRunListFragment.this);
         return rootView;
     }
 
@@ -156,5 +159,32 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                 R.drawable.dropbox));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.noti));
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        Log.w("", "it woks!!");
+    }
+
+    @Override
+    public void onToggle(final int position, final boolean able) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int id = autoRunIDs.get(position);
+                String Action = Utilities.ACTION + "SwitchUserAutoRunOnById";
+                JSONObject para = new JSONObject();
+                try {
+                    para.put("uid", sharedPreferences.getString(Utilities.SENDER_ID, null));
+                    para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                    para.put("userautorunId", id);
+                    para.put("enable", able ? "on" : "off");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String Para = Utilities.PARAMS + para.toString();
+                Utilities.API_CONNECT(Action, Para, true);
+            }
+        }).start();
     }
 }
