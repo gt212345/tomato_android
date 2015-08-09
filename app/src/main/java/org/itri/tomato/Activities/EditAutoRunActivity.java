@@ -13,32 +13,24 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
-import com.google.gson.JsonNull;
-import com.nineoldandroids.view.ViewHelper;
 
 import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
@@ -54,26 +46,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class AddAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener
-        , DialogFragment.CheckBoxListener, DialogFragment.RadioButtonListener, View.OnClickListener {
-    //floating view scale
-    private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
-    private static final String TAG = "AddAutoRunActivity";
-    SharedPreferences sharedPreferences;
-
-
-    //floating view
-    private View mImageView;
-    private View mOverlayView;
-    private ObservableScrollView mScrollView;
-    private TextView mTitleView;
-    private int mActionBarSize;
-    private int mFlexibleSpaceImageHeight;
-
-
-    String id;
-
+public class EditAutoRunActivity extends AppCompatActivity implements DataRetrieveListener, View.OnClickListener {
+    private final static String TAG = "EditAutoRunActivity";
     boolean isMapCreated = false;
+    String id;
+    SharedPreferences sharedPreferences;
     DialogFragment dialogFragment;
     Toast toast;
     LinearLayout layout;
@@ -100,31 +77,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     String jsonPara;
     int counts;
 
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addautorun);
-        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        dataRetrieveListener = AddAutoRunActivity.this;
+        setContentView(R.layout.activity_edit);
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
-        mImageView = findViewById(R.id.image);
-        new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
-        mActionBarSize = 125;/**/
-        geocoder = new Geocoder(this, Locale.TAIWAN);
-        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = this.getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
-        }
-        /**
-         * init UI
-         */
+        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        dataRetrieveListener = EditAutoRunActivity.this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -134,28 +94,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 finish();
             }
         });
-        mOverlayView = findViewById(R.id.overlay);
-        mScrollView = (ObservableScrollView) findViewById(R.id.scroll);
-        mScrollView.setScrollViewCallbacks(this);
-        mTitleView = (TextView) findViewById(R.id.title);
-        setTitle(null);
-        ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
-            @Override
-            public void run() {
-//                mScrollView.scrollTo(0, mFlexibleSpaceImageHeight - mActionBarSize);
-
-                // If you'd like to start from scrollY == 0, don't write like this:
-                //mScrollView.scrollTo(0, 0);
-                // The initial scrollY is 0, so it won't invoke onScrollChanged().
-                // To do this, use the following:
-                onScrollChanged(0, false, false);
-
-                // You can also achieve it with the following codes.
-                // This causes scroll change from 1 to 0.
-//                mScrollView.scrollTo(0, 1);
-//                mScrollView.scrollTo(0, 0);
-            }
-        });
+        geocoder = new Geocoder(this, Locale.TAIWAN);
+        new Thread(getAutoRunSettings).start();
     }
 
     @Override
@@ -168,142 +108,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-        // Translate overlay and image
-        float flexibleRange = mFlexibleSpaceImageHeight - mActionBarSize;
-        int minOverlayTransitionY = mActionBarSize - mOverlayView.getHeight();
-        ViewHelper.setTranslationY(mOverlayView, ScrollUtils.getFloat(-scrollY, minOverlayTransitionY, 0));
-        ViewHelper.setTranslationY(mImageView, ScrollUtils.getFloat(-scrollY / 2, minOverlayTransitionY, 0));
-
-        // Change alpha of overlay
-        ViewHelper.setAlpha(mOverlayView, ScrollUtils.getFloat((float) scrollY / flexibleRange, 0, 1));
-
-        // Scale title text
-        float scale = (float) 0.95 + ScrollUtils.getFloat((flexibleRange - scrollY) / flexibleRange, 0, MAX_TEXT_SCALE_DELTA);
-        ViewHelper.setPivotX(mTitleView, 0);
-        ViewHelper.setPivotY(mTitleView, 0);
-        ViewHelper.setScaleX(mTitleView, scale);
-        ViewHelper.setScaleY(mTitleView, scale);
-
-        // Translate title text
-        int maxTitleTranslationY = (int) (mFlexibleSpaceImageHeight - (mTitleView.getHeight()) * scale) + 40 /*set here*/;
-        int titleTranslationY = maxTitleTranslationY - scrollY;
-        ViewHelper.setTranslationY(mTitleView, titleTranslationY);
-
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-    }
-
-
-    private void startActivity() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            toast.setText("Enable Location first");
-            toast.show();
-        } else {
-            Intent intent = new Intent();
-            if (latD != 0 && lngD != 0) {
-                intent.putExtra("Lat", latD);
-                intent.putExtra("Lng", lngD);
-            }
-            intent.setClass(AddAutoRunActivity.this, MapActivity.class);
-            startActivityForResult(intent, 200);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 200) {
-            latD = roundDown5(data.getDoubleExtra("lat", 0));
-            lngD = roundDown5(data.getDoubleExtra("lng", 0));
-            lat.setText(latStr + ": ");
-            lng.setText(lngStr + ": ");
-            lat.append(String.valueOf(latD));
-            lng.append(String.valueOf(lngD));
-            try {
-                addressList = geocoder.getFromLocation(latD, lngD, 1);
-                region.setText(addressList.get(0).getAddressLine(0));
-                jsonMapLat.put("value", String.valueOf(latD));
-                jsonMapLat.put("agent_parameter", "options");
-                jsonMapLng.put("value", String.valueOf(lngD));
-                jsonMapLng.put("agent_parameter", "options");
-            } catch (IOException e) {
-                Log.w("Region", e.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    Runnable getAutoRunSettings = new Runnable() {
-        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-        @Override
-        public void run() {
-            autoRunItemsWhen = new ArrayList<>();
-            autoRunItemsDo = new ArrayList<>();
-            String Action = Utilities.ACTION + "GetAutoRunById";
-            JSONObject para = new JSONObject();
-            try {
-                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
-                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
-                para.put("autorunId", getIntent().getExtras().getInt("autoRunId"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            String Params = Utilities.PARAMS + para.toString();
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
-            try {
-                JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
-                description = jsonRes.getString("autorunDesc");
-                id = jsonRes.getString("autorunId");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mTitleView.setText(description);
-                        setTitle("Add AutoRun");
-                    }
-                });
-                JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
-                JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
-                for (int i = 0; i < jsonWhen.length(); i++) {
-                    autoRunItemsWhen.add(new AutoRunItem(
-                            jsonWhen.getJSONObject(i).getString("agentId"),
-                            jsonWhen.getJSONObject(i).getString("display"),
-                            jsonWhen.getJSONObject(i).getString("option"),
-                            jsonWhen.getJSONObject(i).getString("conditionType"),
-                            jsonWhen.getJSONObject(i).getString("condition"),
-                            jsonWhen.getJSONObject(i).getString("agent_parameter")
-                    ));
-                }
-                JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
-                for (int i = 0; i < jsonDo.length(); i++) {
-                    autoRunItemsDo.add(new AutoRunItem(
-                            jsonDo.getJSONObject(i).getString("agentId"),
-                            jsonDo.getJSONObject(i).getString("display"),
-                            jsonDo.getJSONObject(i).getString("option"),
-                            jsonDo.getJSONObject(i).getString("conditionType"),
-                            jsonDo.getJSONObject(i).getString("condition"),
-                            jsonDo.getJSONObject(i).getString("agent_parameter")
-                    ));
-                }
-                counts = jsonWhen.length() + jsonDo.length();
-                dataRetrieveListener.onFinish();
-            } catch (JSONException e) {
-                progressDialog.cancel();
-                Log.w("Json", e.toString());
-            }
-        }
-    };
-
-    @Override
     public void onFinish() {
         runOnUiThread(new Runnable() {
             @Override
@@ -313,7 +117,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        hideSoftKeyboard(AddAutoRunActivity.this);
+                        hideSoftKeyboard(EditAutoRunActivity.this);
                     }
                 });
                 TextView title = new TextView(getApplicationContext());
@@ -356,46 +160,164 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
                 apply.setLayoutParams(params);
-                apply.setOnClickListener(AddAutoRunActivity.this);
+                apply.setOnClickListener(EditAutoRunActivity.this);
                 layout.addView(apply);
                 progressDialog.dismiss();
-                onScrollChanged(0, false, false);
             }
         });
     }
 
     @Override
-    public void onCheckFinished(ArrayList<String> Strings, int num) {
-        check.setText("");
-        String temp = "";
-        for (String tmp : Strings) {
-            check.append(tmp + "\n");
-            temp += tmp + "|";
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == 200) {
+            latD = roundDown5(data.getDoubleExtra("lat", 0));
+            lngD = roundDown5(data.getDoubleExtra("lng", 0));
+            lat.setText(latStr + ": ");
+            lng.setText(lngStr + ": ");
+            lat.append(String.valueOf(latD));
+            lng.append(String.valueOf(lngD));
+            try {
+                addressList = geocoder.getFromLocation(latD, lngD, 1);
+                region.setText(addressList.get(0).getAddressLine(0));
+                jsonMapLat.put("value", String.valueOf(latD));
+                jsonMapLat.put("agent_parameter", "options");
+                jsonMapLng.put("value", String.valueOf(lngD));
+                jsonMapLng.put("agent_parameter", "options");
+            } catch (IOException e) {
+                Log.w("Region", e.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            checkList.get(num).put("value", temp.substring(0, temp.length() - 1));
-            checkList.get(num).put("agent_parameter", "options");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        check.setTextSize(20);
-        check.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
     }
 
     @Override
-    public void onRadioFinished(String string, int num) {
-        radio.setText("");
-        radio.append(string);
-        radio.setTextSize(20);
-        radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+    public void onClick(View view) {
+        JSONArray jsonArray = new JSONArray();
+        ArrayList<JSONObject> tmp = new ArrayList<>();
+        tmp.add(jsonMapLat);
+        tmp.add(jsonMapLng);
+        iterateList(tmp, checkList);
+        iterateList(tmp, radioList);
+        iterateList(tmp, phoneList);
+        iterateList(tmp, emailList);
+        iterateList(tmp, passList);
+        iterateList(tmp, textList);
+        iterateList(tmp, richList);
+        iterateList(tmp, numList);
+        for (JSONObject object : tmp) {
+            if (object != null && object.length() == 4) {
+                jsonArray.put(object);
+            }
+        }
+        if (jsonArray.length() != counts) {
+            toast.setText("Settings not complete!!");
+            toast.show();
+            return;
+        }
+        JSONObject jsonObject = new JSONObject();
         try {
-            radioList.get(num).put("value", string);
-            radioList.get(num).put("agent_parameter", "options");
+            jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+            jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+            jsonObject.put("autorunId", id);
+            jsonObject.put("autorunPara", jsonArray);
+            jsonPara = jsonObject.toString();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String Action = Utilities.ACTION + "UpdateUserAutoRunById";
+                    String Params = Utilities.PARAMS + jsonPara;
+                    Utilities.API_CONNECT(Action, Params, true);
+                    if (Utilities.getResponseCode().equals("true")) {
+                        toast.setText("Add Succeed");
+                        toast.show();
+                    }
+                }
+            }).start();
+            Intent intent = new Intent();
+            intent.putExtra("from", TAG);
+            intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
+            startActivity(intent);
+            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
+    private void startActivity() {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            toast.setText("Enable Location first");
+            toast.show();
+        } else {
+            Intent intent = new Intent();
+            if (latD != 0 && lngD != 0) {
+                intent.putExtra("Lat", latD);
+                intent.putExtra("Lng", lngD);
+            }
+            intent.setClass(EditAutoRunActivity.this, MapActivity.class);
+            startActivityForResult(intent, 200);
+        }
+    }
+
+    Runnable getAutoRunSettings = new Runnable() {
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+        @Override
+        public void run() {
+            autoRunItemsWhen = new ArrayList<>();
+            autoRunItemsDo = new ArrayList<>();
+            String Action = Utilities.ACTION + "GetUserAutoRunDetailById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("autorunId", getIntent().getExtras().getInt("autoRunId"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String Params = Utilities.PARAMS + para.toString();
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+            try {
+                JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
+                description = jsonRes.getString("autorunDesc");
+                id = jsonRes.getString("autorunId");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setTitle("Edit AutoRun");
+                    }
+                });
+                JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
+                JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
+                for (int i = 0; i < jsonWhen.length(); i++) {
+                    autoRunItemsWhen.add(new AutoRunItem(
+                            jsonWhen.getJSONObject(i).getString("agentId"),
+                            jsonWhen.getJSONObject(i).getString("display"),
+                            jsonWhen.getJSONObject(i).getString("option"),
+                            jsonWhen.getJSONObject(i).getString("conditionType"),
+                            jsonWhen.getJSONObject(i).getString("condition"),
+                            jsonWhen.getJSONObject(i).getString("agent_parameter")
+                    ));
+                }
+                JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
+                for (int i = 0; i < jsonDo.length(); i++) {
+                    autoRunItemsDo.add(new AutoRunItem(
+                            jsonDo.getJSONObject(i).getString("agentId"),
+                            jsonDo.getJSONObject(i).getString("display"),
+                            jsonDo.getJSONObject(i).getString("option"),
+                            jsonDo.getJSONObject(i).getString("conditionType"),
+                            jsonDo.getJSONObject(i).getString("condition"),
+                            jsonDo.getJSONObject(i).getString("agent_parameter")
+                    ));
+                }
+                counts = jsonWhen.length() + jsonDo.length();
+                dataRetrieveListener.onFinish();
+            } catch (JSONException e) {
+                progressDialog.cancel();
+                Log.w("Json", e.toString());
+            }
+        }
+    };
 
     private void createView(AutoRunItem item) {
         String condition;
@@ -601,27 +523,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     }
 
-    private void checkGps() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
-                    .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int id) {
-                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            dialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(final DialogInterface dialog, final int id) {
-                            dialog.cancel();
-                        }
-                    });
-            final AlertDialog alert = builder.create();
-            alert.show();
-        }
-    }
-
     private void createEdit(final AutoRunItem item, LinearLayout.LayoutParams param, final EditText editText, final int inputType, final int num) {
         weightTv = new TextView(getApplicationContext());
         weightTv.setText(item.getDisplay() + ":");
@@ -716,7 +617,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             richBt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new android.support.v7.app.AlertDialog.Builder(AddAutoRunActivity.this)
+                    new android.support.v7.app.AlertDialog.Builder(EditAutoRunActivity.this)
                             .setMessage(item.getCondition())
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
@@ -731,63 +632,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             layout.addView(editText);
         }
         editText.clearFocus();
-    }
-
-    public static double roundDown5(double d) {
-        return Math.floor(d * 1e5) / 1e5;
-    }
-
-    @Override
-    public void onClick(View view) {
-        JSONArray jsonArray = new JSONArray();
-        ArrayList<JSONObject> tmp = new ArrayList<>();
-        tmp.add(jsonMapLat);
-        tmp.add(jsonMapLng);
-        iterateList(tmp, checkList);
-        iterateList(tmp, radioList);
-        iterateList(tmp, phoneList);
-        iterateList(tmp, emailList);
-        iterateList(tmp, passList);
-        iterateList(tmp, textList);
-        iterateList(tmp, richList);
-        iterateList(tmp, numList);
-        for (JSONObject object : tmp) {
-            if (object != null && object.length() == 4) {
-                jsonArray.put(object);
-            }
-        }
-        if (jsonArray.length() != counts) {
-            toast.setText("Settings not complete!!");
-            toast.show();
-            return;
-        }
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
-            jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
-            jsonObject.put("autorunId", id);
-            jsonObject.put("autorunPara", jsonArray);
-            jsonPara = jsonObject.toString();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String Action = Utilities.ACTION + "AddUserAutoRun";
-                    String Params = Utilities.PARAMS + jsonPara;
-                    Utilities.API_CONNECT(Action, Params, true);
-                    if (Utilities.getResponseCode().equals("true")) {
-                        toast.setText("Add Succeed");
-                        toast.show();
-                    }
-                }
-            }).start();
-            Intent intent = new Intent();
-            intent.putExtra("from", TAG);
-            intent.setClass(AddAutoRunActivity.this, AutoRunActivity.class);
-            startActivity(intent);
-            finish();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     private JSONObject putJson(JSONObject object, AutoRunItem item) {
@@ -825,6 +669,31 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         passList = new ArrayList<>();
         richList = new ArrayList<>();
         schList = new ArrayList<>();
+    }
+
+    private void checkGps() {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            dialog.dismiss();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+    }
+
+    public static double roundDown5(double d) {
+        return Math.floor(d * 1e5) / 1e5;
     }
 
 }

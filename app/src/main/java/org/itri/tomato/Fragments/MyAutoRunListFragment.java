@@ -1,6 +1,7 @@
 package org.itri.tomato.Fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
 
+import org.itri.tomato.Activities.EditAutoRunActivity;
 import org.itri.tomato.Activities.MarketListAdapter;
 import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
@@ -80,8 +82,12 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
+    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        Intent intent = new Intent();
+        intent.putExtra("autoRunId", autoRunIDs.get(position));
+        intent.putExtra("content", listItems.get(position).getContent());
+        intent.setClass(getActivity(), EditAutoRunActivity.class);
+        startActivity(intent);
     }
 
     private ArrayList<ListItem> getAutoRunList() {
