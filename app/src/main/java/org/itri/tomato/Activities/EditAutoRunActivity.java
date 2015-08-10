@@ -25,6 +25,8 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,7 +48,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class EditAutoRunActivity extends AppCompatActivity implements DataRetrieveListener, View.OnClickListener {
+public class EditAutoRunActivity extends AppCompatActivity implements DataRetrieveListener, View.OnClickListener, DialogFragment.CheckBoxListener
+        , DialogFragment.RadioButtonListener {
     private final static String TAG = "EditAutoRunActivity";
     boolean isMapCreated = false;
     String id;
@@ -77,12 +80,20 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     String jsonPara;
     int counts;
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(getResources().getColor(R.color.statusBar));
+        }
+        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         dataRetrieveListener = EditAutoRunActivity.this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -108,12 +119,40 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     }
 
     @Override
+    public void onCheckFinished(ArrayList<String> Strings, int num) {
+        check.setText("");
+        String temp = "";
+        for (String tmp : Strings) {
+            check.append(tmp + "\n");
+            temp += tmp + "|";
+        }
+        try {
+            checkList.get(num).put("value", temp.substring(0, temp.length() - 1));
+            checkList.get(num).put("agent_parameter", "options");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRadioFinished(String string, int num) {
+        radio.setText("");
+        radio.append(string);
+        try {
+            radioList.get(num).put("value", string);
+            radioList.get(num).put("agent_parameter", "options");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public void onFinish() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 createList();
-                layout = (LinearLayout) findViewById(R.id.viewGroup);
+                layout = (LinearLayout) findViewById(R.id.viewGroup1);
                 layout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -146,16 +185,21 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         createView(item);
                     }
                 }
-                TextView overlay = new TextView(getApplicationContext());
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        800
-                );
-                overlay.setLayoutParams(params);
-                layout.addView(overlay);
+                LinearLayout.LayoutParams params;
                 Button apply = new Button(getApplicationContext());
                 apply.setTextSize(20);
-                apply.setText("Add");
+                apply.setText("Apply");
+                apply.setId(0);
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                apply.setLayoutParams(params);
+                apply.setOnClickListener(EditAutoRunActivity.this);
+                layout.addView(apply);
+                apply = new Button(getApplicationContext());
+                apply.setTextSize(20);
+                apply.setText("Delete");
+                apply.setId(1);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -194,54 +238,60 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
 
     @Override
     public void onClick(View view) {
-        JSONArray jsonArray = new JSONArray();
-        ArrayList<JSONObject> tmp = new ArrayList<>();
-        tmp.add(jsonMapLat);
-        tmp.add(jsonMapLng);
-        iterateList(tmp, checkList);
-        iterateList(tmp, radioList);
-        iterateList(tmp, phoneList);
-        iterateList(tmp, emailList);
-        iterateList(tmp, passList);
-        iterateList(tmp, textList);
-        iterateList(tmp, richList);
-        iterateList(tmp, numList);
-        for (JSONObject object : tmp) {
-            if (object != null && object.length() == 4) {
-                jsonArray.put(object);
-            }
-        }
-        if (jsonArray.length() != counts) {
-            toast.setText("Settings not complete!!");
-            toast.show();
-            return;
-        }
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
-            jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
-            jsonObject.put("autorunId", id);
-            jsonObject.put("autorunPara", jsonArray);
-            jsonPara = jsonObject.toString();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String Action = Utilities.ACTION + "UpdateUserAutoRunById";
-                    String Params = Utilities.PARAMS + jsonPara;
-                    Utilities.API_CONNECT(Action, Params, true);
-                    if (Utilities.getResponseCode().equals("true")) {
-                        toast.setText("Add Succeed");
-                        toast.show();
+        switch (view.getId()) {
+            case 0:
+                JSONArray jsonArray = new JSONArray();
+                ArrayList<JSONObject> tmp = new ArrayList<>();
+                tmp.add(jsonMapLat);
+                tmp.add(jsonMapLng);
+                iterateList(tmp, checkList);
+                iterateList(tmp, radioList);
+                iterateList(tmp, phoneList);
+                iterateList(tmp, emailList);
+                iterateList(tmp, passList);
+                iterateList(tmp, textList);
+                iterateList(tmp, richList);
+                iterateList(tmp, numList);
+                for (JSONObject object : tmp) {
+                    if (object != null && object.length() == 4) {
+                        jsonArray.put(object);
                     }
                 }
-            }).start();
-            Intent intent = new Intent();
-            intent.putExtra("from", TAG);
-            intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
-            startActivity(intent);
-            finish();
-        } catch (JSONException e) {
-            e.printStackTrace();
+                if (jsonArray.length() != counts) {
+                    toast.setText("Settings not complete!!");
+                    toast.show();
+                    return;
+                }
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+                    jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+                    jsonObject.put("userautorunId", id);
+                    jsonObject.put("autorunPara", jsonArray);
+                    jsonPara = jsonObject.toString();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String Action = Utilities.ACTION + "UpdateUserAutoRunById";
+                            String Params = Utilities.PARAMS + jsonPara;
+                            Utilities.API_CONNECT(Action, Params, true);
+                            if (Utilities.getResponseCode().equals("true")) {
+                                toast.setText("Edit Succeed");
+                                toast.show();
+                            }
+                        }
+                    }).start();
+                    Intent intent = new Intent();
+                    intent.putExtra("from", TAG);
+                    intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 1:
+                break;
         }
     }
 
@@ -271,9 +321,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             try {
                 para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
                 para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
-                para.put("autorunId", getIntent().getExtras().getInt("autoRunId"));
+                para.put("userautorunId", getIntent().getExtras().getInt("autoRunId"));
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.w(TAG, e.toString() + "Para");
             }
             String Params = Utilities.PARAMS + para.toString();
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
@@ -298,6 +348,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                             jsonWhen.getJSONObject(i).getString("condition"),
                             jsonWhen.getJSONObject(i).getString("agent_parameter")
                     ));
+                    autoRunItemsWhen.get(i).setValue(jsonWhen.getJSONObject(i).getString("value"));
                 }
                 JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
                 for (int i = 0; i < jsonDo.length(); i++) {
@@ -309,6 +360,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                             jsonDo.getJSONObject(i).getString("condition"),
                             jsonDo.getJSONObject(i).getString("agent_parameter")
                     ));
+                    autoRunItemsDo.get(i).setValue(jsonWhen.getJSONObject(i).getString("value"));
                 }
                 counts = jsonWhen.length() + jsonDo.length();
                 dataRetrieveListener.onFinish();
@@ -366,7 +418,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     layout.addView(region);
                     layout.addView(lat);
                     layout.addView(lng);
-                    lat.setText(item.getDisplay() + ": ");
+                    lat.setText(item.getDisplay() + ": " + item.getValue());
                     latStr = item.getDisplay();
                     region.setTextSize(20);
                     lat.setTextSize(20);
@@ -377,13 +429,14 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     isMapCreated = true;
                 } else {
                     lngStr = item.getDisplay();
-                    lng.setText(item.getDisplay() + ": ");
+                    lng.setText(item.getDisplay() + ": " + item.getValue());
                 }
                 break;
             case "checkbox":
                 checkList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 parts = condition.split("\\|");
+                String[] tmp = item.getValue().split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
@@ -398,6 +451,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         3.0f
                 );
                 weightTv.setLayoutParams(params);
+
                 weightBt = new Button(getApplicationContext());
                 weightBt.setText("展開");
                 params = new LinearLayout.LayoutParams(
@@ -407,6 +461,11 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 weightBt.setLayoutParams(params);
                 check = new TextView(getApplicationContext());
+                check.setTextSize(20);
+                check.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                for (String str : tmp) {
+                    check.append(str + "\n");
+                }
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
                 layout.addView(check);
@@ -414,7 +473,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck++);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX_EDIT, null, countCheck++);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -492,6 +551,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 weightBt.setLayoutParams(params);
                 radio = new TextView(getApplicationContext());
+                radio.setTextSize(20);
+                radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                radio.setText(item.getValue());
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
                 layout.addView(radio);
@@ -499,7 +561,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio++);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON_EDIT, null, countRadio++);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -530,6 +592,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         layout.addView(weightTv);
         editText.setTextSize(20);
+        editText.setText(item.getValue());
         editText.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
         editText.setInputType(inputType);
         editText.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
@@ -648,7 +711,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         try {
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
 
         }
     }

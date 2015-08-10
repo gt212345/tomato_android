@@ -10,6 +10,7 @@ public class AutoRunItem {
     String conditionType;
     String condition;
     String agent_parameter;
+    String value;
 
 
     public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agent_parameter) {
@@ -19,6 +20,10 @@ public class AutoRunItem {
         this.conditionType = conditionType;
         this.condition = condition;
         this.agent_parameter = agent_parameter;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public String getAgentId() {
@@ -43,5 +48,9 @@ public class AutoRunItem {
 
     public String getAgent_parameter() {
         return agent_parameter;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

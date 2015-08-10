@@ -2,10 +2,13 @@ package org.itri.tomato.Activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +59,10 @@ public class LoginActivity extends AppCompatActivity {
         editPass = (EditText) findViewById(R.id.editPass);
         Button login = (Button) findViewById(R.id.login);
         Button create = (Button) findViewById(R.id.create);
+        if(!isOnline()){
+            Toast.makeText(this, "No Network Connection", Toast.LENGTH_LONG).show();
+            finish();
+        }
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 loginThread.start();
             }
         });
-        if (sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+        if (isOnline() && sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
             UserAccount = sharedPreferences.getString(Utilities.USER_ACCOUNT, null);
             UserPassword = sharedPreferences.getString(Utilities.USER_PASSWORD, null);
             progressDialog = ProgressDialog.show(LoginActivity.this, "登入中", "請稍候......", true);
@@ -221,6 +228,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         progressDialog.dismiss();
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 }

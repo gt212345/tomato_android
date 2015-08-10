@@ -17,6 +17,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import org.itri.tomato.Activities.AddAutoRunActivity;
+import org.itri.tomato.Activities.EditAutoRunActivity;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 
@@ -36,6 +37,8 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     private static final int CHECK_BOX = 1;
     private static final int RADIO_BUTTON = 2;
     private static final int SEARCH_DIALOG = 3;
+    private static final int CHECK_BOX_EDIT = 4;
+    private static final int RADIO_BUTTON_EDIT = 5;
 
 
     public interface CheckBoxListener {
@@ -130,6 +133,40 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                         listener.onRadioFinished("all", num);
                     }
                 });
+                break;
+            case CHECK_BOX_EDIT:
+                for (int i = 0; i < counts; i++) {
+                    CheckBox checkBox = new CheckBox(getActivity());
+                    checkBox.setText(names.get(i));
+                    checkBox.setOnCheckedChangeListener(this);
+                    layout.addView(checkBox);
+                }
+
+                builder.setView(view).setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        CheckBoxListener listener = (EditAutoRunActivity) getActivity();
+                        listener.onCheckFinished(checks, num);
+                    }
+                }).setNegativeButton("Cancel", null);
+                break;
+            case RADIO_BUTTON_EDIT:
+                radioGroup = new RadioGroup(getActivity());
+                radioGroup.setOrientation(LinearLayout.VERTICAL);
+                layout.addView(radioGroup);
+                for (int i = 0; i < counts; i++) {
+                    RadioButton radioButton = new RadioButton(getActivity());
+                    radioButton.setText(names.get(i));
+                    radioButton.setOnCheckedChangeListener(this);
+                    radioGroup.addView(radioButton);
+                }
+                builder.setView(view).setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        RadioButtonListener listener = (EditAutoRunActivity) getActivity();
+                        listener.onRadioFinished(string, num);
+                    }
+                }).setNegativeButton("Cancel", null);
                 break;
         }
         return builder.create();

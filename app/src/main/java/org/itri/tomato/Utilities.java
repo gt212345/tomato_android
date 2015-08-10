@@ -1,5 +1,7 @@
 package org.itri.tomato;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -30,6 +32,8 @@ public class Utilities {
     public static final int CHECK_BOX = 1;
     public static final int RADIO_BUTTON = 2;
     public static final int SEARCH_DIALOG = 3;
+    public static final int CHECK_BOX_EDIT = 4;
+    public static final int RADIO_BUTTON_EDIT = 5;
 
     /**
      * For Server API
@@ -92,4 +96,5 @@ public class Utilities {
     public static String getResponseCode() {
         return responseCode;
     }
+
 }
