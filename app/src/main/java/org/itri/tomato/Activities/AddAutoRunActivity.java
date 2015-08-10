@@ -204,7 +204,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
 
     private void startActivity() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             toast.setText("Enable Location first");
             toast.show();
         } else {
@@ -602,7 +602,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     private void checkGps() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
                     .setCancelable(false)
@@ -775,7 +775,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     String Params = Utilities.PARAMS + jsonPara;
                     Utilities.API_CONNECT(Action, Params, true);
                     if (Utilities.getResponseCode().equals("true")) {
-                        toast.setText("Add Succeed");
+                        toast.setText("AutoRun Added");
                         toast.show();
                     }
                 }

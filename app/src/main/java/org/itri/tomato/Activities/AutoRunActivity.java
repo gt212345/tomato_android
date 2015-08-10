@@ -153,6 +153,11 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
             transaction.replace(R.id.container, fragment);
             transaction.addToBackStack(null);
             transaction.commit();
+        } else if ((savedInstanceState == null && getIntent().getExtras().getString("from").equals("EditAutoRunActivity"))) {
+            fragment = new MyAutoRunListFragment();
+            transaction.replace(R.id.container, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         } else if (savedInstanceState == null) {
             fragment = new AutoRunListFragment();
             transaction.replace(R.id.container, fragment);

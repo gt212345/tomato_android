@@ -199,7 +199,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 apply = new Button(getApplicationContext());
                 apply.setTextSize(20);
                 apply.setText("Delete");
-                apply.setId(1);
+                apply.setId(-1);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -258,7 +258,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     }
                 }
                 if (jsonArray.length() != counts) {
-                    toast.setText("Settings not complete!!");
+                    toast.setText("Settings not Changed");
                     toast.show();
                     return;
                 }
@@ -290,13 +290,39 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     e.printStackTrace();
                 }
                 break;
-            case 1:
+            case -1:
+                JSONObject jsonObjectDelete = new JSONObject();
+                try {
+                    jsonObjectDelete.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+                    jsonObjectDelete.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+                    jsonObjectDelete.put("userautorunId", id);
+                    jsonPara = jsonObjectDelete.toString();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String Action = Utilities.ACTION + "DelUserAutoRunById";
+                            String Params = Utilities.PARAMS + jsonPara;
+                            Utilities.API_CONNECT(Action, Params, true);
+                            if (Utilities.getResponseCode().equals("true")) {
+                                toast.setText("AutoRun Deleted");
+                                toast.show();
+                            }
+                        }
+                    }).start();
+                    Intent intent = new Intent();
+                    intent.putExtra("from", TAG);
+                    intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
+                    startActivity(intent);
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }
 
     private void startActivity() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             toast.setText("Enable Location first");
             toast.show();
         } else {
@@ -735,7 +761,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     }
 
     private void checkGps() {
-        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        if (!manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) && !manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
                     .setCancelable(false)
