@@ -77,9 +77,7 @@ public class RegistrationIntentService extends IntentService {
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
             try {
                 JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                Log.w("status", jsonObjectTmp.getString("status"));
-                if (jsonObjectTmp.getString("status").equals("200")) {
-                    Log.w(TAG, "success");
+                if (jsonObjectTmp.getString("status").equals("true")) {
                     sharedPreferences.edit().putBoolean(Utilities.SENT_TOKEN_TO_SERVER, true).apply();
                 }
             } catch (JSONException e) {

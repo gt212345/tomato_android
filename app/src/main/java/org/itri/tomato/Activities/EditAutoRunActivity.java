@@ -304,8 +304,13 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                             String Params = Utilities.PARAMS + jsonPara;
                             Utilities.API_CONNECT(Action, Params, true);
                             if (Utilities.getResponseCode().equals("true")) {
-                                toast.setText("AutoRun Deleted");
-                                toast.show();
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        toast.setText("AutoRun Deleted");
+                                        toast.show();
+                                    }
+                                });
                             }
                         }
                     }).start();

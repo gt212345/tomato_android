@@ -1,5 +1,6 @@
 package org.itri.tomato.Services;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -22,6 +23,7 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String message = data.getString("message");
+        numMessage = 0;
 //        Log.d(TAG, "From: " + from);
 //        Log.d(TAG, "Message: " + message);
 
@@ -41,7 +43,6 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
 
     private void sendNotification(String message, String from) {
         Intent intent = new Intent(this, GCMTestActivity.class);
-        numMessage = 0;
         intent.putExtra("from", from);
         intent.putExtra("message", message);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -55,19 +56,20 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
                 );
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+        Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_school_white_48dp)
-                .setContentTitle("Tomato Message")
-                .setContentText(message)
-                .setNumber(++numMessage)
+                .setContentTitle("Tomato")
+                .setContentText("New Message!!")
                 .setSound(defaultSoundUri)
                 .setAutoCancel(true)
-                .setContentIntent(resultPendingIntent);
+                .setContentIntent(resultPendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .build();
 
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(NOTIFY_ID /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(NOTIFY_ID /* ID of notification */, notification);
     }
 }

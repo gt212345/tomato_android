@@ -775,8 +775,13 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     String Params = Utilities.PARAMS + jsonPara;
                     Utilities.API_CONNECT(Action, Params, true);
                     if (Utilities.getResponseCode().equals("true")) {
-                        toast.setText("AutoRun Added");
-                        toast.show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                toast.setText("AutoRun Added");
+                                toast.show();
+                            }
+                        });
                     }
                 }
             }).start();
