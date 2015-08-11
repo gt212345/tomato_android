@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
@@ -21,6 +22,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -28,7 +30,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +38,6 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
-import com.google.gson.JsonNull;
 import com.nineoldandroids.view.ViewHelper;
 
 import org.itri.tomato.AutoRunItem;
@@ -45,6 +45,7 @@ import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.Fragments.DialogFragment;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
+import org.itri.tomato.WhenDoIconView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,7 +64,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
 
     //floating view
-    private View mImageView;
+    private WhenDoIconView mImageView;
     private View mOverlayView;
     private ObservableScrollView mScrollView;
     private TextView mTitleView;
@@ -109,11 +110,15 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         dataRetrieveListener = AddAutoRunActivity.this;
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
-        mImageView = findViewById(R.id.image);
+        mImageView = (WhenDoIconView) findViewById(R.id.image);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
         new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mActionBarSize = 125;/**/
+        mImageView.setIcon(R.drawable.fb, R.drawable.dropbox, size.x, mActionBarSize);
         geocoder = new Geocoder(this, Locale.TAIWAN);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
@@ -809,7 +814,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
         try {
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
 
         }
     }

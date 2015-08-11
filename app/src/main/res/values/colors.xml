@@ -4,4 +4,6 @@
     <color name="accentLight">#FFEB3B</color>
     <color name="actionBar">#2196F3</color>
     <color name="statusBar">#1976D2</color>
+    <color name="when_color">#0072E3</color>
+    <color name="do_color">#84C1FF</color>
 </resources>
