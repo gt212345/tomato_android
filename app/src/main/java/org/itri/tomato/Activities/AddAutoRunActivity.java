@@ -372,6 +372,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     public void onCheckFinished(ArrayList<String> Strings, int num) {
         check.setText("");
+        if (Strings.isEmpty()) {
+            return;
+        }
         String temp = "";
         for (String tmp : Strings) {
             check.append(tmp + "\n");
