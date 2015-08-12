@@ -1,4 +1,4 @@
-package org.itri.tomato.Fragments;
+package org.itri.tomato.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -17,8 +17,8 @@ import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
 
-import org.itri.tomato.Activities.EditAutoRunActivity;
-import org.itri.tomato.Activities.MarketListAdapter;
+import org.itri.tomato.activities.EditAutoRunActivity;
+import org.itri.tomato.activities.MarketListAdapter;
 import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;

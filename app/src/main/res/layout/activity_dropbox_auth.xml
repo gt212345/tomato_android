@@ -1,41 +1,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="org.itri.tomato.Activities.DropboxAuthActivity">
+    tools:context="org.itri.tomato.activities.DropboxAuthActivity">
 
     <Button
         android:id="@+id/login_button_db"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        android:text="Enable"/>
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_horizontal"
+        android:text="Enable"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
     <ImageView
+        android:id="@+id/dbIcon"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/dbIcon"
-        android:src="@drawable/dropbox"
-        android:layout_marginTop="67dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="67dp"
+        android:src="@drawable/dropbox" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/dbIcon"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:text="Dropbox, a free service that lets people bring their documents,
-         photos and videos everywhere and share them easily."
-        android:id="@+id/textView"
-        android:layout_alignTop="@+id/dbIcon"
+        android:layout_toEndOf="@+id/login_button_db"
         android:layout_toRightOf="@+id/dbIcon"
-        android:layout_toEndOf="@+id/login_button_db" />
+        android:text="Dropbox, a free service that lets people bring their documents,
+         photos and videos everywhere and share them easily." />
 
 </RelativeLayout>

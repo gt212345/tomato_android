@@ -1,4 +1,4 @@
-package org.itri.tomato.Services;
+package org.itri.tomato.services;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -11,8 +11,8 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import org.itri.tomato.Activities.GCMTestActivity;
-import org.itri.tomato.Activities.LoginActivity;
+import org.itri.tomato.activities.GCMTestActivity;
+import org.itri.tomato.activities.LoginActivity;
 import org.itri.tomato.R;
 
 public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerService {

@@ -1,14 +1,9 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.activities;
 
 import android.content.Intent;
-import android.provider.SyncStateContract;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
 
 import org.itri.tomato.R;

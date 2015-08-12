@@ -1,4 +1,4 @@
-package org.itri.tomato.Services;
+package org.itri.tomato.services;
 
 
 import android.content.Intent;

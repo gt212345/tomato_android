@@ -1,4 +1,4 @@
-package org.itri.tomato.Fragments;
+package org.itri.tomato.fragments;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
@@ -26,12 +26,12 @@ import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
 
-import org.itri.tomato.Activities.AddAutoRunActivity;
+import org.itri.tomato.activities.AddAutoRunActivity;
 import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 
-import org.itri.tomato.Activities.MarketListAdapter;
+import org.itri.tomato.activities.MarketListAdapter;
 import org.itri.tomato.Utilities;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,8 +1,7 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.activities;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import org.itri.tomato.Fragments.MyAutoRunListFragment;
+import org.itri.tomato.fragments.MyAutoRunListFragment;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 

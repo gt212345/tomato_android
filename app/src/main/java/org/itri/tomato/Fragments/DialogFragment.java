@@ -1,4 +1,4 @@
-package org.itri.tomato.Fragments;
+package org.itri.tomato.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -16,8 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import org.itri.tomato.Activities.AddAutoRunActivity;
-import org.itri.tomato.Activities.EditAutoRunActivity;
+import org.itri.tomato.activities.AddAutoRunActivity;
+import org.itri.tomato.activities.EditAutoRunActivity;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 

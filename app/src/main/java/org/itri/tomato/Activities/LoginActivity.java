@@ -1,4 +1,4 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;

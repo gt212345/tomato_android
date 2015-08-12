@@ -1,4 +1,4 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
@@ -34,7 +33,7 @@ import android.widget.Toast;
 
 import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
-import org.itri.tomato.Fragments.DialogFragment;
+import org.itri.tomato.fragments.DialogFragment;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 import org.json.JSONArray;

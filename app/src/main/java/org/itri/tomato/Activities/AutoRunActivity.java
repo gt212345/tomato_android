@@ -1,4 +1,4 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
 import android.app.Fragment;
@@ -31,12 +31,12 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
-import org.itri.tomato.Fragments.AutoRunListFragment;
-import org.itri.tomato.Fragments.ConnectorsFragment;
-import org.itri.tomato.Fragments.MyAutoRunListFragment;
+import org.itri.tomato.fragments.AutoRunListFragment;
+import org.itri.tomato.fragments.ConnectorsFragment;
+import org.itri.tomato.fragments.MyAutoRunListFragment;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
-import org.itri.tomato.Services.RegistrationIntentService;
+import org.itri.tomato.services.RegistrationIntentService;
 import org.itri.tomato.Utilities;
 
 import java.util.ArrayList;

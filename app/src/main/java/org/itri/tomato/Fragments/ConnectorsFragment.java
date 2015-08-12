@@ -1,4 +1,4 @@
-package org.itri.tomato.Fragments;
+package org.itri.tomato.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import org.itri.tomato.Activities.DropboxAuthActivity;
-import org.itri.tomato.Activities.FacebookAuthActivity;
+import org.itri.tomato.activities.DropboxAuthActivity;
+import org.itri.tomato.activities.FacebookAuthActivity;
 import org.itri.tomato.R;
 
 /**

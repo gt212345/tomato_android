@@ -1,79 +1,83 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-                android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin" android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".Login">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".Login">
 
     <ImageView
+        android:id="@+id/tomato"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tomato"
-        android:maxWidth="20dp"
-        android:maxHeight="20dp"
         android:layout_marginTop="64dp"
-        android:src="@drawable/tomato"
-        />
+        android:maxHeight="20dp"
+        android:maxWidth="20dp"
+        android:src="@drawable/tomato" />
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/accLayout"
         android:layout_width="250dp"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="210dp"
-        android:id="@+id/accLayout"
-        android:background="@color/background_material_light">
+        android:background="@color/background_material_light"
+        android:orientation="vertical">
 
         <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:hint="Account"
-            android:singleLine="true"
-            android:maxLines="1"
             android:id="@+id/editAccount"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center" />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="250dp"
-        android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/passLayout"
-        android:layout_below="@+id/accLayout"
-        android:background="@android:color/white">
-        <EditText
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:inputType="textPassword"
-            android:hint="Password"
-            android:id="@+id/editPass"
             android:layout_gravity="center_horizontal"
-            android:gravity="center" />
+            android:gravity="center"
+            android:hint="Account"
+            android:maxLines="1"
+            android:singleLine="true" />
     </LinearLayout>
-    <Button
+
+    <LinearLayout
+        android:id="@+id/passLayout"
         android:layout_width="250dp"
         android:layout_height="50dp"
-        android:text="LOGIN"
-        android:id="@+id/login"
-        android:layout_marginTop="10dp"
-        android:ems="5"
-        android:layout_centerInParent="true"
-        android:layout_below="@+id/passLayout"
-        android:background="@color/material_deep_teal_200"
-        />
+        android:layout_below="@+id/accLayout"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editPass"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:hint="Password"
+            android:inputType="textPassword" />
+    </LinearLayout>
 
     <Button
+        android:id="@+id/login"
         android:layout_width="250dp"
         android:layout_height="50dp"
-        android:text="Create Accound"
-        android:id="@+id/create"
-        android:ems="5"
-        android:layout_marginTop="2dp"
+        android:layout_below="@+id/passLayout"
         android:layout_centerInParent="true"
-        android:layout_below="@+id/login"
+        android:layout_marginTop="10dp"
         android:background="@color/material_deep_teal_200"
-        />
+        android:ems="5"
+        android:text="LOGIN" />
+
+    <Button
+        android:id="@+id/create"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/login"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="2dp"
+        android:background="@color/material_deep_teal_200"
+        android:ems="5"
+        android:text="Create Accound" />
 
 
 </RelativeLayout>

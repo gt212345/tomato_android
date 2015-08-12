@@ -1,4 +1,4 @@
-package org.itri.tomato.Services;
+package org.itri.tomato.services;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -16,10 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegistIntentService";

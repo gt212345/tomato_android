@@ -1,4 +1,4 @@
-package org.itri.tomato.Activities;
+package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
 import android.content.SharedPreferences;
@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.android.AndroidAuthSession;

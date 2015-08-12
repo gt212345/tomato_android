@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MarketActivity">
 
@@ -10,17 +11,17 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark"
-            android:background="@color/actionBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:background="@color/actionBar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark" />
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_below="@+id/appBarLayout">
 
 
