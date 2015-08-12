@@ -365,6 +365,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 apply.setOnClickListener(AddAutoRunActivity.this);
                 layout.addView(apply);
                 mImageView.setIcon(icons.get(whenIconId - 1), icons.get(doIconId - 1), size.x, mActionBarSize);
+                mImageView.invalidate();
                 progressDialog.dismiss();
                 onScrollChanged(0, false, false);
             }
