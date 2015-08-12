@@ -83,7 +83,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     ArrayList<AutoRunItem> autoRunItemsWhen, autoRunItemsDo;
     DataRetrieveListener dataRetrieveListener;
     LinearLayout mapLayout;
-    TextView weightTv, lat, lng, check, radio, region;
+    TextView weightTv, lat, lng, check, radio, map, region;
     Button weightBt;
     String[] parts;
     String latStr, lngStr;
@@ -91,11 +91,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Geocoder geocoder;
     List<Address> addressList;
     String dialogStr;
-    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, schList;
+    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, schList, mappingList;
     EditText phone, text, number, pass, email, rich;
     LocationManager manager;
     Toolbar toolbar;
-    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countSch = 0;
+    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countSch = 0, countMap = 0;
     double latD = 0;
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng;
@@ -393,16 +393,29 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    public void onRadioFinished(String string, int num) {
-        radio.setText("");
-        radio.append(string);
-        radio.setTextSize(20);
-        radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-        try {
-            radioList.get(num - 1).put("value", string);
-            radioList.get(num - 1).put("agent_parameter", "options");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void onRadioFinished(String string, int num, boolean isMap) {
+        if(isMap) {
+            map.setText("");
+            map.setTextSize(20);
+            map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+            map.append(string);
+            try {
+                radioList.get(num - 1).put("value", string);
+                radioList.get(num - 1).put("agent_parameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            radio.setText("");
+            radio.setTextSize(20);
+            radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+            radio.append(string);
+            try {
+                radioList.get(num - 1).put("value", string);
+                radioList.get(num - 1).put("agent_parameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -502,7 +515,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck, false);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -588,7 +601,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio, false);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -604,6 +617,46 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 rich = new EditText(getApplicationContext());
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich);
                 countRich++;
+                break;
+            case "mappingtext":
+                mappingList.add(putJson(new JSONObject(), item));
+                condition = item.getCondition();
+                parts = condition.split("\\|");
+                mapLayout = new LinearLayout(getApplicationContext());
+                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                layout.addView(mapLayout);
+                weightTv = new TextView(getApplicationContext());
+                weightTv.setText(item.getDisplay() + ":");
+                weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                weightTv.setTextSize(20);
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        3.0f
+                );
+                weightTv.setLayoutParams(params);
+                weightBt = new Button(getApplicationContext());
+                weightBt.setText("展開");
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                weightBt.setLayoutParams(params);
+                map = new TextView(getApplicationContext());
+                mapLayout.addView(weightTv);
+                mapLayout.addView(weightBt);
+                layout.addView(map);
+                dialogStr = item.getDisplay();
+                weightBt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countMap, true);
+                        dialogFragment.show(getFragmentManager(), dialogStr);
+                    }
+                });
+                countMap++;
                 break;
             case "schedule":
                 schList.add(putJson(new JSONObject(), item));

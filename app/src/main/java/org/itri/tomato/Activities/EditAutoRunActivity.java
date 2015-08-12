@@ -136,7 +136,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     }
 
     @Override
-    public void onRadioFinished(String string, int num) {
+    public void onRadioFinished(String string, int num, boolean isMap) {
         radio.setText("");
         radio.append(string);
         try {
@@ -167,21 +167,23 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 title.setTextSize(40);
                 layout.addView(title);
                 if (autoRunItemsWhen.size() != 0) {
-                    TextView when = new TextView(getApplicationContext());
-                    when.setText("When:");
-                    when.setTextSize(30);
-                    when.setTextColor(Color.BLACK);
-                    layout.addView(when);
+                    TextView whenTitle = new TextView(getApplicationContext());
+                    whenTitle.setTextColor(getResources().getColor(android.R.color.white));
+                    whenTitle.setBackgroundColor(getResources().getColor(android.R.color.black));
+                    whenTitle.setText("When:");
+                    whenTitle.setTextSize(20);
+                    layout.addView(whenTitle);
                     for (AutoRunItem item : autoRunItemsWhen) {
                         createView(item);
                     }
                 }
                 if (autoRunItemsDo.size() != 0) {
-                    TextView Do = new TextView(getApplicationContext());
-                    Do.setText("Do:");
-                    Do.setTextSize(30);
-                    Do.setTextColor(Color.BLACK);
-                    layout.addView(Do);
+                    TextView doTitle = new TextView(getApplicationContext());
+                    doTitle.setTextColor(getResources().getColor(android.R.color.white));
+                    doTitle.setBackgroundColor(getResources().getColor(android.R.color.black));
+                    doTitle.setText("Do:");
+                    doTitle.setTextSize(20);
+                    layout.addView(doTitle);
                     for (AutoRunItem item : autoRunItemsDo) {
                         createView(item);
                     }
@@ -505,10 +507,11 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX_EDIT, null, countCheck++);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX_EDIT, null, countCheck, false);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
+                countCheck++;
                 break;
             case "phone":
                 phoneList.add(putJson(new JSONObject(), item));
@@ -593,10 +596,11 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON_EDIT, null, countRadio++);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON_EDIT, null, countRadio, false);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
+                countRadio++;
                 break;
             case "richtext":
                 richList.add(putJson(new JSONObject(), item));

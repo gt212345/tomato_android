@@ -46,16 +46,17 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     }
 
     public interface RadioButtonListener {
-        void onRadioFinished(String String, int num);
+        void onRadioFinished(String String, int num, boolean isMap);
     }
 
 
-    public static DialogFragment newInstance(String[] parts, int type, Fragment f, int num) {
+    public static DialogFragment newInstance(String[] parts, int type, Fragment f, int num, boolean isMap) {
         DialogFragment dialogFragment = new DialogFragment();
         Bundle args = new Bundle();
         args.putStringArray("parts", parts);
         args.putInt("type", type);
         args.putInt("num", num);
+        args.putBoolean("isMap", isMap);
         fragment = f;
         dialogFragment.setArguments(args);
         return dialogFragment;
@@ -65,6 +66,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int counts = getArguments().getStringArray("parts").length;
         int type = getArguments().getInt("type");
+        final boolean isMap = getArguments().getBoolean("isMap");
         num = getArguments().getInt("num");
         ArrayList<String> names = new ArrayList<>();
         checks = new ArrayList<>();
@@ -106,7 +108,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         RadioButtonListener listener = (AddAutoRunActivity) getActivity();
-                        listener.onRadioFinished(string, num);
+                        listener.onRadioFinished(string, num, isMap);
                     }
                 }).setNegativeButton("Cancel", null);
                 break;
@@ -124,13 +126,13 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         RadioButtonListener listener = (AutoRunListFragment) fragment;
-                        listener.onRadioFinished(string, num);
+                        listener.onRadioFinished(string, num, isMap);
                     }
                 }).setNegativeButton("Clear", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         RadioButtonListener listener = (AutoRunListFragment) fragment;
-                        listener.onRadioFinished("all", num);
+                        listener.onRadioFinished("all", num, isMap);
                     }
                 });
                 break;
@@ -164,7 +166,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         RadioButtonListener listener = (EditAutoRunActivity) getActivity();
-                        listener.onRadioFinished(string, num);
+                        listener.onRadioFinished(string, num, isMap);
                     }
                 }).setNegativeButton("Cancel", null);
                 break;
