@@ -118,7 +118,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
 
     @Override
     public void onCheckFinished(ArrayList<String> dataList, int num) {
-        if(dataList.isEmpty()){
+        if (dataList.isEmpty()) {
             return;
         }
         check.setText("");
@@ -376,9 +376,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                             jsonWhen.getJSONObject(i).getString("option"),
                             jsonWhen.getJSONObject(i).getString("conditionType"),
                             jsonWhen.getJSONObject(i).getString("condition"),
-                            jsonWhen.getJSONObject(i).getString("agent_parameter")
+                            jsonWhen.getJSONObject(i).getString("agent_parameter"),
+                            jsonWhen.getJSONObject(i).getString("value")
                     ));
-                    autoRunItemsWhen.get(i).setValue(jsonWhen.getJSONObject(i).getString("value"));
                 }
                 JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
                 for (int i = 0; i < jsonDo.length(); i++) {
@@ -388,9 +388,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                             jsonDo.getJSONObject(i).getString("option"),
                             jsonDo.getJSONObject(i).getString("conditionType"),
                             jsonDo.getJSONObject(i).getString("condition"),
-                            jsonDo.getJSONObject(i).getString("agent_parameter")
+                            jsonDo.getJSONObject(i).getString("agent_parameter"),
+                            jsonDo.getJSONObject(i).getString("value")
                     ));
-                    autoRunItemsDo.get(i).setValue(jsonWhen.getJSONObject(i).getString("value"));
                 }
                 counts = jsonWhen.length() + jsonDo.length();
                 dataRetrieveListener.onFinish();
@@ -407,15 +407,35 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
-                    jsonMapLat = new JSONObject();
-                    jsonMapLng = new JSONObject();
-                    putJson(jsonMapLat, item);
-                    putJson(jsonMapLng, item);
-                    try {
-                        jsonMapLat.put("value", item.getValue());
-                        jsonMapLat.put("agent_parameter", "options");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    lat = new TextView(getApplicationContext());
+                    lng = new TextView(getApplicationContext());
+                    if(item.getOption().equals("sp_lat")) {
+                        jsonMapLat = new JSONObject();
+                        putJson(jsonMapLat, item);
+                        lat.setText(item.getDisplay() + ": " + item.getValue());
+                        lat.setTextSize(20);
+                        lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                        latStr = item.getDisplay();
+                        try {
+                            jsonMapLat.put("value", item.getValue());
+                            jsonMapLat.put("agent_parameter", "options");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        jsonMapLng = new JSONObject();
+                        putJson(jsonMapLng, item);
+                        lng.setText(item.getDisplay() + ": " + item.getValue());
+                        lngStr = item.getDisplay();
+                        lng.setTextSize(20);
+                        lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                        try {
+                            Log.w(TAG, "option: " +item.getOption() + ", display" + item.getDisplay());
+                            jsonMapLng.put("value", item.getValue());
+                            jsonMapLng.put("agent_parameter", "options");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                     checkGps();
                     mapLayout = new LinearLayout(getApplicationContext());
@@ -449,29 +469,40 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         }
                     });
                     region = new TextView(getApplicationContext());
-                    lat = new TextView(getApplicationContext());
-                    lng = new TextView(getApplicationContext());
                     layout.addView(region);
                     layout.addView(lat);
                     layout.addView(lng);
-                    lat.setText(item.getDisplay() + ": " + item.getValue());
-                    latStr = item.getDisplay();
                     region.setTextSize(20);
-                    lat.setTextSize(20);
-                    lng.setTextSize(20);
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
-                    try {
-                        jsonMapLng.put("value", item.getValue());
-                        jsonMapLng.put("agent_parameter", "options");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if(item.getOption().equals("sp_lat")) {
+                        jsonMapLat = new JSONObject();
+                        putJson(jsonMapLat, item);
+                        lat.setText(item.getDisplay() + ": " + item.getValue());
+                        latStr = item.getDisplay();
+                        lat.setTextSize(20);
+                        lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                        try {
+                            jsonMapLat.put("value", item.getValue());
+                            jsonMapLat.put("agent_parameter", "options");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        jsonMapLng = new JSONObject();
+                        putJson(jsonMapLng, item);
+                        lng.setText(item.getDisplay() + ": " + item.getValue());
+                        lngStr = item.getDisplay();
+                        lng.setTextSize(20);
+                        lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                        try {
+                            jsonMapLng.put("value", item.getValue());
+                            jsonMapLng.put("agent_parameter", "options");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    lngStr = item.getDisplay();
-                    lng.setText(item.getDisplay() + ": " + item.getValue());
                 }
                 break;
             case "checkbox":
@@ -731,7 +762,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             richBt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(condition.getVisibility() == View.GONE) {
+                    if (condition.getVisibility() == View.GONE) {
                         condition.setVisibility(View.VISIBLE);
                         richBt.setText("隱藏");
                     } else {

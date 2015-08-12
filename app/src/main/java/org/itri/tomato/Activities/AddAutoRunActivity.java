@@ -287,7 +287,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             jsonWhen.getJSONObject(i).getString("option"),
                             jsonWhen.getJSONObject(i).getString("conditionType"),
                             jsonWhen.getJSONObject(i).getString("condition"),
-                            jsonWhen.getJSONObject(i).getString("agent_parameter")
+                            jsonWhen.getJSONObject(i).getString("agent_parameter"),
+                            jsonWhen.getJSONObject(i).getString("value")
                     ));
                 }
                 JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
@@ -298,7 +299,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             jsonDo.getJSONObject(i).getString("option"),
                             jsonDo.getJSONObject(i).getString("conditionType"),
                             jsonDo.getJSONObject(i).getString("condition"),
-                            jsonDo.getJSONObject(i).getString("agent_parameter")
+                            jsonDo.getJSONObject(i).getString("agent_parameter"),
+                            jsonDo.getJSONObject(i).getString("value")
                     ));
                 }
                 counts = jsonWhen.length() + jsonDo.length();
@@ -426,10 +428,23 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
-                    jsonMapLat = new JSONObject();
-                    jsonMapLng = new JSONObject();
-                    putJson(jsonMapLat, item);
-                    putJson(jsonMapLng, item);
+                    lat = new TextView(getApplicationContext());
+                    lng = new TextView(getApplicationContext());
+                    if(item.getOption().equals("sp_lat")) {
+                        jsonMapLat = new JSONObject();
+                        putJson(jsonMapLat, item);
+                        lat.setText(item.getDisplay() + ": ");
+                        lat.setTextSize(20);
+                        lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                        latStr = item.getDisplay();
+                    } else {
+                        jsonMapLng = new JSONObject();
+                        putJson(jsonMapLng, item);
+                        lngStr = item.getDisplay();
+                        lng.setText(item.getDisplay() + ": ");
+                        lng.setTextSize(20);
+                        lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    }
                     checkGps();
                     mapLayout = new LinearLayout(getApplicationContext());
                     mapLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -462,23 +477,28 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         }
                     });
                     region = new TextView(getApplicationContext());
-                    lat = new TextView(getApplicationContext());
-                    lng = new TextView(getApplicationContext());
                     layout.addView(region);
                     layout.addView(lat);
                     layout.addView(lng);
-                    lat.setText(item.getDisplay() + ": ");
-                    latStr = item.getDisplay();
                     region.setTextSize(20);
-                    lat.setTextSize(20);
-                    lng.setTextSize(20);
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                    lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                    lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
-                    lngStr = item.getDisplay();
-                    lng.setText(item.getDisplay() + ": ");
+                    if(item.getOption().equals("sp_lat")) {
+                        jsonMapLat = new JSONObject();
+                        putJson(jsonMapLat, item);
+                        lat.setText(item.getDisplay() + ": ");
+                        lat.setTextSize(20);
+                        lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                        latStr = item.getDisplay();
+                    } else {
+                        jsonMapLng = new JSONObject();
+                        putJson(jsonMapLng, item);
+                        lngStr = item.getDisplay();
+                        lng.setText(item.getDisplay() + ": ");
+                        lng.setTextSize(20);
+                        lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    }
                 }
                 break;
             case "checkbox":

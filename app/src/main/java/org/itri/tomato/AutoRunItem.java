@@ -13,13 +13,14 @@ public class AutoRunItem {
     String value;
 
 
-    public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agent_parameter) {
+    public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agent_parameter, String value) {
         this.agentId = agentId;
         this.display = display;
         this.option = option;
         this.conditionType = conditionType;
         this.condition = condition;
         this.agent_parameter = agent_parameter;
+        this.value = value;
     }
 
     public void setValue(String value) {
