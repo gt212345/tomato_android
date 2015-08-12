@@ -13,17 +13,15 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -119,10 +117,13 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     }
 
     @Override
-    public void onCheckFinished(ArrayList<String> Strings, int num) {
+    public void onCheckFinished(ArrayList<String> dataList, int num) {
+        if(dataList.isEmpty()){
+            return;
+        }
         check.setText("");
         String temp = "";
-        for (String tmp : Strings) {
+        for (String tmp : dataList) {
             check.append(tmp + "\n");
             temp += tmp + "|";
         }

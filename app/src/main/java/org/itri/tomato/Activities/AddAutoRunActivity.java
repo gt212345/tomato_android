@@ -235,7 +235,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             lng.append(String.valueOf(lngD));
             try {
                 addressList = geocoder.getFromLocation(latD, lngD, 1);
-                region.setText(addressList.get(0).getAddressLine(0));
+                if(!addressList.isEmpty()){
+                    region.setText(addressList.get(0).getAddressLine(0));
+                }
                 jsonMapLat.put("value", String.valueOf(latD));
                 jsonMapLat.put("agent_parameter", "options");
                 jsonMapLng.put("value", String.valueOf(lngD));
