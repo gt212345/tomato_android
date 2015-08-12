@@ -154,11 +154,13 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Intent intent = new Intent();
-        intent.putExtra("autoRunId", autoRunIDs.get(position));
-        intent.putExtra("content", items.get(position).getContent());
-        intent.setClass(getActivity(), AddAutoRunActivity.class);
-        startActivity(intent);
+        if (!items.isEmpty()) {
+            Intent intent = new Intent();
+            intent.putExtra("autoRunId", autoRunIDs.get(position));
+            intent.putExtra("content", items.get(position).getContent());
+            intent.setClass(getActivity(), AddAutoRunActivity.class);
+            startActivity(intent);
+        }
     }
 
     private ArrayList<ListItem> getAutoRunList() {
@@ -170,6 +172,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                     @Override
                     public void run() {
                         pullRefreshLayout.setRefreshing(true);
+                        marketList.setOnItemClickListener(null);
                     }
                 });
                 String Action = Utilities.ACTION + "GetAutoRunList";
@@ -200,9 +203,9 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
             @Override
             public void run() {
                 marketList.setAdapter(adapter);
-                marketList.setOnItemClickListener(AutoRunListFragment.this);
                 adapter.notifyDataSetChanged();
                 pullRefreshLayout.setRefreshing(false);
+                marketList.setOnItemClickListener(AutoRunListFragment.this);
             }
         });
     }

@@ -74,20 +74,22 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
             @Override
             public void run() {
                 autoRunList.setAdapter(adapter);
-                autoRunList.setOnItemClickListener(MyAutoRunListFragment.this);
                 adapter.notifyDataSetChanged();
                 pullRefreshLayout.setRefreshing(false);
+                autoRunList.setOnItemClickListener(MyAutoRunListFragment.this);
             }
         });
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        Intent intent = new Intent();
-        intent.putExtra("autoRunId", autoRunIDs.get(position));
-        intent.putExtra("content", listItems.get(position).getContent());
-        intent.setClass(getActivity(), EditAutoRunActivity.class);
-        startActivity(intent);
+        if (!listItems.isEmpty()) {
+            Intent intent = new Intent();
+            intent.putExtra("autoRunId", autoRunIDs.get(position));
+            intent.putExtra("content", listItems.get(position).getContent());
+            intent.setClass(getActivity(), EditAutoRunActivity.class);
+            startActivity(intent);
+        }
     }
 
     private ArrayList<ListItem> getAutoRunList() {
@@ -101,6 +103,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     @Override
                     public void run() {
                         pullRefreshLayout.setRefreshing(true);
+                        autoRunList.setOnItemClickListener(null);
                     }
                 });
                 String Action = Utilities.ACTION + "GetUserAutoRunList";
