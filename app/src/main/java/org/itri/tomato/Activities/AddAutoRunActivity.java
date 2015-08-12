@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.location.Address;
@@ -235,7 +234,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             lng.append(String.valueOf(lngD));
             try {
                 addressList = geocoder.getFromLocation(latD, lngD, 1);
-                if(!addressList.isEmpty()){
+                if (!addressList.isEmpty()) {
                     region.setText(addressList.get(0).getAddressLine(0));
                 }
                 jsonMapLat.put("value", String.valueOf(latD));
@@ -323,28 +322,25 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         hideSoftKeyboard(AddAutoRunActivity.this);
                     }
                 });
-                TextView title = new TextView(getApplicationContext());
-                title.setText("設定");
-                title.setGravity(Gravity.CENTER);
-                title.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                title.setTextSize(40);
-                layout.addView(title);
+
                 if (autoRunItemsWhen.size() != 0) {
-                    TextView when = new TextView(getApplicationContext());
-                    when.setText("When:");
-                    when.setTextSize(30);
-                    when.setTextColor(Color.BLACK);
-                    layout.addView(when);
+                    TextView whenTitle = new TextView(getApplicationContext());
+                    whenTitle.setTextColor(getResources().getColor(android.R.color.white));
+                    whenTitle.setBackgroundColor(getResources().getColor(android.R.color.black));
+                    whenTitle.setText("When:");
+                    whenTitle.setTextSize(20);
+                    layout.addView(whenTitle);
                     for (AutoRunItem item : autoRunItemsWhen) {
                         createView(item);
                     }
                 }
                 if (autoRunItemsDo.size() != 0) {
-                    TextView Do = new TextView(getApplicationContext());
-                    Do.setText("Do:");
-                    Do.setTextSize(30);
-                    Do.setTextColor(Color.BLACK);
-                    layout.addView(Do);
+                    TextView doTitle = new TextView(getApplicationContext());
+                    doTitle.setTextColor(getResources().getColor(android.R.color.white));
+                    doTitle.setBackgroundColor(getResources().getColor(android.R.color.black));
+                    doTitle.setText("Do:");
+                    doTitle.setTextSize(20);
+                    layout.addView(doTitle);
                     for (AutoRunItem item : autoRunItemsDo) {
                         createView(item);
                     }
@@ -733,7 +729,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             richBt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(condition.getVisibility() == View.GONE) {
+                    if (condition.getVisibility() == View.GONE) {
                         condition.setVisibility(View.VISIBLE);
                         richBt.setText("隱藏");
                     } else {

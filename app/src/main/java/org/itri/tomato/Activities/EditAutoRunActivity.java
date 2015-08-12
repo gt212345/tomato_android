@@ -698,28 +698,34 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         if (inputType == InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS) {
             LinearLayout orientLayout = new LinearLayout(getApplicationContext());
             orientLayout.setOrientation(LinearLayout.HORIZONTAL);
-            Button richBt = new Button(getApplicationContext());
+            final Button richBt = new Button(getApplicationContext());
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     0,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
                     1.0f
             );
             richBt.setLayoutParams(params);
             richBt.setText("提示");
-            layout.addView(orientLayout);
             orientLayout.addView(editText);
             orientLayout.addView(richBt);
+            layout.addView(orientLayout);
+
+            final TextView condition = new TextView(getApplicationContext());
+            condition.setTextColor(getResources().getColor(android.R.color.black));
+            condition.setText(item.getCondition());
+            layout.addView(condition);
+            condition.setVisibility(View.GONE);
+
             richBt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new android.support.v7.app.AlertDialog.Builder(EditAutoRunActivity.this)
-                            .setMessage(item.getCondition())
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            })
-                            .show();
+                    if(condition.getVisibility() == View.GONE) {
+                        condition.setVisibility(View.VISIBLE);
+                        richBt.setText("隱藏");
+                    } else {
+                        condition.setVisibility(View.GONE);
+                        richBt.setText("提示");
+                    }
                 }
             });
         } else {
