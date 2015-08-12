@@ -2,7 +2,6 @@ package org.itri.tomato;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -41,13 +40,10 @@ public class WhenDoIconView extends View {
     }
 
     private void init(AttributeSet attrs, int defStyle) {
-
-
         mTextPaint.setTextSize(80);
         mTextPaint.setColor(getResources().getColor(android.R.color.white));
         mWhenPaint.setColor(getResources().getColor(R.color.when_color));
         mDoPaint.setColor(getResources().getColor(R.color.do_color));
-
     }
 
     public void setIcon(Bitmap whenIcon, Bitmap doIcon, int width, int barheight) {
@@ -58,7 +54,6 @@ public class WhenDoIconView extends View {
         mBitmapWhen = Bitmap.createScaledBitmap(whenIcon, mWidthRatio, mWidthRatio, false);
         mBitmapDo = Bitmap.createScaledBitmap(doIcon, mWidthRatio, mWidthRatio, false);
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
