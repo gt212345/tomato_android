@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         editPass = (EditText) findViewById(R.id.editPass);
         Button login = (Button) findViewById(R.id.login);
         Button create = (Button) findViewById(R.id.create);
-        if(!isOnline()){
+        if (!isOnline()) {
             Toast.makeText(this, "No Network Connection", Toast.LENGTH_LONG).show();
             finish();
         }
@@ -155,7 +155,6 @@ public class LoginActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                                 finish();
                             } else {
-                                Log.w("Login", "!200");
                                 progressDialog.cancel();
                             }
                         } catch (JSONException e) {
@@ -180,7 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (jsonObject != null) {
                         try {
                             JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                            if (jsonObjectTmp.getString("status").equals("200")) {
+                            if (jsonObjectTmp.getString("status").equals("true")) {
                                 if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
                                     sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
                                     sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();

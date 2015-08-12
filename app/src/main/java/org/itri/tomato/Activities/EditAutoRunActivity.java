@@ -258,12 +258,8 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 for (JSONObject object : tmp) {
                     if (object != null && object.length() == 4) {
                         jsonArray.put(object);
+                    } else {
                     }
-                }
-                if (jsonArray.length() != counts) {
-                    toast.setText("Settings not Changed");
-                    toast.show();
-                    return;
                 }
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -415,6 +411,12 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     jsonMapLng = new JSONObject();
                     putJson(jsonMapLat, item);
                     putJson(jsonMapLng, item);
+                    try {
+                        jsonMapLat.put("value", item.getValue());
+                        jsonMapLat.put("agent_parameter", "options");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     checkGps();
                     mapLayout = new LinearLayout(getApplicationContext());
                     mapLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -462,6 +464,12 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
+                    try {
+                        jsonMapLng.put("value", item.getValue());
+                        jsonMapLng.put("agent_parameter", "options");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     lngStr = item.getDisplay();
                     lng.setText(item.getDisplay() + ": " + item.getValue());
                 }
@@ -743,6 +751,8 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         try {
             object.put("agentId", item.getAgentId());
             object.put("option", item.getOption());
+            object.put("value", item.getValue());
+            object.put("agent_parameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
