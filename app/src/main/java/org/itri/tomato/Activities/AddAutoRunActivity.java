@@ -7,6 +7,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.location.Address;
@@ -72,7 +74,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
 
     String id;
-
+    ArrayList<Bitmap> icons;
     boolean isMapCreated = false;
     DialogFragment dialogFragment;
     Toast toast;
@@ -98,7 +100,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng;
     String jsonPara;
-    int counts;
+    int counts, whenIconId, doIconId;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -109,15 +111,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         dataRetrieveListener = AddAutoRunActivity.this;
         progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+        createIconList();
         mImageView = (WhenDoIconView) findViewById(R.id.image);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
         new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mActionBarSize = 125;/**/
-        mImageView.setIcon(R.drawable.fb, R.drawable.dropbox, size.x, mActionBarSize);
         geocoder = new Geocoder(this, Locale.TAIWAN);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
@@ -270,6 +269,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
                 description = jsonRes.getString("autorunDesc");
                 id = jsonRes.getString("autorunId");
+                whenIconId = jsonRes.getInt("whenIconId");
+                doIconId = jsonRes.getInt("doIconId");
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -314,6 +315,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
                 createList();
                 layout = (LinearLayout) findViewById(R.id.viewGroup);
                 layout.setOnClickListener(new View.OnClickListener() {
@@ -322,7 +326,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         hideSoftKeyboard(AddAutoRunActivity.this);
                     }
                 });
-
                 if (autoRunItemsWhen.size() != 0) {
                     TextView whenTitle = new TextView(getApplicationContext());
                     whenTitle.setTextColor(getResources().getColor(android.R.color.white));
@@ -361,6 +364,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 apply.setLayoutParams(params);
                 apply.setOnClickListener(AddAutoRunActivity.this);
                 layout.addView(apply);
+                mImageView.setIcon(icons.get(whenIconId - 1), icons.get(doIconId - 1), size.x, mActionBarSize);
                 progressDialog.dismiss();
                 onScrollChanged(0, false, false);
             }
@@ -379,8 +383,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             temp += tmp + "|";
         }
         try {
-            checkList.get(num).put("value", temp.substring(0, temp.length() - 1));
-            checkList.get(num).put("agent_parameter", "options");
+            checkList.get(num - 1).put("value", temp.substring(0, temp.length() - 1));
+            checkList.get(num - 1).put("agent_parameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -395,8 +399,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         radio.setTextSize(20);
         radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         try {
-            radioList.get(num).put("value", string);
-            radioList.get(num).put("agent_parameter", "options");
+            radioList.get(num - 1).put("value", string);
+            radioList.get(num - 1).put("agent_parameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -498,10 +502,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck++);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
+                countCheck++;
                 break;
             case "phone":
                 phoneList.add(putJson(new JSONObject(), item));
@@ -583,10 +588,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio++);
+                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
+                countRadio++;
                 break;
             case "richtext":
                 richList.add(putJson(new JSONObject(), item));
@@ -596,7 +602,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         3.0f
                 );
                 rich = new EditText(getApplicationContext());
-                createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich++);
+                createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich);
+                countRich++;
                 break;
             case "schedule":
                 schList.add(putJson(new JSONObject(), item));
@@ -842,6 +849,32 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         passList = new ArrayList<>();
         richList = new ArrayList<>();
         schList = new ArrayList<>();
+    }
+
+    void createIconList() {
+        icons = new ArrayList<>();
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.raining));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.noti));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.home));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.email));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.person));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.email));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.email));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.ring));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.fb));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.dropbox));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.noti));
     }
 
 }

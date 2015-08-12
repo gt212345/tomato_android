@@ -2,23 +2,16 @@ package org.itri.tomato.Fragments;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.ProgressDialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,12 +23,10 @@ import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.baoyz.widget.PullRefreshLayout;
 
 import org.itri.tomato.Activities.AddAutoRunActivity;
-import org.itri.tomato.Activities.AutoRunActivity;
 import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
@@ -82,11 +73,11 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         setHasOptionsMenu(true);
         autoRunIDs = new ArrayList<Integer>();
-        createDummyList();
+        createIconList();
         listener = AutoRunListFragment.this;
         getActivity().setTitle("AutoRun List");
         this.rootView = rootView;
-//        items = createDummyList();
+//        items = createIconList();
         marketList = (ListView) rootView.findViewById(R.id.marketList);
         marketList.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -113,7 +104,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         return rootView;
     }
 
-    void createDummyList() {
+    void createIconList() {
         bitmaps = new ArrayList<>();
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.raining));

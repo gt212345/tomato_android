@@ -50,15 +50,13 @@ public class WhenDoIconView extends View {
 
     }
 
-    public void setIcon(int whenIcon, int doIcon, int width, int barheight) {
+    public void setIcon(Bitmap whenIcon, Bitmap doIcon, int width, int barheight) {
         mWidthMiddle = width / 2;
         mWidthRatio = width / 6;
         mHalfWidthRation = mWidthRatio / 2;
         mBarHeight = barheight;
-        mBitmapWhen = BitmapFactory.decodeResource(getResources(), whenIcon);
-        mBitmapWhen = Bitmap.createScaledBitmap(mBitmapWhen, mWidthRatio, mWidthRatio, false);
-        mBitmapDo = BitmapFactory.decodeResource(getResources(), doIcon);
-        mBitmapDo = Bitmap.createScaledBitmap(mBitmapDo, mWidthRatio, mWidthRatio, false);
+        mBitmapWhen = Bitmap.createScaledBitmap(whenIcon, mWidthRatio, mWidthRatio, false);
+        mBitmapDo = Bitmap.createScaledBitmap(doIcon, mWidthRatio, mWidthRatio, false);
     }
 
 
