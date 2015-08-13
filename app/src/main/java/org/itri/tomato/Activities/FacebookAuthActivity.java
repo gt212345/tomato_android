@@ -64,6 +64,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 toast.setText("Success");
                 toast.show();
                 fb_access_token = loginResult.getAccessToken().getToken();
+                new Thread().start();
             }
 
             @Override

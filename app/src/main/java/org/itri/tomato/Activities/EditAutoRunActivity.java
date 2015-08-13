@@ -410,7 +410,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 if (!isMapCreated) {
                     lat = new TextView(getApplicationContext());
                     lng = new TextView(getApplicationContext());
-                    if(item.getOption().equals("sp_lat")) {
+                    if(item.getOption().equals("sp_lat") || item.getOption().equals("longitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": " + item.getValue());
@@ -477,7 +477,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
-                    if(item.getOption().equals("sp_lat")) {
+                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": " + item.getValue());

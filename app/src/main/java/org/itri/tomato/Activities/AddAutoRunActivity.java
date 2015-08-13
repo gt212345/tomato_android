@@ -431,7 +431,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 if (!isMapCreated) {
                     lat = new TextView(getApplicationContext());
                     lng = new TextView(getApplicationContext());
-                    if(item.getOption().equals("sp_lat")) {
+                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": ");
@@ -485,7 +485,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
-                    if(item.getOption().equals("sp_lat")) {
+                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": ");

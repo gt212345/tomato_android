@@ -39,6 +39,7 @@ public class ConnectorsFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
         return rootView;
     }
 }
