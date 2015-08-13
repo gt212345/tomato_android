@@ -128,8 +128,8 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             temp += tmp + "|";
         }
         try {
-            checkList.get(num).put("value", temp.substring(0, temp.length() - 1));
-            checkList.get(num).put("agent_parameter", "options");
+            checkList.get(num - 1).put("value", temp.substring(0, temp.length() - 1));
+            checkList.get(num - 1).put("agent_parameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -451,7 +451,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 if (!isMapCreated) {
                     lat = new TextView(getApplicationContext());
                     lng = new TextView(getApplicationContext());
-                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
+                    if (item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": " + item.getValue());
@@ -472,7 +472,6 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         lng.setTextSize(20);
                         lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                         try {
-                            Log.w(TAG, "option: " +item.getOption() + ", display" + item.getDisplay());
                             jsonMapLng.put("value", item.getValue());
                             jsonMapLng.put("agent_parameter", "options");
                         } catch (JSONException e) {
@@ -518,7 +517,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
-                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
+                    if (item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": " + item.getValue());

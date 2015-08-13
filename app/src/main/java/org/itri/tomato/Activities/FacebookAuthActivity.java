@@ -1,6 +1,7 @@
 package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
@@ -35,6 +38,9 @@ public class FacebookAuthActivity extends AppCompatActivity {
     private static String fb_access_token;
     Toast toast;
     SharedPreferences sharedPreferences;
+    ProfileTracker profileTracker;
+    String id;
+    String name;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -58,7 +64,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile","email"));
+                LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email"));
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -67,7 +73,6 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 toast.setText("Success");
                 toast.show();
                 fb_access_token = loginResult.getAccessToken().getToken();
-                new Thread(sentToken).start();
             }
 
             @Override
@@ -82,6 +87,22 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 toast.show();
             }
         });
+        profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                name = currentProfile.getName();
+                id = currentProfile.getId();
+                if (!fb_access_token.equals("")) {
+                    new Thread(sentToken).start();
+                }
+            }
+        };
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     Runnable sentToken = new Runnable() {
@@ -94,13 +115,24 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
                 para.put("serviceToken", fb_access_token);
                 para.put("serviceKey", "");
-                para.put("serviceUserName", "");
-                para.put("serviceId", "");
+                para.put("serviceUserName", name);
+                para.put("serviceId", id);
                 para.put("connectorId", "1");
-            } catch (JSONException e){
+            } catch (JSONException e) {
 
+            }
+            String Para = Utilities.PARAMS + para.toString();
+            Utilities.API_CONNECT(Action, Para, true);
+            if (Utilities.getResponseCode().equals("true")) {
+                Toast.makeText(FacebookAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
             }
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        profileTracker.stopTracking();
+    }
 
 }

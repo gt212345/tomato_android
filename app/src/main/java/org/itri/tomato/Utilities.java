@@ -1,8 +1,13 @@
 package org.itri.tomato;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.ConnectivityManager;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +21,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by heiruwu on 7/17/15.
@@ -75,7 +82,7 @@ public class Utilities {
                     Log.i(Action, responseCode);
                     return jsonObject;
                 } else {
-                    Log.w(Action , "failed");
+                    Log.w(Action, "failed");
                     return null;
                 }
             } else {
@@ -95,6 +102,27 @@ public class Utilities {
 
     public static String getResponseCode() {
         return responseCode;
+    }
+
+    public static void getHashKey(Context context) {
+        PackageInfo info;
+        try {
+            info = context.getPackageManager().getPackageInfo("org.itri.tomato", PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String KeyResult = new String(Base64.encode(md.digest(), 0));//String something = new String(Base64.encodeBytes(md.digest()));
+                Log.e("hash key", KeyResult);
+                Toast.makeText(context, "My FB Key is \n" + KeyResult, Toast.LENGTH_LONG).show();
+            }
+        } catch (PackageManager.NameNotFoundException e1) {
+            Log.e("name not found", e1.toString());
+        } catch (NoSuchAlgorithmException e) {
+            Log.e("no such an algorithm", e.toString());
+        } catch (Exception e) {
+            Log.e("exception", e.toString());
+        }
     }
 
 }

@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -27,6 +31,8 @@ import org.itri.tomato.Utilities;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
