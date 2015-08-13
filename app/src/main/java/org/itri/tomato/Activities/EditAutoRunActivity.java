@@ -76,6 +76,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     JSONObject jsonMapLat, jsonMapLng;
     String jsonPara;
     int counts;
+    final static int mRunBtnId = 2;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -188,6 +189,18 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     }
                 }
                 LinearLayout.LayoutParams params;
+
+                Button runNow = new Button(getApplicationContext());
+                runNow.setTextSize(20);
+                runNow.setText("RunNow");
+                runNow.setId(mRunBtnId);
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                runNow.setLayoutParams(params);
+                runNow.setOnClickListener(EditAutoRunActivity.this);
+                layout.addView(runNow);
+
                 Button apply = new Button(getApplicationContext());
                 apply.setTextSize(20);
                 apply.setText("Apply");
@@ -228,10 +241,10 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 if (!addressList.isEmpty()) {
                     region.setText(addressList.get(0).getAddressLine(0));
                 }
-                    jsonMapLat.put("value", String.valueOf(latD));
-                    jsonMapLat.put("agent_parameter", "options");
-                    jsonMapLng.put("value", String.valueOf(lngD));
-                    jsonMapLng.put("agent_parameter", "options");
+                jsonMapLat.put("value", String.valueOf(latD));
+                jsonMapLat.put("agent_parameter", "options");
+                jsonMapLng.put("value", String.valueOf(lngD));
+                jsonMapLng.put("agent_parameter", "options");
             } catch (IOException e) {
                 Log.w("Region", e.toString());
             } catch (JSONException e) {
@@ -319,6 +332,34 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
                     startActivity(intent);
                     finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case mRunBtnId:
+                JSONObject jsonObjectRunNow = new JSONObject();
+                try {
+                    jsonObjectRunNow.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+                    jsonObjectRunNow.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+                    jsonObjectRunNow.put("userautorunId", id);
+                    jsonPara = jsonObjectRunNow.toString();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String Action = Utilities.ACTION + "RunNow";
+                            String Params = Utilities.PARAMS + jsonPara;
+                            Utilities.API_CONNECT(Action, Params, true);
+                            if (Utilities.getResponseCode().equals("true")) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        toast.setText("AutoRun Run Complete");
+                                        toast.show();
+                                    }
+                                });
+                            }
+                        }
+                    }).start();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
