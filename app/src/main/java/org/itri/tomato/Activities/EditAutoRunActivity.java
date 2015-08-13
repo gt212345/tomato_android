@@ -225,11 +225,13 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             lng.append(String.valueOf(lngD));
             try {
                 addressList = geocoder.getFromLocation(latD, lngD, 1);
-                region.setText(addressList.get(0).getAddressLine(0));
-                jsonMapLat.put("value", String.valueOf(latD));
-                jsonMapLat.put("agent_parameter", "options");
-                jsonMapLng.put("value", String.valueOf(lngD));
-                jsonMapLng.put("agent_parameter", "options");
+                if (!addressList.isEmpty()) {
+                    region.setText(addressList.get(0).getAddressLine(0));
+                }
+                    jsonMapLat.put("value", String.valueOf(latD));
+                    jsonMapLat.put("agent_parameter", "options");
+                    jsonMapLng.put("value", String.valueOf(lngD));
+                    jsonMapLng.put("agent_parameter", "options");
             } catch (IOException e) {
                 Log.w("Region", e.toString());
             } catch (JSONException e) {
