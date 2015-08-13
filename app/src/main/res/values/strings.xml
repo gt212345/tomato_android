@@ -15,4 +15,5 @@
     <string name="search_hint">Connector name</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_edit">EditActivity</string>
+    <string name="title_activity_my_auto_run">MyAutoRunActivity</string>
 </resources>

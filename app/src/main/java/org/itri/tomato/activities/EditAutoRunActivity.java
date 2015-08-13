@@ -58,19 +58,18 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     ArrayList<AutoRunItem> autoRunItemsWhen, autoRunItemsDo;
     DataRetrieveListener dataRetrieveListener;
     LinearLayout mapLayout;
-    TextView weightTv, lat, lng, check, radio, region;
+    TextView weightTv, lat, lng, check, radio, region, map, sch;
     Button weightBt;
-    String[] parts;
     String latStr, lngStr;
     ProgressDialog progressDialog;
     Geocoder geocoder;
     List<Address> addressList;
     String dialogStr;
-    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, schList;
+    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, mappingList, schList;
     EditText phone, text, number, pass, email, rich;
     LocationManager manager;
     Toolbar toolbar;
-    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countSch = 0;
+    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countMap, countSch = 0;
     double latD = 0;
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng;
@@ -135,14 +134,34 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     }
 
     @Override
-    public void onRadioFinished(String string, int num, boolean isMap) {
-        radio.setText("");
-        radio.append(string);
-        try {
-            radioList.get(num).put("value", string);
-            radioList.get(num).put("agent_parameter", "options");
-        } catch (JSONException e) {
-            e.printStackTrace();
+    public void onRadioFinished(String string, int num, int type) {
+        if(type == Utilities.MAP) {
+            map.setText("");
+            map.append(string);
+            try {
+                mappingList.get(num - 1).put("value", string);
+                mappingList.get(num - 1).put("agent_parameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else if (type == Utilities.RADIO_BUTTON) {
+            radio.setText("");
+            radio.append(string);
+            try {
+                radioList.get(num - 1).put("value", string);
+                radioList.get(num - 1).put("agent_parameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sch.setText("");
+            sch.append(string);
+            try {
+                schList.get(num - 1).put("value", string);
+                schList.get(num - 1).put("agent_parameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -189,31 +208,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 }
                 LinearLayout.LayoutParams params;
 
-                Button runNow = new Button(getApplicationContext());
-                runNow.setTextSize(20);
-                runNow.setText("RunNow");
-                runNow.setId(R.id.run_btn);
-                params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-                runNow.setLayoutParams(params);
-                runNow.setOnClickListener(EditAutoRunActivity.this);
-                layout.addView(runNow);
-
                 Button apply = new Button(getApplicationContext());
                 apply.setTextSize(20);
                 apply.setText("Apply");
-                apply.setId(0);
-                params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
-                apply.setLayoutParams(params);
-                apply.setOnClickListener(EditAutoRunActivity.this);
-                layout.addView(apply);
-                apply = new Button(getApplicationContext());
-                apply.setTextSize(20);
-                apply.setText("Delete");
-                apply.setId(-1);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -254,115 +251,46 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case 0:
-                JSONArray jsonArray = new JSONArray();
-                ArrayList<JSONObject> tmp = new ArrayList<>();
-                tmp.add(jsonMapLat);
-                tmp.add(jsonMapLng);
-                iterateList(tmp, checkList);
-                iterateList(tmp, radioList);
-                iterateList(tmp, phoneList);
-                iterateList(tmp, emailList);
-                iterateList(tmp, passList);
-                iterateList(tmp, textList);
-                iterateList(tmp, richList);
-                iterateList(tmp, numList);
-                for (JSONObject object : tmp) {
-                    if (object != null && object.length() == 4) {
-                        jsonArray.put(object);
-                    } else {
+        JSONArray jsonArray = new JSONArray();
+        ArrayList<JSONObject> tmp = new ArrayList<>();
+        tmp.add(jsonMapLat);
+        tmp.add(jsonMapLng);
+        iterateList(tmp, checkList);
+        iterateList(tmp, radioList);
+        iterateList(tmp, phoneList);
+        iterateList(tmp, emailList);
+        iterateList(tmp, passList);
+        iterateList(tmp, textList);
+        iterateList(tmp, richList);
+        iterateList(tmp, numList);
+        for (JSONObject object : tmp) {
+            if (object != null && object.length() == 5) {
+                jsonArray.put(object);
+            } else {
+            }
+        }
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+            jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+            jsonObject.put("userautorunId", id);
+            jsonObject.put("autorunPara", jsonArray);
+            jsonPara = jsonObject.toString();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    String Action = Utilities.ACTION + "UpdateUserAutoRunById";
+                    String Params = Utilities.PARAMS + jsonPara;
+                    Utilities.API_CONNECT(Action, Params, true);
+                    if (Utilities.getResponseCode().equals("true")) {
+                        toast.setText("Edit Succeed");
+                        toast.show();
                     }
                 }
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
-                    jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
-                    jsonObject.put("userautorunId", id);
-                    jsonObject.put("autorunPara", jsonArray);
-                    jsonPara = jsonObject.toString();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String Action = Utilities.ACTION + "UpdateUserAutoRunById";
-                            String Params = Utilities.PARAMS + jsonPara;
-                            Utilities.API_CONNECT(Action, Params, true);
-                            if (Utilities.getResponseCode().equals("true")) {
-                                toast.setText("Edit Succeed");
-                                toast.show();
-                            }
-                        }
-                    }).start();
-                    Intent intent = new Intent();
-                    intent.putExtra("from", TAG);
-                    intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case -1:
-                JSONObject jsonObjectDelete = new JSONObject();
-                try {
-                    jsonObjectDelete.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
-                    jsonObjectDelete.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
-                    jsonObjectDelete.put("userautorunId", id);
-                    jsonPara = jsonObjectDelete.toString();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String Action = Utilities.ACTION + "DelUserAutoRunById";
-                            String Params = Utilities.PARAMS + jsonPara;
-                            Utilities.API_CONNECT(Action, Params, true);
-                            if (Utilities.getResponseCode().equals("true")) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        toast.setText("AutoRun Deleted");
-                                        toast.show();
-                                    }
-                                });
-                            }
-                        }
-                    }).start();
-                    Intent intent = new Intent();
-                    intent.putExtra("from", TAG);
-                    intent.setClass(EditAutoRunActivity.this, AutoRunActivity.class);
-                    startActivity(intent);
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.run_btn:
-                JSONObject jsonObjectRunNow = new JSONObject();
-                try {
-                    jsonObjectRunNow.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
-                    jsonObjectRunNow.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
-                    jsonObjectRunNow.put("userautorunId", id);
-                    jsonPara = jsonObjectRunNow.toString();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String Action = Utilities.ACTION + "RunNow";
-                            String Params = Utilities.PARAMS + jsonPara;
-                            Utilities.API_CONNECT(Action, Params, true);
-                            if (Utilities.getResponseCode().equals("true")) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        toast.setText("AutoRun Run Complete");
-                                        toast.show();
-                                    }
-                                });
-                            }
-                        }
-                    }).start();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                break;
+            }).start();
+            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -471,7 +399,6 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         lng.setTextSize(20);
                         lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                         try {
-                            Log.w(TAG, "option: " + item.getOption() + ", display" + item.getDisplay());
                             jsonMapLng.put("value", item.getValue());
                             jsonMapLng.put("agent_parameter", "options");
                         } catch (JSONException e) {
@@ -549,7 +476,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             case "checkbox":
                 checkList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
-                parts = condition.split("\\|");
+                final String[] partsC = condition.split("\\|");
                 String[] tmp = item.getValue().split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -587,7 +514,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX_EDIT, null, countCheck, false);
+                        dialogFragment = DialogFragment.newInstance(partsC, Utilities.CHECK_BOX_EDIT, null, countCheck, Utilities.RADIO_BUTTON);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -642,7 +569,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             case "radio":
                 radioList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
-                parts = condition.split("\\|");
+                final String[] partsR = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
@@ -676,7 +603,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON_EDIT, null, countRadio, false);
+                        dialogFragment = DialogFragment.newInstance(partsR, Utilities.RADIO_BUTTON_EDIT, null, countRadio, Utilities.RADIO_BUTTON);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -692,8 +619,88 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 rich = new EditText(getApplicationContext());
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich++);
                 break;
+            case "mappingtext":
+                mappingList.add(putJson(new JSONObject(), item));
+                condition = item.getCondition();
+                final String[] partsM = condition.split("\\|");
+                mapLayout = new LinearLayout(getApplicationContext());
+                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                layout.addView(mapLayout);
+                weightTv = new TextView(getApplicationContext());
+                weightTv.setText(item.getDisplay() + ":");
+                weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                weightTv.setTextSize(20);
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        3.0f
+                );
+                weightTv.setLayoutParams(params);
+                weightBt = new Button(getApplicationContext());
+                weightBt.setText("展開");
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                weightBt.setLayoutParams(params);
+                map = new TextView(getApplicationContext());
+                mapLayout.addView(weightTv);
+                mapLayout.addView(weightBt);
+                layout.addView(map);
+                dialogStr = item.getDisplay();
+                weightBt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogFragment = DialogFragment.newInstance(partsM, Utilities.RADIO_BUTTON, null, countMap, Utilities.MAP);
+                        dialogFragment.show(getFragmentManager(), dialogStr);
+                    }
+                });
+                countMap++;
+                break;
             case "schedule":
                 schList.add(putJson(new JSONObject(), item));
+                condition = item.getCondition();
+                final String[] partsS = condition.split("\\|");
+                mapLayout = new LinearLayout(getApplicationContext());
+                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                layout.addView(mapLayout);
+                weightTv = new TextView(getApplicationContext());
+                weightTv.setText(item.getDisplay() + ":");
+                weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                weightTv.setTextSize(20);
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        3.0f
+                );
+                weightTv.setLayoutParams(params);
+                weightBt = new Button(getApplicationContext());
+                weightBt.setText("展開");
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                weightBt.setLayoutParams(params);
+                sch = new TextView(getApplicationContext());
+                sch.setTextSize(20);
+                sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                sch.setText(item.getValue());
+                mapLayout.addView(weightTv);
+                mapLayout.addView(weightBt);
+                layout.addView(sch);
+                dialogStr = item.getDisplay();
+                weightBt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogFragment = DialogFragment.newInstance(partsS, Utilities.RADIO_BUTTON, null, countSch, Utilities.SCHEDULE);
+                        dialogFragment.show(getFragmentManager(), dialogStr);
+                    }
+                });
+                countSch++;
                 break;
             case "key":
                 counts--;
@@ -823,6 +830,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         try {
             object.put("agentId", item.getAgentId());
             object.put("option", item.getOption());
+            object.put("condtionType", item.getConditionType());
             object.put("value", item.getValue());
             object.put("agent_parameter", "options");
         } catch (JSONException e) {

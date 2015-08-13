@@ -23,6 +23,7 @@ import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
+import org.itri.tomato.activities.MyAutoRunActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,7 +88,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
             Intent intent = new Intent();
             intent.putExtra("autoRunId", autoRunIDs.get(position));
             intent.putExtra("content", listItems.get(position).getContent());
-            intent.setClass(getActivity(), EditAutoRunActivity.class);
+            intent.setClass(getActivity(), MyAutoRunActivity.class);
             startActivity(intent);
         }
     }

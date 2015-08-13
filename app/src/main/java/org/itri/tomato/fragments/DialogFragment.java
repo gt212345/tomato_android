@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,17 +47,17 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     }
 
     public interface RadioButtonListener {
-        void onRadioFinished(String String, int num, boolean isMap);
+        void onRadioFinished(String String, int num, int isMap);
     }
 
 
-    public static DialogFragment newInstance(String[] parts, int type, Fragment f, int num, boolean isMap) {
+    public static DialogFragment newInstance(String[] parts, int type, Fragment f, int num, int isMap) {
         DialogFragment dialogFragment = new DialogFragment();
         Bundle args = new Bundle();
         args.putStringArray("parts", parts);
         args.putInt("type", type);
         args.putInt("num", num);
-        args.putBoolean("isMap", isMap);
+        args.putInt("isMap", isMap);
         fragment = f;
         dialogFragment.setArguments(args);
         return dialogFragment;
@@ -66,7 +67,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int counts = getArguments().getStringArray("parts").length;
         int type = getArguments().getInt("type");
-        final boolean isMap = getArguments().getBoolean("isMap");
+        final int isMap = getArguments().getInt("isMap");
         num = getArguments().getInt("num");
         ArrayList<String> names = new ArrayList<>();
         checks = new ArrayList<>();

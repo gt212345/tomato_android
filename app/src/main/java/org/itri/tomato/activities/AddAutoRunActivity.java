@@ -83,9 +83,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     ArrayList<AutoRunItem> autoRunItemsWhen, autoRunItemsDo;
     DataRetrieveListener dataRetrieveListener;
     LinearLayout mapLayout;
-    TextView weightTv, lat, lng, check, radio, map, region;
+    TextView weightTv, lat, lng, check, radio, map, region, sch;
     Button weightBt;
-    String[] parts;
     String latStr, lngStr;
     ProgressDialog progressDialog;
     Geocoder geocoder;
@@ -396,19 +395,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     @Override
-    public void onRadioFinished(String string, int num, boolean isMap) {
-        if(isMap) {
+    public void onRadioFinished(String string, int num, int type) {
+        if(type == Utilities.MAP) {
             map.setText("");
             map.setTextSize(20);
             map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
             map.append(string);
             try {
-                radioList.get(num - 1).put("value", string);
-                radioList.get(num - 1).put("agent_parameter", "options");
+                mappingList.get(num - 1).put("value", string);
+                mappingList.get(num - 1).put("agent_parameter", "options");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else {
+        } else if (type == Utilities.RADIO_BUTTON) {
             radio.setText("");
             radio.setTextSize(20);
             radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
@@ -416,6 +415,17 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             try {
                 radioList.get(num - 1).put("value", string);
                 radioList.get(num - 1).put("agent_parameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sch.setText("");
+            sch.setTextSize(20);
+            sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+            sch.append(string);
+            try {
+                schList.get(num - 1).put("value", string);
+                schList.get(num - 1).put("agent_parameter", "options");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -505,7 +515,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             case "checkbox":
                 checkList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
-                parts = condition.split("\\|");
+                final String[] partsC = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
@@ -536,7 +546,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.CHECK_BOX, null, countCheck, false);
+                        dialogFragment = DialogFragment.newInstance(partsC, Utilities.CHECK_BOX, null, countCheck, Utilities.RADIO_BUTTON);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -591,7 +601,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             case "radio":
                 radioList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
-                parts = condition.split("\\|");
+                final String[] partsR = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
@@ -622,7 +632,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countRadio, false);
+                        dialogFragment = DialogFragment.newInstance(partsR, Utilities.RADIO_BUTTON, null, countRadio, Utilities.RADIO_BUTTON);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -642,7 +652,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             case "mappingtext":
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
-                parts = condition.split("\\|");
+                final String[] partsM = condition.split("\\|");
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
@@ -673,7 +683,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(parts, Utilities.RADIO_BUTTON, null, countMap, true);
+                        dialogFragment = DialogFragment.newInstance(partsM, Utilities.RADIO_BUTTON, null, countMap, Utilities.MAP);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
@@ -681,6 +691,43 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 break;
             case "schedule":
                 schList.add(putJson(new JSONObject(), item));
+                condition = item.getCondition();
+                final String[] partsS = condition.split("\\|");
+                mapLayout = new LinearLayout(getApplicationContext());
+                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                layout.addView(mapLayout);
+                weightTv = new TextView(getApplicationContext());
+                weightTv.setText(item.getDisplay() + ":");
+                weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                weightTv.setTextSize(20);
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        3.0f
+                );
+                weightTv.setLayoutParams(params);
+                weightBt = new Button(getApplicationContext());
+                weightBt.setText("展開");
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1.0f
+                );
+                weightBt.setLayoutParams(params);
+                sch = new TextView(getApplicationContext());
+                mapLayout.addView(weightTv);
+                mapLayout.addView(weightBt);
+                layout.addView(sch);
+                dialogStr = item.getDisplay();
+                weightBt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogFragment = DialogFragment.newInstance(partsS, Utilities.RADIO_BUTTON, null, countSch, Utilities.SCHEDULE);
+                        dialogFragment.show(getFragmentManager(), dialogStr);
+                    }
+                });
+                countSch++;
                 break;
             case "key":
                 counts--;
@@ -845,7 +892,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         iterateList(tmp, richList);
         iterateList(tmp, numList);
         for (JSONObject object : tmp) {
-            if (object != null && object.length() == 4) {
+            if (object != null && object.length() == 5) {
                 jsonArray.put(object);
             }
         }
@@ -892,6 +939,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         try {
             object.put("agentId", item.getAgentId());
             object.put("option", item.getOption());
+            object.put("conditionType", item.getConditionType());
         } catch (JSONException e) {
             e.printStackTrace();
         }

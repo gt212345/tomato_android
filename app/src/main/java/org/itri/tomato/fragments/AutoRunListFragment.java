@@ -255,7 +255,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
     }
 
     @Override
-    public void onRadioFinished(String query, int num, boolean isMap) {
+    public void onRadioFinished(String query, int num, int isMap) {
 //        searchView.clearFocus();
         filterName = query;
         adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);

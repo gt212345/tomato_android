@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -65,13 +66,14 @@ public class FacebookAuthActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email"));
+                profileTracker.startTracking();
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                toast.setText("Success");
-                toast.show();
+//                toast.setText("Success");
+//                toast.show();
                 fb_access_token = loginResult.getAccessToken().getToken();
             }
 
@@ -89,12 +91,19 @@ public class FacebookAuthActivity extends AppCompatActivity {
         });
         profileTracker = new ProfileTracker() {
             @Override
+            public void stopTracking() {
+                super.stopTracking();
+                name = Profile.getCurrentProfile().getName();
+                id = Profile.getCurrentProfile().getId();
+                Log.w("facebook", name + "," + id);
+                new Thread(sentToken).start();
+            }
+
+            @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
                 name = currentProfile.getName();
                 id = currentProfile.getId();
-                if (!fb_access_token.equals("")) {
-                    new Thread(sentToken).start();
-                }
+                new Thread(sentToken).start();
             }
         };
     }
