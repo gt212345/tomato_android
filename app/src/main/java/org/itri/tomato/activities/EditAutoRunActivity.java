@@ -158,7 +158,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             sch.append(string);
             try {
                 schList.get(num - 1).put("value", string);
-                schList.get(num - 1).put("agent_parameter", "options");
+                schList.get(num - 1).put("agent_parameter", "schedule");
             } catch (JSONException e) {
                 e.printStackTrace();
             }

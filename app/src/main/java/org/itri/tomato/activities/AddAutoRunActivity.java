@@ -425,7 +425,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             sch.append(string);
             try {
                 schList.get(num - 1).put("value", string);
-                schList.get(num - 1).put("agent_parameter", "options");
+                schList.get(num - 1).put("agent_parameter", "schedule");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -894,6 +894,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
+                try {
+                    Log.w(TAG,object.getString("value"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
         if (jsonArray.length() != counts) {
