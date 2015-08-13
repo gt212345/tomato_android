@@ -125,6 +125,8 @@ public class FacebookAuthActivity extends AppCompatActivity {
             Utilities.API_CONNECT(Action, Para, true);
             if (Utilities.getResponseCode().equals("true")) {
                 Toast.makeText(FacebookAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
+            } else {
+
             }
         }
     };
