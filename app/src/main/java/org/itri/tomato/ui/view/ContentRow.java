@@ -8,4 +8,5 @@ import android.widget.LinearLayout;
 public interface ContentRow {
 
     public LinearLayout getLayout();
+
 }
