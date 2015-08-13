@@ -33,9 +33,9 @@ import android.widget.Toast;
 
 import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
-import org.itri.tomato.fragments.DialogFragment;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
+import org.itri.tomato.fragments.DialogFragment;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,7 +76,6 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     JSONObject jsonMapLat, jsonMapLng;
     String jsonPara;
     int counts;
-    final static int mRunBtnId = 2;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -193,7 +192,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 Button runNow = new Button(getApplicationContext());
                 runNow.setTextSize(20);
                 runNow.setText("RunNow");
-                runNow.setId(mRunBtnId);
+                runNow.setId(R.id.run_btn);
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -336,7 +335,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     e.printStackTrace();
                 }
                 break;
-            case mRunBtnId:
+            case R.id.run_btn:
                 JSONObject jsonObjectRunNow = new JSONObject();
                 try {
                     jsonObjectRunNow.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
@@ -472,6 +471,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         lng.setTextSize(20);
                         lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                         try {
+                            Log.w(TAG, "option: " + item.getOption() + ", display" + item.getDisplay());
                             jsonMapLng.put("value", item.getValue());
                             jsonMapLng.put("agent_parameter", "options");
                         } catch (JSONException e) {
