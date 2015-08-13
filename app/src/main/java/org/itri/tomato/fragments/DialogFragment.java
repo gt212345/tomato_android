@@ -33,6 +33,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     ArrayList<String> checks;
     int num;
     String string;
+    int isMap;
     RadioGroup radioGroup;
     static Fragment fragment;
     private static final int CHECK_BOX = 1;
@@ -67,7 +68,8 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int counts = getArguments().getStringArray("parts").length;
         int type = getArguments().getInt("type");
-        final int isMap = getArguments().getInt("isMap");
+        isMap = getArguments().getInt("isMap");
+        Log.w("",isMap+"");
         num = getArguments().getInt("num");
         ArrayList<String> names = new ArrayList<>();
         checks = new ArrayList<>();

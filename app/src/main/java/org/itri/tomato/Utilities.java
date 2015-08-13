@@ -42,7 +42,7 @@ public class Utilities {
     public static final int CHECK_BOX_EDIT = 4;
     public static final int RADIO_BUTTON_EDIT = 5;
     public static final int MAP = 0;
-    public static final int SCHEDULE = 1;
+    public static final int SCHEDULE = 7;
 
     /**
      * For Server API
