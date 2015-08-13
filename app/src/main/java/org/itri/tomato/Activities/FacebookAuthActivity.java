@@ -21,6 +21,8 @@ import com.facebook.login.LoginResult;
 
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 
@@ -32,12 +34,13 @@ public class FacebookAuthActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private static String fb_access_token;
     Toast toast;
+    SharedPreferences sharedPreferences;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
@@ -55,7 +58,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile","user_photos"));
+                LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile","email"));
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -64,7 +67,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 toast.setText("Success");
                 toast.show();
                 fb_access_token = loginResult.getAccessToken().getToken();
-                new Thread().start();
+                new Thread(sentToken).start();
             }
 
             @Override
@@ -80,5 +83,24 @@ public class FacebookAuthActivity extends AppCompatActivity {
             }
         });
     }
+
+    Runnable sentToken = new Runnable() {
+        @Override
+        public void run() {
+            String Action = Utilities.ACTION + "PostConnectorTokenById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("serviceToken", fb_access_token);
+                para.put("serviceKey", "");
+                para.put("serviceUserName", "");
+                para.put("serviceId", "");
+                para.put("connectorId", "1");
+            } catch (JSONException e){
+
+            }
+        }
+    };
 
 }

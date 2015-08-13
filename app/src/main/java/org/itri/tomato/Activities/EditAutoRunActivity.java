@@ -451,7 +451,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 if (!isMapCreated) {
                     lat = new TextView(getApplicationContext());
                     lng = new TextView(getApplicationContext());
-                    if(item.getOption().equals("sp_lat") || item.getOption().equals("longitude")) {
+                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": " + item.getValue());
