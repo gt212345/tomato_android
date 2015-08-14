@@ -42,6 +42,8 @@ public class FacebookAuthActivity extends AppCompatActivity {
     ProfileTracker profileTracker;
     String id;
     String name;
+    Button loginButton;
+    boolean isEnable;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -49,6 +51,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        isEnable = getIntent().getBooleanExtra("enable", false);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -61,11 +64,21 @@ public class FacebookAuthActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_facebook_auth);
         callbackManager = CallbackManager.Factory.create();
-        Button loginButton = (Button) findViewById(R.id.login_button_fb);
+        loginButton = (Button) findViewById(R.id.login_button_fb);
+        if (isEnable) {
+            loginButton.setText("Disable");
+        } else {
+            loginButton.setText("Enable");
+        }
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email"));
+                if (!isEnable) {
+                    LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email"));
+                } else {
+                    toast.setText("Not Support Yet");
+                    toast.show();
+                }
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -101,9 +114,9 @@ public class FacebookAuthActivity extends AppCompatActivity {
 
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                name = currentProfile.getName();
-                id = currentProfile.getId();
-                new Thread(sentToken).start();
+//                name = currentProfile.getName();
+//                id = currentProfile.getId();
+//                new Thread(sentToken).start();
             }
         };
     }
@@ -134,14 +147,30 @@ public class FacebookAuthActivity extends AppCompatActivity {
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, true);
             if (Utilities.getResponseCode().equals("true")) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(FacebookAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                loginButton.setText("Disable");
             } else {
+            }
+        }
+    };
 
+    /**
+     * server not support yet
+     */
+    Runnable deleteToken = new Runnable() {
+        @Override
+        public void run() {
+            String Action = Utilities.ACTION + "PostConnectorTokenById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("connectorId", "1");
+            } catch (JSONException e) {
+            }
+            String Para = Utilities.PARAMS + para.toString();
+            Utilities.API_CONNECT(Action, Para, true);
+            if (Utilities.getResponseCode().equals("true")) {
+            } else {
             }
         }
     };

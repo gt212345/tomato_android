@@ -1,6 +1,7 @@
 package org.itri.tomato.fragments;
 
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
  */
 public class MyAutoRunListFragment extends Fragment implements DataRetrieveListener, AdapterView.OnItemClickListener, MarketListAdapter.toggleListener {
     SharedPreferences sharedPreferences;
+    ProgressDialog progressDialog;
     ListView autoRunList;
     ArrayList<Bitmap> bitmaps;
     ArrayList<ListItem> listItems;
@@ -174,6 +176,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
 
     @Override
     public void onToggle(final int position, final boolean able) {
+        progressDialog = ProgressDialog.show(getActivity(), "載入中", "請稍等......", false);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -190,6 +193,11 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                 }
                 String Para = Utilities.PARAMS + para.toString();
                 Utilities.API_CONNECT(Action, Para, true);
+                if (Utilities.getResponseCode().equals("true")) {
+                    progressDialog.dismiss();
+                } else {
+                    progressDialog.cancel();
+                }
             }
         }).start();
     }
