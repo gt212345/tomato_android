@@ -43,7 +43,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
     DataRetrieveListener listener;
     PullRefreshLayout pullRefreshLayout;
     MarketListAdapter adapter;
-//    private View rootView;
+    private View rootView;
 
     private static final String TAG = "MyAutoRunListFragment";
 
@@ -53,8 +53,14 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
         View rootView = inflater.inflate(R.layout.fragment_myautorunlist, container, false);
         setHasOptionsMenu(true);
         getActivity().setTitle("My AutoRun List");
-//        this.rootView = rootView;
+        this.rootView = rootView;
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         createDummyList();
         autoRunList = (ListView) rootView.findViewById(R.id.autoRunList);
         listener = MyAutoRunListFragment.this;
@@ -66,7 +72,6 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList(), MyAutoRunListFragment.this);
-        return rootView;
     }
 
     @Override

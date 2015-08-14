@@ -66,7 +66,6 @@ public class FacebookAuthActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email"));
-                profileTracker.startTracking();
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -75,6 +74,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
 //                toast.setText("Success");
 //                toast.show();
                 fb_access_token = loginResult.getAccessToken().getToken();
+                profileTracker.startTracking();
             }
 
             @Override

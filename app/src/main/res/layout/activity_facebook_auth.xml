@@ -37,8 +37,7 @@
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@+id/login_button_fb"
         android:layout_toRightOf="@+id/fbIcon"
-        android:text="Facebook is a social networking website launched in Feb 2004.
-         Users may create a personal profile, add other users as friends, and exchange messages, including automatic notifications when they update their profile" />
+        android:text="Facebook is a social networking website launched in Feb 2004.Users may create a personal profile, add other users as friends, and exchange messages, including automatic notifications when they update their profile" />
 
 
 </RelativeLayout>

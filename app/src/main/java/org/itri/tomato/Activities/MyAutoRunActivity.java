@@ -145,6 +145,15 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 );
                 desTv.setLayoutParams(params);
                 Switch aSwitch = new Switch(getApplicationContext());
+                try {
+                    if (autoRunItem.getString("enable").equals("on")) {
+                        aSwitch.setChecked(true);
+                    } else {
+                        aSwitch.setChecked(false);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 params = new LinearLayout.LayoutParams(
                         0,
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -183,6 +192,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 edit.setOnClickListener(MyAutoRunActivity.this);
                 layout.addView(edit);
                 Button delete = new Button(getApplicationContext());
+                delete.setTextColor(Color.RED);
                 delete.setTextSize(20);
                 delete.setText("Delete");
                 params = new LinearLayout.LayoutParams(
@@ -281,10 +291,10 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, final boolean able) {
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                progressDialog = ProgressDialog.show(MyAutoRunActivity.this, "載入中", "請稍等......", false);
                 String Action = Utilities.ACTION + "SwitchUserAutoRunById";
                 JSONObject para = new JSONObject();
                 try {
@@ -298,9 +308,19 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 String Para = Utilities.PARAMS + para.toString();
                 Utilities.API_CONNECT(Action, Para, true);
                 if (Utilities.getResponseCode().equals("true")) {
-                    progressDialog.dismiss();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog.dismiss();
+                        }
+                    });
                 } else {
-                    progressDialog.cancel();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog.cancel();
+                        }
+                    });
                 }
             }
         }).start();

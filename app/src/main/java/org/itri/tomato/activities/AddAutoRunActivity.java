@@ -421,7 +421,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     e.printStackTrace();
                 }
             } else {
-                Log.w("", "?");
                 sch.setText("");
                 sch.setTextSize(20);
                 sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
@@ -902,16 +901,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
-                try {
-                    Log.w(TAG,object.getString("option") + "," + object.getString("value") + "," + object.getString("agent_parameter"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         }
         if (jsonArray.length() != counts) {
             toast.setText("Settings not complete!!");
             toast.show();
+            progressDialog.cancel();
             return;
         }
         JSONObject jsonObject = new JSONObject();

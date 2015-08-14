@@ -69,7 +69,6 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
         int counts = getArguments().getStringArray("parts").length;
         int type = getArguments().getInt("type");
         isMap = getArguments().getInt("isMap");
-        Log.w("",isMap+"");
         num = getArguments().getInt("num");
         ArrayList<String> names = new ArrayList<>();
         checks = new ArrayList<>();

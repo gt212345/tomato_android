@@ -75,7 +75,6 @@ public class MarketListAdapter extends BaseAdapter implements CompoundButton.OnC
                 viewHolder = new ViewHolder();
                 viewHolder.aSwitch = (Switch) view.findViewById(R.id.aSwitch);
                 viewHolder.aSwitch.setTag(position);
-                viewHolder.aSwitch.setOnCheckedChangeListener(this);
                 viewHolder.image1 = (ImageView) view.findViewById(R.id.service1);
                 viewHolder.image2 = (ImageView) view.findViewById(R.id.service2);
                 viewHolder.content = (TextView) view.findViewById(R.id.content);
@@ -89,6 +88,7 @@ public class MarketListAdapter extends BaseAdapter implements CompoundButton.OnC
             viewHolder.image2.setImageBitmap(item.getImage2());
             viewHolder.aSwitch.setVisibility(View.VISIBLE);
             viewHolder.aSwitch.setChecked(item.getAble());
+            viewHolder.aSwitch.setOnCheckedChangeListener(this);
             viewHolder.content.setText(item.getContent());
             return view;
         } else if (items.get(position).isHas2Image()) {

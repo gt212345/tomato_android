@@ -59,11 +59,11 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_school_white_48dp)
                 .setContentTitle("Tomato")
-                .setContentText("New Message!!")
+                .setContentText(message)
                 .setSound(defaultSoundUri)
                 .setAutoCancel(true)
                 .setContentIntent(resultPendingIntent)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+//                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .build();
 
 
