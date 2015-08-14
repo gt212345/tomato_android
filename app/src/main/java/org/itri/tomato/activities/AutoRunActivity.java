@@ -84,6 +84,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
                 drawerLayout.closeDrawers();
                 break;
             case 4:
+                drawerLayout.closeDrawers();
                 new AlertDialog.Builder(AutoRunActivity.this)
                         .setMessage("Are you sure you want to sign out?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -94,7 +95,6 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
                                 sharedPreferences.edit().remove(Utilities.USER_PASSWORD).apply();
                                 sharedPreferences.edit().remove(Utilities.HAS_ACCOUNT).apply();
                                 sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, false).apply();
-                                drawerLayout.closeDrawers();
                                 Intent intent = new Intent();
                                 intent.setClass(AutoRunActivity.this, LoginActivity.class);
                                 startActivity(intent);

@@ -916,6 +916,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             jsonObject.put("autorunId", id);
             jsonObject.put("autorunPara", jsonArray);
             jsonPara = jsonObject.toString();
+            Log.i("Add para:",jsonPara.toString());
             new Thread(new Runnable() {
                 @Override
                 public void run() {

@@ -36,7 +36,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
      * For Facebook API
      */
     private CallbackManager callbackManager;
-    private static String fb_access_token;
+    private static String fb_access_token = "";
     Toast toast;
     SharedPreferences sharedPreferences;
     ProfileTracker profileTracker;
@@ -71,8 +71,6 @@ public class FacebookAuthActivity extends AppCompatActivity {
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-//                toast.setText("Success");
-//                toast.show();
                 fb_access_token = loginResult.getAccessToken().getToken();
                 profileTracker.startTracking();
             }
@@ -93,10 +91,12 @@ public class FacebookAuthActivity extends AppCompatActivity {
             @Override
             public void startTracking() {
                 super.startTracking();
-                name = Profile.getCurrentProfile().getName();
-                id = Profile.getCurrentProfile().getId();
-                Log.w("facebook account", name + "," + id);
-                new Thread(sentToken).start();
+                if (!fb_access_token.equals("")) {
+                    name = Profile.getCurrentProfile().getName();
+                    id = Profile.getCurrentProfile().getId();
+                    Log.w("facebook account", name + "," + id);
+                    new Thread(sentToken).start();
+                }
             }
 
             @Override
