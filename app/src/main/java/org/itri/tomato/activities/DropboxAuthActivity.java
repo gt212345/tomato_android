@@ -1,6 +1,7 @@
 package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,6 +69,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                 // Required to complete auth, sets the access token on the session
                 mDBApi.getSession().finishAuthentication();
                 db_access_token = mDBApi.getSession().getOAuth2AccessToken();
+                new Thread(sentToken).start();
             } catch (IllegalStateException e) {
                 Log.i("DbAuthLog", "Error authenticating", e);
             }
@@ -88,12 +90,16 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                 para.put("serviceId", "");
                 para.put("connectorId", "2");
             } catch (JSONException e) {
-
             }
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, true);
             if (Utilities.getResponseCode().equals("true")) {
-                Toast.makeText(DropboxAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(DropboxAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     };
