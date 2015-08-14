@@ -1,10 +1,14 @@
 package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Build;
@@ -12,10 +16,14 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -30,6 +38,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 
 /**
  * Created by heiruwu on 7/24/15.
@@ -40,6 +52,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ScrollView scrollView;
     GoogleMap googleMap;
     Marker marker;
+    EditText search;
+    String locationStr;
+    Geocoder geocoder;
+    List<Address> addressList;
     double latD = 0;
     double lngD = 0;
 
@@ -48,7 +64,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        
+        geocoder = new Geocoder(this, Locale.TAIWAN);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
@@ -57,6 +73,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        search = (EditText) findViewById(R.id.searchEt);
+        search.setHint("請輸入欲搜尋地址");
+        search.setHintTextColor(Color.parseColor("#9E9E9E"));
+        Button button = (Button) findViewById(R.id.searchBt);
+        button.setText("搜尋");
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (marker != null) {
+                    marker.remove();
+                }
+                hideSoftKeyboard(MapActivity.this);
+                locationStr = search.getText().toString();
+                if (!locationStr.equals("")) {
+                    try {
+                        addressList = geocoder.getFromLocationName(locationStr, 1);
+                        if (!addressList.isEmpty()) {
+                            Address address = addressList.get(0);
+                            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(address.getLatitude(), address.getLongitude()), 14);
+                            googleMap.animateCamera(cameraUpdate);
+                            marker = googleMap.addMarker(new MarkerOptions().position(new LatLng(address.getLatitude(), address.getLongitude())));
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -132,6 +176,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         if (marker != null) {
             marker.remove();
         }
+        hideSoftKeyboard(this);
         marker = googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latLng.latitude, latLng.longitude))
                 .title("Click Apply!!")
@@ -147,4 +192,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         setResult(RESULT_OK, intent);
         finish();
     }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        try {
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        } catch (NullPointerException e) {
+
+        }
+    }
+
 }

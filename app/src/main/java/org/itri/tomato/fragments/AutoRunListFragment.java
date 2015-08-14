@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -55,8 +56,8 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
     DialogFragment dialogFragment;
     SearchView searchView;
     String filterName = "all";
-    boolean isMore = true;
     SharedPreferences sharedPreferences;
+    int page = 1, count = 20;
 
     @Override
     public void onPause() {
@@ -72,7 +73,6 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
         View rootView = inflater.inflate(R.layout.fragment_marketlist, container, false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         setHasOptionsMenu(true);
-        autoRunIDs = new ArrayList<Integer>();
         createIconList();
         listener = AutoRunListFragment.this;
         getActivity().setTitle("AutoRun List");
@@ -87,8 +87,9 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (firstVisibleItem + visibleItemCount >= totalItemCount && adapter != null && isMore) {
-//                    dummyLoadMore(items);
+                if (firstVisibleItem + visibleItemCount >= totalItemCount && adapter != null) {
+//                    count++;
+//                    items = getAutoRunList();
 //                    adapter.notifyDataSetChanged();
                 }
             }
@@ -130,27 +131,6 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                 R.drawable.noti));
     }
 
-    void dummyLoadMore(ArrayList<ListItem> items) {
-        for (int i = 0; i < 5; i++) {
-            if (items.size() > 70) {
-                isMore = false;
-            } else {
-                isMore = true;
-            }
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.fb), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.email), "This AutoRun script will send you an email whenever you are invited to an event!", true, false, false));
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.github), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.twitter), "This AutoRun script tweet out every detail of your commit of a certain project.", true, false, false));
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.in), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.youtube), "This AutoRun script will do nothing!", true, false, false));
-            items.add(new ListItem(BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.instagram), BitmapFactory.decodeResource(getActivity().getResources(),
-                    R.drawable.gplus), "This AutoRun script will do nothing!", true, false, false));
-        }
-    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -165,6 +145,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
 
     private ArrayList<ListItem> getAutoRunList() {
         items = new ArrayList<>();
+        autoRunIDs = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -176,7 +157,17 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                     }
                 });
                 String Action = Utilities.ACTION + "GetAutoRunList";
-                String Params = Utilities.PARAMS + "{\"uid\":\"4\",\"token\":\"123\",\"filterName\":\"" + filterName + "\",\"page\":\"1\",\"count\":\"10\"}";
+                JSONObject para = new JSONObject();
+                try {
+                    para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                    para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                    para.put("filterName", filterName);
+                    para.put("page", page);
+                    para.put("count", count);
+                } catch (JSONException e) {
+                    Log.w("AutoRunListFragment", e.toString());
+                }
+                String Params = Utilities.PARAMS + para.toString();
                 JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
                 if (Utilities.getResponseCode().equals("true")) {
                     try {

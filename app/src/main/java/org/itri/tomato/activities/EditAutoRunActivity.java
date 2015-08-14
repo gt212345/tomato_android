@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
@@ -135,32 +136,34 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
 
     @Override
     public void onRadioFinished(String string, int num, int type) {
-        if(type == Utilities.MAP) {
-            map.setText("");
-            map.append(string);
-            try {
-                mappingList.get(num - 1).put("value", string);
-                mappingList.get(num - 1).put("agent_parameter", "options");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (type == Utilities.RADIO_BUTTON) {
-            radio.setText("");
-            radio.append(string);
-            try {
-                radioList.get(num - 1).put("value", string);
-                radioList.get(num - 1).put("agent_parameter", "options");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            sch.setText("");
-            sch.append(string);
-            try {
-                schList.get(num - 1).put("value", string);
-                schList.get(num - 1).put("agent_parameter", "schedule");
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(!string.equals("")) {
+            if (type == Utilities.MAP) {
+                map.setText("");
+                map.append(string);
+                try {
+                    mappingList.get(num - 1).put("value", string);
+                    mappingList.get(num - 1).put("agent_parameter", "options");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if (type == Utilities.RADIO_BUTTON) {
+                radio.setText("");
+                radio.append(string);
+                try {
+                    radioList.get(num - 1).put("value", string);
+                    radioList.get(num - 1).put("agent_parameter", "options");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                sch.setText("");
+                sch.append(string);
+                try {
+                    schList.get(num - 1).put("value", string);
+                    schList.get(num - 1).put("agent_parameter", "schedule");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -718,7 +721,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         editText.setText(item.getValue());
         editText.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
         editText.setInputType(inputType);
-        editText.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        editText.setHintTextColor(Color.parseColor("#9E9E9E"));
         editText.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         editText.setLayoutParams(param);
         editText.addTextChangedListener(new TextWatcher() {
@@ -855,6 +858,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     }
 
     private void createList() {
+        mappingList = new ArrayList<>();
         checkList = new ArrayList<>();
         radioList = new ArrayList<>();
         phoneList = new ArrayList<>();

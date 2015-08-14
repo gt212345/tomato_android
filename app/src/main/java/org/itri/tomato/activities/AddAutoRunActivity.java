@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.location.Address;
@@ -396,39 +397,41 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onRadioFinished(String string, int num, int type) {
-        if(type == Utilities.MAP) {
-            map.setText("");
-            map.setTextSize(20);
-            map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-            map.append(string);
-            try {
-                mappingList.get(num - 1).put("value", string);
-                mappingList.get(num - 1).put("agent_parameter", "options");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else if (type == Utilities.RADIO_BUTTON) {
-            radio.setText("");
-            radio.setTextSize(20);
-            radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-            radio.append(string);
-            try {
-                radioList.get(num - 1).put("value", string);
-                radioList.get(num - 1).put("agent_parameter", "options");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            Log.w("","?");
-            sch.setText("");
-            sch.setTextSize(20);
-            sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-            sch.append(string);
-            try {
-                schList.get(num - 1).put("value", string);
-                schList.get(num - 1).put("agent_parameter", "schedule");
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(!string.equals("")) {
+            if (type == Utilities.MAP) {
+                map.setText("");
+                map.setTextSize(20);
+                map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                map.append(string);
+                try {
+                    mappingList.get(num - 1).put("value", string);
+                    mappingList.get(num - 1).put("agent_parameter", "options");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else if (type == Utilities.RADIO_BUTTON) {
+                radio.setText("");
+                radio.setTextSize(20);
+                radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                radio.append(string);
+                try {
+                    radioList.get(num - 1).put("value", string);
+                    radioList.get(num - 1).put("agent_parameter", "options");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.w("", "?");
+                sch.setText("");
+                sch.setTextSize(20);
+                sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                sch.append(string);
+                try {
+                    schList.get(num - 1).put("value", string);
+                    schList.get(num - 1).put("agent_parameter", "schedule");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -768,7 +771,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         editText.setTextSize(20);
         editText.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
         editText.setInputType(inputType);
-        editText.setHintTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+        editText.setHintTextColor(Color.parseColor("#9E9E9E"));
         editText.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         editText.setLayoutParams(param);
         editText.addTextChangedListener(new TextWatcher() {
@@ -971,6 +974,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     private void createList() {
+        mappingList = new ArrayList<>();
         checkList = new ArrayList<>();
         radioList = new ArrayList<>();
         phoneList = new ArrayList<>();
