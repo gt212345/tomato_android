@@ -144,29 +144,27 @@ public class LoginActivity extends AppCompatActivity {
                     if (jsonObject != null) {
                         try {
                             JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                            if (jsonObjectTmp.getString("status").equals("true")) {
-                                if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
-                                    sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
-                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();
-                                    sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
-                                }
-//                                Log.i("uid", jsonObjectTmp.get("uid").toString());
-//                                Log.i("token", jsonObjectTmp.get("token").toString());
-                                sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
-                                sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
-                                Intent intent = new Intent();
-                                intent.putExtra("from", TAG);
-                                intent.setClass(LoginActivity.this, AutoRunActivity.class);
-                                startActivity(intent);
-                                progressDialog.dismiss();
-                                finish();
-                            } else {
-                                progressDialog.cancel();
+                            if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+                                sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
+                                sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();
+                                sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                             }
+//                            Log.i("uid", jsonObjectTmp.get("uid").toString());
+//                            Log.i("token", jsonObjectTmp.get("token").toString());
+                            sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
+                            sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
+                            Intent intent = new Intent();
+                            intent.putExtra("from", TAG);
+                            intent.setClass(LoginActivity.this, AutoRunActivity.class);
+                            startActivity(intent);
+                            progressDialog.dismiss();
+                            finish();
                         } catch (JSONException e) {
                             Log.w("Login", e.toString());
                         }
                     }
+                } else {
+                    progressDialog.cancel();
                 }
             } else {
                 progressDialog.cancel();
@@ -185,28 +183,26 @@ public class LoginActivity extends AppCompatActivity {
                     if (jsonObject != null) {
                         try {
                             JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
-                            if (jsonObjectTmp.getString("status").equals("true")) {
-                                if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
-                                    sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
-                                    sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();
-                                    sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
-                                }
-//                                Log.i("uid", jsonObjectTmp.get("uid").toString());
-//                                Log.i("token", jsonObjectTmp.get("token").toString());
-                                sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
-                                sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
-                                Intent intent = new Intent();
-                                intent.setClass(LoginActivity.this, AutoRunActivity.class);
-                                startActivity(intent);
-                                progressDialog.dismiss();
-                                finish();
-                            } else {
-                                progressDialog.cancel();
+                            if (!sharedPreferences.getBoolean(Utilities.HAS_ACCOUNT, false)) {
+                                sharedPreferences.edit().putString(Utilities.USER_ACCOUNT, UserAccount).apply();
+                                sharedPreferences.edit().putString(Utilities.USER_PASSWORD, UserPassword).apply();
+                                sharedPreferences.edit().putBoolean(Utilities.HAS_ACCOUNT, true).apply();
                             }
+                            Log.i("uid", jsonObjectTmp.get("uid").toString());
+                            Log.i("token", jsonObjectTmp.get("token").toString());
+                            sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
+                            sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
+                            Intent intent = new Intent();
+                            intent.setClass(LoginActivity.this, AutoRunActivity.class);
+                            startActivity(intent);
+                            progressDialog.dismiss();
+                            finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
+                } else {
+                    progressDialog.cancel();
                 }
             } else {
                 progressDialog.cancel();
