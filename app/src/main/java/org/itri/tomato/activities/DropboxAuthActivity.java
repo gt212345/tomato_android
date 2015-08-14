@@ -112,6 +112,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        isEnable = true;
                         loginButtonDb.setText("Disable");
                     }
                 });

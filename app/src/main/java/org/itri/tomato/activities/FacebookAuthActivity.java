@@ -150,6 +150,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        isEnable = true;
                         loginButton.setText("Disable");
                     }
                 });
