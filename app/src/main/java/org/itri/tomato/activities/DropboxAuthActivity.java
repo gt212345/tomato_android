@@ -107,7 +107,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
             } catch (JSONException e) {
             }
             String Para = Utilities.PARAMS + para.toString();
-            Utilities.API_CONNECT(Action, Para, true);
+            Utilities.API_CONNECT(Action, Para, DropboxAuthActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 runOnUiThread(new Runnable() {
                     @Override

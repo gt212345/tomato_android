@@ -233,7 +233,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                         public void run() {
                             String Action = Utilities.ACTION + "DelUserAutoRunById";
                             String Params = Utilities.PARAMS + jsonPara;
-                            Utilities.API_CONNECT(Action, Params, true);
+                            Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
                             if (Utilities.getResponseCode().equals("true")) {
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -269,7 +269,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                         public void run() {
                             String Action = Utilities.ACTION + "RunNow";
                             String Params = Utilities.PARAMS + jsonPara;
-                            Utilities.API_CONNECT(Action, Params, true);
+                            Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
                             if (Utilities.getResponseCode().equals("true")) {
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -306,7 +306,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                     Log.w(TAG, e.toString());
                 }
                 String Para = Utilities.PARAMS + para.toString();
-                Utilities.API_CONNECT(Action, Para, true);
+                Utilities.API_CONNECT(Action, Para, MyAutoRunActivity.this, true);
                 if (Utilities.getResponseCode().equals("true")) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -374,7 +374,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 e.printStackTrace();
             }
             String Params = Utilities.PARAMS + para.toString();
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 try {
                     autoRunItem = new JSONObject(jsonObject.getString("response"));

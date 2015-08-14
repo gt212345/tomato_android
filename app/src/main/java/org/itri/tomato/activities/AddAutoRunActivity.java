@@ -264,50 +264,52 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 e.printStackTrace();
             }
             String Params = Utilities.PARAMS + para.toString();
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
-            try {
-                JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
-                description = jsonRes.getString("autorunDesc");
-                id = jsonRes.getString("autorunId");
-                whenIconId = jsonRes.getInt("whenIconId");
-                doIconId = jsonRes.getInt("doIconId");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mTitleView.setText(description);
-                        setTitle("Add AutoRun");
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, AddAutoRunActivity.this, true);
+            if (Utilities.getResponseCode().equals("true")) {
+                try {
+                    JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
+                    description = jsonRes.getString("autorunDesc");
+                    id = jsonRes.getString("autorunId");
+                    whenIconId = jsonRes.getInt("whenIconId");
+                    doIconId = jsonRes.getInt("doIconId");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mTitleView.setText(description);
+                            setTitle("Add AutoRun");
+                        }
+                    });
+                    JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
+                    JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
+                    for (int i = 0; i < jsonWhen.length(); i++) {
+                        autoRunItemsWhen.add(new AutoRunItem(
+                                jsonWhen.getJSONObject(i).getString("agentId"),
+                                jsonWhen.getJSONObject(i).getString("display"),
+                                jsonWhen.getJSONObject(i).getString("option"),
+                                jsonWhen.getJSONObject(i).getString("conditionType"),
+                                jsonWhen.getJSONObject(i).getString("condition"),
+                                jsonWhen.getJSONObject(i).getString("agent_parameter"),
+                                jsonWhen.getJSONObject(i).getString("value")
+                        ));
                     }
-                });
-                JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
-                JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
-                for (int i = 0; i < jsonWhen.length(); i++) {
-                    autoRunItemsWhen.add(new AutoRunItem(
-                            jsonWhen.getJSONObject(i).getString("agentId"),
-                            jsonWhen.getJSONObject(i).getString("display"),
-                            jsonWhen.getJSONObject(i).getString("option"),
-                            jsonWhen.getJSONObject(i).getString("conditionType"),
-                            jsonWhen.getJSONObject(i).getString("condition"),
-                            jsonWhen.getJSONObject(i).getString("agent_parameter"),
-                            jsonWhen.getJSONObject(i).getString("value")
-                    ));
+                    JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
+                    for (int i = 0; i < jsonDo.length(); i++) {
+                        autoRunItemsDo.add(new AutoRunItem(
+                                jsonDo.getJSONObject(i).getString("agentId"),
+                                jsonDo.getJSONObject(i).getString("display"),
+                                jsonDo.getJSONObject(i).getString("option"),
+                                jsonDo.getJSONObject(i).getString("conditionType"),
+                                jsonDo.getJSONObject(i).getString("condition"),
+                                jsonDo.getJSONObject(i).getString("agent_parameter"),
+                                jsonDo.getJSONObject(i).getString("value")
+                        ));
+                    }
+                    counts = jsonWhen.length() + jsonDo.length();
+                    dataRetrieveListener.onFinish();
+                } catch (JSONException e) {
+                    progressDialog.cancel();
+                    Log.w("Json", e.toString());
                 }
-                JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
-                for (int i = 0; i < jsonDo.length(); i++) {
-                    autoRunItemsDo.add(new AutoRunItem(
-                            jsonDo.getJSONObject(i).getString("agentId"),
-                            jsonDo.getJSONObject(i).getString("display"),
-                            jsonDo.getJSONObject(i).getString("option"),
-                            jsonDo.getJSONObject(i).getString("conditionType"),
-                            jsonDo.getJSONObject(i).getString("condition"),
-                            jsonDo.getJSONObject(i).getString("agent_parameter"),
-                            jsonDo.getJSONObject(i).getString("value")
-                    ));
-                }
-                counts = jsonWhen.length() + jsonDo.length();
-                dataRetrieveListener.onFinish();
-            } catch (JSONException e) {
-                progressDialog.cancel();
-                Log.w("Json", e.toString());
             }
         }
     };
@@ -397,7 +399,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onRadioFinished(String string, int num, int type) {
-        if(!string.equals("")) {
+        if (!string.equals("")) {
             if (type == Utilities.MAP) {
                 map.setText("");
                 map.setTextSize(20);
@@ -444,7 +446,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 if (!isMapCreated) {
                     lat = new TextView(getApplicationContext());
                     lng = new TextView(getApplicationContext());
-                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
+                    if (item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": ");
@@ -498,7 +500,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
                 } else {
-                    if(item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
+                    if (item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
                         putJson(jsonMapLat, item);
                         lat.setText(item.getDisplay() + ": ");
@@ -602,7 +604,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
                 break;
             case "radio":
-                if(item.getOption().equals("Schedule")){
+                if (item.getOption().equals("Schedule")) {
                     schList.add(putJson(new JSONObject(), item));
                     condition = item.getCondition();
                     final String[] partsS = condition.split("\\|");
@@ -916,13 +918,13 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             jsonObject.put("autorunId", id);
             jsonObject.put("autorunPara", jsonArray);
             jsonPara = jsonObject.toString();
-            Log.i("Add para:",jsonPara.toString());
+            Log.i("Add para:", jsonPara.toString());
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     String Action = Utilities.ACTION + "AddUserAutoRun";
                     String Params = Utilities.PARAMS + jsonPara;
-                    Utilities.API_CONNECT(Action, Params, true);
+                    Utilities.API_CONNECT(Action, Params, AddAutoRunActivity.this, true);
                     if (Utilities.getResponseCode().equals("true")) {
                         runOnUiThread(new Runnable() {
                             @Override

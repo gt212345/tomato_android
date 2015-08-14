@@ -70,7 +70,7 @@ public class RegistrationIntentService extends IntentService {
         if (!sharedPreferences.getBoolean(Utilities.SENT_TOKEN_TO_SERVER, false)) {
             String Action = Utilities.ACTION + "PostGCMDataByDevice";
             String Params = Utilities.PARAMS + "{\"uid\":\"" + UID + "\",\"token\":\"" + TOKEN + "\",\"regId\":\"" + token + "\",\"type\":\"" + Utilities.TYPE + "\"}";
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, getApplicationContext(), true);
             try {
                 JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
                 if (jsonObjectTmp.getString("status").equals("true")) {

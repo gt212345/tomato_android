@@ -123,7 +123,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     Log.w("JSON", e.toString());
                 }
                 String Params = Utilities.PARAMS + para.toString();
-                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, getActivity(), true);
                 if (Utilities.getResponseCode().equals("true")) {
                     try {
                         JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
@@ -192,7 +192,7 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     Log.w(TAG, e.toString());
                 }
                 String Para = Utilities.PARAMS + para.toString();
-                Utilities.API_CONNECT(Action, Para, true);
+                Utilities.API_CONNECT(Action, Para, getActivity(), true);
                 if (Utilities.getResponseCode().equals("true")) {
                     progressDialog.dismiss();
                 } else {

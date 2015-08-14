@@ -5,6 +5,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
@@ -55,7 +56,12 @@ public class Utilities {
 
     private static String responseCode;
 
-    public static JSONObject API_CONNECT(String Action, String Params, boolean hasInput) {
+    public static JSONObject API_CONNECT(String Action, String Params,Context context, boolean hasInput) {
+        if (!isOnline(context)){
+//            Toast.makeText(context, "No Network Connection", Toast.LENGTH_SHORT).show();
+            responseCode = "noResponse";
+            return null;
+        }
         try {
             URL url = new URL(Utilities.API_URL);
             String out = Action + Params;
@@ -125,6 +131,13 @@ public class Utilities {
         } catch (Exception e) {
             Log.e("exception", e.toString());
         }
+    }
+
+    public static boolean isOnline(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
 }

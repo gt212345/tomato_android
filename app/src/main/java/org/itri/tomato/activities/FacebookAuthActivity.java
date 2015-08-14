@@ -145,7 +145,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
             }
             Log.w("FACEBOOK", para.toString());
             String Para = Utilities.PARAMS + para.toString();
-            Utilities.API_CONNECT(Action, Para, true);
+            Utilities.API_CONNECT(Action, Para, FacebookAuthActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 runOnUiThread(new Runnable() {
                     @Override
@@ -174,7 +174,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
             } catch (JSONException e) {
             }
             String Para = Utilities.PARAMS + para.toString();
-            Utilities.API_CONNECT(Action, Para, true);
+            Utilities.API_CONNECT(Action, Para, FacebookAuthActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
             } else {
             }

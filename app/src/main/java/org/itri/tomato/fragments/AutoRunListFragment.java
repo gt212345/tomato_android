@@ -168,7 +168,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                     Log.w("AutoRunListFragment", e.toString());
                 }
                 String Params = Utilities.PARAMS + para.toString();
-                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, getActivity(), true);
                 if (Utilities.getResponseCode().equals("true")) {
                     try {
                         JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));

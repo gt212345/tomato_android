@@ -65,10 +65,6 @@ public class LoginActivity extends AppCompatActivity {
         editPass = (EditText) findViewById(R.id.editPass);
         Button login = (Button) findViewById(R.id.login);
         Button create = (Button) findViewById(R.id.create);
-        if (!isOnline()) {
-            Toast.makeText(this, "No Network Connection", Toast.LENGTH_LONG).show();
-            finish();
-        }
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -139,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
             if (isEmailValid(UserAccount)) {
                 String Action = Utilities.ACTION + "Login";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
-                jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                jsonObject = Utilities.API_CONNECT(Action, Params, LoginActivity.this, true);
                 if (Utilities.getResponseCode().equals("true")) {
                     if (jsonObject != null) {
                         try {
@@ -163,6 +159,14 @@ public class LoginActivity extends AppCompatActivity {
                             Log.w("Login", e.toString());
                         }
                     }
+                } else if(Utilities.getResponseCode().equals("noResponse")) {
+                    progressDialog.dismiss();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "無網路連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
                     progressDialog.cancel();
                 }
@@ -178,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
             if (isEmailValid(UserAccount)) {
                 String Action = Utilities.ACTION + "CreateAccount";
                 String Params = Utilities.PARAMS + "{\"email\":\"" + UserAccount + "\",\"pass\":\"" + UserPassword + "\"}";
-                jsonObject = Utilities.API_CONNECT(Action, Params, true);
+                jsonObject = Utilities.API_CONNECT(Action, Params, LoginActivity.this, true);
                 if (Utilities.getResponseCode().equals("true")) {
                     if (jsonObject != null) {
                         try {
@@ -201,6 +205,14 @@ public class LoginActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+                } else if(Utilities.getResponseCode().equals("noResponse")) {
+                    progressDialog.dismiss();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LoginActivity.this, "無網路連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
                     progressDialog.cancel();
                 }

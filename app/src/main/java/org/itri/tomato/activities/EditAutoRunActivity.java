@@ -286,7 +286,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 public void run() {
                     String Action = Utilities.ACTION + "UpdateUserAutoRunById";
                     String Params = Utilities.PARAMS + jsonPara;
-                    Utilities.API_CONNECT(Action, Params, true);
+                    Utilities.API_CONNECT(Action, Params, EditAutoRunActivity.this, true);
                     if (Utilities.getResponseCode().equals("true")) {
                         progressDialog.dismiss();
                         toast.setText("Edit Succeed");
@@ -333,7 +333,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 Log.w(TAG, e.toString() + "Para");
             }
             String Params = Utilities.PARAMS + para.toString();
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, true);
+            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, EditAutoRunActivity.this, true);
             try {
                 JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
                 description = jsonRes.getString("autorunDesc");
