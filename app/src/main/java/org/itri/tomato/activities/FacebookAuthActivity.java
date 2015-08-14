@@ -147,7 +147,12 @@ public class FacebookAuthActivity extends AppCompatActivity {
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, true);
             if (Utilities.getResponseCode().equals("true")) {
-                loginButton.setText("Disable");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loginButton.setText("Disable");
+                    }
+                });
             } else {
             }
         }
