@@ -136,7 +136,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
 
     @Override
     public void onRadioFinished(String string, int num, int type) {
-        if(!string.equals("")) {
+        if (!string.equals("")) {
             if (type == Utilities.MAP) {
                 map.setText("");
                 map.append(string);
@@ -267,10 +267,10 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         iterateList(tmp, textList);
         iterateList(tmp, richList);
         iterateList(tmp, numList);
+        iterateList(tmp, schList);
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
-            } else {
             }
         }
         JSONObject jsonObject = new JSONObject();
@@ -280,6 +280,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             jsonObject.put("userautorunId", id);
             jsonObject.put("autorunPara", jsonArray);
             jsonPara = jsonObject.toString();
+            Log.w(TAG, jsonPara);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -574,47 +575,91 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
                 break;
             case "radio":
-                radioList.add(putJson(new JSONObject(), item));
-                condition = item.getCondition();
-                final String[] partsR = condition.split("\\|");
-                mapLayout = new LinearLayout(getApplicationContext());
-                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
-                layout.addView(mapLayout);
-                weightTv = new TextView(getApplicationContext());
-                weightTv.setText(item.getDisplay() + ":");
-                weightTv.setGravity(Gravity.CENTER_VERTICAL);
-                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                weightTv.setTextSize(20);
-                params = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        3.0f
-                );
-                weightTv.setLayoutParams(params);
-                weightBt = new Button(getApplicationContext());
-                weightBt.setText("展開");
-                params = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        1.0f
-                );
-                weightBt.setLayoutParams(params);
-                radio = new TextView(getApplicationContext());
-                radio.setTextSize(20);
-                radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                radio.setText(item.getValue());
-                mapLayout.addView(weightTv);
-                mapLayout.addView(weightBt);
-                layout.addView(radio);
-                dialogStr = item.getDisplay();
-                weightBt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(partsR, Utilities.RADIO_BUTTON_EDIT, null, countRadio, Utilities.RADIO_BUTTON);
-                        dialogFragment.show(getFragmentManager(), dialogStr);
-                    }
-                });
-                countRadio++;
+                if (item.getOption().equals("Schedule")) {
+                    schList.add(putJson(new JSONObject(), item));
+                    condition = item.getCondition();
+                    final String[] partsS = condition.split("\\|");
+                    mapLayout = new LinearLayout(getApplicationContext());
+                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    layout.addView(mapLayout);
+                    weightTv = new TextView(getApplicationContext());
+                    weightTv.setText(item.getDisplay() + ":");
+                    weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                    weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    weightTv.setTextSize(20);
+                    params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            3.0f
+                    );
+                    weightTv.setLayoutParams(params);
+                    weightBt = new Button(getApplicationContext());
+                    weightBt.setText("展開");
+                    params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            1.0f
+                    );
+                    weightBt.setLayoutParams(params);
+                    sch = new TextView(getApplicationContext());
+                    sch.setTextSize(20);
+                    sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    sch.setText(item.getValue());
+                    mapLayout.addView(weightTv);
+                    mapLayout.addView(weightBt);
+                    layout.addView(sch);
+                    dialogStr = item.getDisplay();
+                    weightBt.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogFragment = DialogFragment.newInstance(partsS, Utilities.RADIO_BUTTON_EDIT, null, countSch, Utilities.SCHEDULE);
+                            dialogFragment.show(getFragmentManager(), dialogStr);
+                        }
+                    });
+                    countSch++;
+                } else {
+                    radioList.add(putJson(new JSONObject(), item));
+                    condition = item.getCondition();
+                    final String[] partsR = condition.split("\\|");
+                    mapLayout = new LinearLayout(getApplicationContext());
+                    mapLayout.setOrientation(LinearLayout.HORIZONTAL);
+                    layout.addView(mapLayout);
+                    weightTv = new TextView(getApplicationContext());
+                    weightTv.setText(item.getDisplay() + ":");
+                    weightTv.setGravity(Gravity.CENTER_VERTICAL);
+                    weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    weightTv.setTextSize(20);
+                    params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            3.0f
+                    );
+                    weightTv.setLayoutParams(params);
+                    weightBt = new Button(getApplicationContext());
+                    weightBt.setText("展開");
+                    params = new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            1.0f
+                    );
+                    weightBt.setLayoutParams(params);
+                    radio = new TextView(getApplicationContext());
+                    radio.setTextSize(20);
+                    radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                    radio.setText(item.getValue());
+                    mapLayout.addView(weightTv);
+                    mapLayout.addView(weightBt);
+                    layout.addView(radio);
+                    dialogStr = item.getDisplay();
+                    weightBt.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialogFragment = DialogFragment.newInstance(partsR, Utilities.RADIO_BUTTON_EDIT, null, countRadio, Utilities.RADIO_BUTTON);
+                            dialogFragment.show(getFragmentManager(), dialogStr);
+                        }
+                    });
+                    countRadio++;
+                }
                 break;
             case "richtext":
                 richList.add(putJson(new JSONObject(), item));
@@ -660,54 +705,11 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 weightBt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(partsM, Utilities.RADIO_BUTTON, null, countMap, Utilities.MAP);
+                        dialogFragment = DialogFragment.newInstance(partsM, Utilities.RADIO_BUTTON_EDIT, null, countMap, Utilities.MAP);
                         dialogFragment.show(getFragmentManager(), dialogStr);
                     }
                 });
                 countMap++;
-                break;
-            case "schedule":
-                schList.add(putJson(new JSONObject(), item));
-                condition = item.getCondition();
-                final String[] partsS = condition.split("\\|");
-                mapLayout = new LinearLayout(getApplicationContext());
-                mapLayout.setOrientation(LinearLayout.HORIZONTAL);
-                layout.addView(mapLayout);
-                weightTv = new TextView(getApplicationContext());
-                weightTv.setText(item.getDisplay() + ":");
-                weightTv.setGravity(Gravity.CENTER_VERTICAL);
-                weightTv.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                weightTv.setTextSize(20);
-                params = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        3.0f
-                );
-                weightTv.setLayoutParams(params);
-                weightBt = new Button(getApplicationContext());
-                weightBt.setText("展開");
-                params = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        1.0f
-                );
-                weightBt.setLayoutParams(params);
-                sch = new TextView(getApplicationContext());
-                sch.setTextSize(20);
-                sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
-                sch.setText(item.getValue());
-                mapLayout.addView(weightTv);
-                mapLayout.addView(weightBt);
-                layout.addView(sch);
-                dialogStr = item.getDisplay();
-                weightBt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dialogFragment = DialogFragment.newInstance(partsS, Utilities.RADIO_BUTTON, null, countSch, Utilities.SCHEDULE);
-                        dialogFragment.show(getFragmentManager(), dialogStr);
-                    }
-                });
-                countSch++;
                 break;
             case "key":
                 counts--;
