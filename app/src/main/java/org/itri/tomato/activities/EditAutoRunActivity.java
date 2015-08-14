@@ -254,6 +254,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
 
     @Override
     public void onClick(View view) {
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         JSONArray jsonArray = new JSONArray();
         ArrayList<JSONObject> tmp = new ArrayList<>();
         tmp.add(jsonMapLat);
@@ -286,12 +287,15 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     String Params = Utilities.PARAMS + jsonPara;
                     Utilities.API_CONNECT(Action, Params, true);
                     if (Utilities.getResponseCode().equals("true")) {
+                        progressDialog.dismiss();
                         toast.setText("Edit Succeed");
                         toast.show();
+                        finish();
+                    } else {
+                        progressDialog.cancel();
                     }
                 }
             }).start();
-            finish();
         } catch (JSONException e) {
             e.printStackTrace();
         }

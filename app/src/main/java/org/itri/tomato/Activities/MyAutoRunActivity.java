@@ -8,18 +8,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.Typeface;
-import android.location.Geocoder;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -36,18 +32,14 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.nineoldandroids.view.ViewHelper;
 
-import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
-import org.itri.tomato.ListItem;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 import org.itri.tomato.WhenDoIconView;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class MyAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "MyAutoRunActivity";
@@ -219,6 +211,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 startActivity(intent);
                 break;
             case -1:
+                progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
                 JSONObject jsonObjectDelete = new JSONObject();
                 try {
                     jsonObjectDelete.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
@@ -239,19 +232,22 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                                         toast.show();
                                     }
                                 });
+                                progressDialog.dismiss();
+                                Intent intent = new Intent();
+                                intent.putExtra("from", TAG);
+                                intent.setClass(MyAutoRunActivity.this, AutoRunActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
                         }
                     }).start();
-                    intent = new Intent();
-                    intent.putExtra("from", TAG);
-                    intent.setClass(MyAutoRunActivity.this, AutoRunActivity.class);
-                    startActivity(intent);
-                    finish();
                 } catch (JSONException e) {
+                    progressDialog.cancel();
                     e.printStackTrace();
                 }
                 break;
             case R.id.run_btn:
+                progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
                 JSONObject jsonObjectRunNow = new JSONObject();
                 try {
                     jsonObjectRunNow.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
@@ -272,6 +268,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                                         toast.show();
                                     }
                                 });
+                                progressDialog.dismiss();
                             }
                         }
                     }).start();
@@ -287,6 +284,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
         new Thread(new Runnable() {
             @Override
             public void run() {
+                progressDialog = ProgressDialog.show(MyAutoRunActivity.this, "載入中", "請稍等......", false);
                 String Action = Utilities.ACTION + "SwitchUserAutoRunById";
                 JSONObject para = new JSONObject();
                 try {
@@ -299,6 +297,11 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 }
                 String Para = Utilities.PARAMS + para.toString();
                 Utilities.API_CONNECT(Action, Para, true);
+                if (Utilities.getResponseCode().equals("true")) {
+                    progressDialog.dismiss();
+                } else {
+                    progressDialog.cancel();
+                }
             }
         }).start();
     }

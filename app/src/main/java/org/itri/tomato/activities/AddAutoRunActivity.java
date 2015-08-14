@@ -885,6 +885,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onClick(View view) {
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         JSONArray jsonArray = new JSONArray();
         ArrayList<JSONObject> tmp = new ArrayList<>();
         tmp.add(jsonMapLat);
@@ -934,15 +935,17 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 toast.show();
                             }
                         });
+                        progressDialog.dismiss();
+                        Intent intent = new Intent();
+                        intent.putExtra("from", TAG);
+                        intent.setClass(AddAutoRunActivity.this, AutoRunActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
                 }
             }).start();
-            Intent intent = new Intent();
-            intent.putExtra("from", TAG);
-            intent.setClass(AddAutoRunActivity.this, AutoRunActivity.class);
-            startActivity(intent);
-            finish();
         } catch (JSONException e) {
+            progressDialog.cancel();
             e.printStackTrace();
         }
     }
