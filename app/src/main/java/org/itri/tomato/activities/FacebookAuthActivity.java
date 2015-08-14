@@ -91,11 +91,11 @@ public class FacebookAuthActivity extends AppCompatActivity {
         });
         profileTracker = new ProfileTracker() {
             @Override
-            public void stopTracking() {
-                super.stopTracking();
+            public void startTracking() {
+                super.startTracking();
                 name = Profile.getCurrentProfile().getName();
                 id = Profile.getCurrentProfile().getId();
-                Log.w("facebook", name + "," + id);
+                Log.w("facebook account", name + "," + id);
                 new Thread(sentToken).start();
             }
 
@@ -128,12 +128,18 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 para.put("serviceId", id);
                 para.put("connectorId", "1");
             } catch (JSONException e) {
-
+                Log.w("FACEBOOK", e.toString());
             }
+            Log.w("FACEBOOK", para.toString());
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, true);
             if (Utilities.getResponseCode().equals("true")) {
-                Toast.makeText(FacebookAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(FacebookAuthActivity.this, "OAuth finished", Toast.LENGTH_SHORT).show();
+                    }
+                });
             } else {
 
             }
