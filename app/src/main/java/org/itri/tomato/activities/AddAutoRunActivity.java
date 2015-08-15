@@ -44,10 +44,11 @@ import com.nineoldandroids.view.ViewHelper;
 
 import org.itri.tomato.AutoRunItem;
 import org.itri.tomato.DataRetrieveListener;
-import org.itri.tomato.fragments.DialogFragment;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 import org.itri.tomato.WhenDoIconView;
+import org.itri.tomato.fragments.DialogFragment;
+import org.itri.tomato.ui.ContentRower;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -313,6 +314,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             }
         }
     };
+
+    ContentRower cr;
 
     @Override
     public void onFinish() {

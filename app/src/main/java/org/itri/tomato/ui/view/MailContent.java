@@ -1,6 +1,7 @@
 package org.itri.tomato.ui.view;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -17,16 +18,17 @@ import org.json.JSONObject;
 /**
  * Created by austin on 15/8/12.
  */
-public class TextContent extends LinearLayout implements ContentRow {
-
+public class MailContent extends LinearLayout implements ContentRow {
 
     private TextView mTitleView;
     private EditText mDataView;
-    private String mContentType = Constants.TEXT_CONTENT;
+    private String mErrMsg;
+    private Context mContext;
+    private String mContentType = Constants.MAIL_CONTENT;
     private AutoRunItem mItem;
     private boolean mEditMode;
 
-    public TextContent(Context context) {
+    public MailContent(Context context) {
         super(context);
         init(context);
     }
@@ -37,13 +39,14 @@ public class TextContent extends LinearLayout implements ContentRow {
     }
 
     private void init(Context context) {
+        mContext = context;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.set_content_text, this);
-        mTitleView = (TextView) view.findViewById(R.id.set_content_text_title);
-        mDataView = (EditText) view.findViewById(R.id.set_content_text_data);
+        View view = layoutInflater.inflate(R.layout.set_content_mail, this);
+        mTitleView = (TextView) view.findViewById(R.id.set_content_mail_title);
+        mDataView = (EditText) view.findViewById(R.id.set_content_mail_data);
     }
 
-    public String getData() {
+    private String getData() {
         return mDataView.getText().toString();
     }
 
@@ -63,12 +66,22 @@ public class TextContent extends LinearLayout implements ContentRow {
 
     @Override
     public boolean validate() {
-        return false;
+        String data = getData();
+        if (TextUtils.isEmpty(data)) {
+            mErrMsg = "email require";
+            return false;
+        }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(data).matches()) {
+            mErrMsg = "email format error";
+            return false;
+        }
+        return true;
+
     }
 
     @Override
     public String errMessage() {
-        return mItem.getDisplay() + " need complete";
+        return mErrMsg;
     }
 
     @Override
@@ -84,7 +97,6 @@ public class TextContent extends LinearLayout implements ContentRow {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
+
 }
