@@ -405,6 +405,12 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     private void createView(AutoRunItem item) {
         String condition;
         LinearLayout.LayoutParams params;
+        TextView blank = new TextView(getApplicationContext());
+        params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                100
+        );
+        blank.setLayoutParams(params);
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
@@ -475,6 +481,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     region.setTextSize(20);
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
+                    layout.addView(blank);
                 } else {
                     if (item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
@@ -551,6 +558,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     }
                 });
                 countCheck++;
+                layout.addView(blank);
                 break;
             case "phone":
                 phoneList.add(putJson(new JSONObject(), item));
@@ -560,6 +568,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 phone = new EditText(getApplicationContext());
                 createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE, countPhone++);
+                layout.addView(blank);
                 break;
             case "email":
                 ++countEmail;
@@ -570,6 +579,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 email = new EditText(getApplicationContext());
                 createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, countEmail);
+                layout.addView(blank);
                 break;
             case "number":
                 numList.add(putJson(new JSONObject(), item));
@@ -579,6 +589,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 number = new EditText(getApplicationContext());
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
+                layout.addView(blank);
                 break;
             case "pass":
                 passList.add(putJson(new JSONObject(), item));
@@ -588,6 +599,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 pass = new EditText(getApplicationContext());
                 createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD, countPass++);
+                layout.addView(blank);
                 break;
             case "text":
                 textList.add(putJson(new JSONObject(), item));
@@ -597,6 +609,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 text = new EditText(getApplicationContext());
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
+                layout.addView(blank);
                 break;
             case "radio":
                 if (item.getOption().equals("Schedule")) {
@@ -641,6 +654,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         }
                     });
                     countSch++;
+                    layout.addView(blank);
                 } else {
                     radioList.add(putJson(new JSONObject(), item));
                     condition = item.getCondition();
@@ -683,6 +697,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         }
                     });
                     countRadio++;
+                    layout.addView(blank);
                 }
                 break;
             case "richtext":
@@ -694,6 +709,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 rich = new EditText(getApplicationContext());
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich++);
+                layout.addView(blank);
                 break;
             case "mappingtext":
                 mappingList.add(putJson(new JSONObject(), item));
@@ -741,6 +757,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     }
                 });
                 countMap++;
+                layout.addView(blank);
                 break;
             case "key":
                 counts--;

@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
+import org.itri.tomato.activities.AutoRunActivity;
 import org.itri.tomato.activities.GCMTestActivity;
 import org.itri.tomato.activities.LoginActivity;
 import org.itri.tomato.R;
+import org.itri.tomato.activities.MyAutoRunActivity;
 
 public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerService {
     private static final String TAG = "GcmListenerService";
@@ -42,8 +44,8 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
     }
 
     private void sendNotification(String message, String from) {
-        Intent intent = new Intent(this, GCMTestActivity.class);
-        intent.putExtra("from", from);
+        Intent intent = new Intent(this, AutoRunActivity.class);
+        intent.putExtra("from", "MyAutoRunActivity");
         intent.putExtra("message", message);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -63,7 +65,7 @@ public class GcmListenerService extends com.google.android.gms.gcm.GcmListenerSe
                 .setSound(defaultSoundUri)
                 .setAutoCancel(true)
                 .setContentIntent(resultPendingIntent)
-//                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .build();
 
 

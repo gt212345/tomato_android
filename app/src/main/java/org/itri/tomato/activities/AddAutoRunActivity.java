@@ -461,6 +461,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private void createView(AutoRunItem item) {
         String condition;
         LinearLayout.LayoutParams params;
+        TextView blank = new TextView(getApplicationContext());
+        params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                100
+        );
+        blank.setLayoutParams(params);
         switch (item.getConditionType()) {
             case "map":
                 if (!isMapCreated) {
@@ -519,6 +525,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     region.setTextSize(20);
                     region.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     isMapCreated = true;
+                    layout.addView(blank);
                 } else {
                     if (item.getOption().equals("sp_lat") || item.getOption().equals("latitude")) {
                         jsonMapLat = new JSONObject();
@@ -576,6 +583,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     }
                 });
                 countCheck++;
+                layout.addView(blank);
                 break;
             case "phone":
                 phoneList.add(putJson(new JSONObject(), item));
@@ -585,6 +593,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 phone = new EditText(getApplicationContext());
                 createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE, countPhone++);
+                layout.addView(blank);
                 break;
             case "email":
                 ++countEmail;
@@ -595,6 +604,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 email = new EditText(getApplicationContext());
                 createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, countEmail);
+                layout.addView(blank);
                 break;
             case "number":
                 numList.add(putJson(new JSONObject(), item));
@@ -604,6 +614,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 number = new EditText(getApplicationContext());
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
+                layout.addView(blank);
                 break;
             case "pass":
                 passList.add(putJson(new JSONObject(), item));
@@ -613,6 +624,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 pass = new EditText(getApplicationContext());
                 createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD, countPass++);
+                layout.addView(blank);
                 break;
             case "text":
                 textList.add(putJson(new JSONObject(), item));
@@ -622,6 +634,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 text = new EditText(getApplicationContext());
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
+                layout.addView(blank);
                 break;
             case "radio":
                 if (item.getOption().equals("Schedule")) {
@@ -663,6 +676,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         }
                     });
                     countSch++;
+                    layout.addView(blank);
                     break;
                 } else {
                     radioList.add(putJson(new JSONObject(), item));
@@ -703,6 +717,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         }
                     });
                     countRadio++;
+                    layout.addView(blank);
                     break;
                 }
             case "richtext":
@@ -715,6 +730,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 rich = new EditText(getApplicationContext());
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich);
                 countRich++;
+                layout.addView(blank);
                 break;
             case "arraytext":
                 arrayList.add(putJson(new JSONObject(), item));
@@ -726,6 +742,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 array = new EditText(getApplicationContext());
                 createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_NORMAL, countArray);
                 countArray++;
+                layout.addView(blank);
                 break;
             case "mappingtext":
                 mappingList.add(putJson(new JSONObject(), item));
@@ -770,6 +787,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     }
                 });
                 countMap++;
+                layout.addView(blank);
                 break;
             case "key":
                 counts--;

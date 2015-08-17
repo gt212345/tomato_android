@@ -134,7 +134,6 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                             } else {
                                 able.add(false);
                             }
-                            Log.w("wheniconid", jsonArray.getJSONObject(i).getString("whenIconId"));
                             listItems.add(new ListItem(bitmaps.get(Integer.parseInt(jsonArray.getJSONObject(i).getString("whenIconId")) - 1), bitmaps.get(Integer.parseInt(jsonArray.getJSONObject(i).getString("doIconId")) -1)
                                     , jsonArray.getJSONObject(i).getString("autorunDesc"), true, true, able.get(i)));
                             autoRunIDs.add(jsonArray.getJSONObject(i).getInt("userautorunId"));
