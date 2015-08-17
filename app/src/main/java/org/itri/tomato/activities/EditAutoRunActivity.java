@@ -66,11 +66,11 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     Geocoder geocoder;
     List<Address> addressList;
     String dialogStr;
-    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, mappingList, schList;
-    EditText phone, text, number, pass, email, rich;
+    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, mappingList, schList, arrayList;
+    EditText phone, text, number, pass, email, rich, array;
     LocationManager manager;
     Toolbar toolbar;
-    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countMap, countSch = 0;
+    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countMap, countSch = 0, countArray = 0;
     double latD = 0;
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng;
@@ -358,46 +358,48 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             }
             String Params = Utilities.PARAMS + para.toString();
             JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, EditAutoRunActivity.this, true);
-            try {
-                JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
-                description = jsonRes.getString("autorunDesc");
-                id = jsonRes.getString("autorunId");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setTitle("Edit AutoRun");
+            if (Utilities.getResponseCode().equals("true")) {
+                try {
+                    JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
+                    description = jsonRes.getString("autorunDesc");
+                    id = jsonRes.getString("autorunId");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            setTitle("Edit AutoRun");
+                        }
+                    });
+                    JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
+                    JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
+                    for (int i = 0; i < jsonWhen.length(); i++) {
+                        autoRunItemsWhen.add(new AutoRunItem(
+                                jsonWhen.getJSONObject(i).getString("agentId"),
+                                jsonWhen.getJSONObject(i).getString("display"),
+                                jsonWhen.getJSONObject(i).getString("option"),
+                                jsonWhen.getJSONObject(i).getString("conditionType"),
+                                jsonWhen.getJSONObject(i).getString("condition"),
+                                jsonWhen.getJSONObject(i).getString("agent_parameter"),
+                                jsonWhen.getJSONObject(i).getString("value")
+                        ));
                     }
-                });
-                JSONObject jsonPara = new JSONObject(jsonRes.getString("autorunPara"));
-                JSONArray jsonWhen = new JSONArray(jsonPara.getString("when"));
-                for (int i = 0; i < jsonWhen.length(); i++) {
-                    autoRunItemsWhen.add(new AutoRunItem(
-                            jsonWhen.getJSONObject(i).getString("agentId"),
-                            jsonWhen.getJSONObject(i).getString("display"),
-                            jsonWhen.getJSONObject(i).getString("option"),
-                            jsonWhen.getJSONObject(i).getString("conditionType"),
-                            jsonWhen.getJSONObject(i).getString("condition"),
-                            jsonWhen.getJSONObject(i).getString("agent_parameter"),
-                            jsonWhen.getJSONObject(i).getString("value")
-                    ));
+                    JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
+                    for (int i = 0; i < jsonDo.length(); i++) {
+                        autoRunItemsDo.add(new AutoRunItem(
+                                jsonDo.getJSONObject(i).getString("agentId"),
+                                jsonDo.getJSONObject(i).getString("display"),
+                                jsonDo.getJSONObject(i).getString("option"),
+                                jsonDo.getJSONObject(i).getString("conditionType"),
+                                jsonDo.getJSONObject(i).getString("condition"),
+                                jsonDo.getJSONObject(i).getString("agent_parameter"),
+                                jsonDo.getJSONObject(i).getString("value")
+                        ));
+                    }
+                    counts = jsonWhen.length() + jsonDo.length();
+                    dataRetrieveListener.onFinish();
+                } catch (JSONException e) {
+                    progressDialog.cancel();
+                    Log.w("Json", e.toString());
                 }
-                JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
-                for (int i = 0; i < jsonDo.length(); i++) {
-                    autoRunItemsDo.add(new AutoRunItem(
-                            jsonDo.getJSONObject(i).getString("agentId"),
-                            jsonDo.getJSONObject(i).getString("display"),
-                            jsonDo.getJSONObject(i).getString("option"),
-                            jsonDo.getJSONObject(i).getString("conditionType"),
-                            jsonDo.getJSONObject(i).getString("condition"),
-                            jsonDo.getJSONObject(i).getString("agent_parameter"),
-                            jsonDo.getJSONObject(i).getString("value")
-                    ));
-                }
-                counts = jsonWhen.length() + jsonDo.length();
-                dataRetrieveListener.onFinish();
-            } catch (JSONException e) {
-                progressDialog.cancel();
-                Log.w("Json", e.toString());
             }
         }
     };
@@ -711,6 +713,18 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich++);
                 layout.addView(blank);
                 break;
+            case "arraytext":
+                arrayList.add(putJson(new JSONObject(), item));
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        3.0f
+                );
+                array = new EditText(getApplicationContext());
+                createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_NORMAL, countArray);
+                countArray++;
+                layout.addView(blank);
+                break;
             case "mappingtext":
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
@@ -759,6 +773,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 countMap++;
                 layout.addView(blank);
                 break;
+
             case "key":
                 counts--;
                 break;
@@ -836,6 +851,19 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         try {
                             richList.get(num).put("value", editText.getText().toString());
                             richList.get(num).put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case InputType.TYPE_TEXT_VARIATION_NORMAL:
+                        try {
+                            String[] parts = editText.getText().toString().split(",");
+                            JSONArray array = new JSONArray();
+                            for (int i = 0; i < parts.length; i++) {
+                                array.put(parts[i]);
+                            }
+                            arrayList.get(num).put("value", array);
+                            arrayList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

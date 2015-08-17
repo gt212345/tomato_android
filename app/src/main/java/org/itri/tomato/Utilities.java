@@ -1,5 +1,6 @@
 package org.itri.tomato;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -56,9 +57,15 @@ public class Utilities {
 
     private static String responseCode;
 
-    public static JSONObject API_CONNECT(String Action, String Params,Context context, boolean hasInput) {
+    public static JSONObject API_CONNECT(String Action, String Params,final Context context, boolean hasInput) {
         if (!isOnline(context)){
-//            Toast.makeText(context, "No Network Connection", Toast.LENGTH_SHORT).show();
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "No Network Connection", Toast.LENGTH_SHORT).show();
+                }
+            });
+            ((Activity)context).finish();
             responseCode = "noResponse";
             return null;
         }

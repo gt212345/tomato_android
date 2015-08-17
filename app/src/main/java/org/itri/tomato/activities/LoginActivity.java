@@ -205,14 +205,6 @@ public class LoginActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                } else if(Utilities.getResponseCode().equals("noResponse")) {
-                    progressDialog.dismiss();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(LoginActivity.this, "無網路連線", Toast.LENGTH_SHORT).show();
-                        }
-                    });
                 } else {
                     progressDialog.cancel();
                 }

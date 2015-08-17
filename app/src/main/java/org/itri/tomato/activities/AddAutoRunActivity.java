@@ -238,12 +238,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 if (!addressList.isEmpty()) {
                     region.setText(addressList.get(0).getAddressLine(0));
                 }
+            } catch (IOException e) {
+                Log.w("Region", e.toString());
+            }
+            try {
                 jsonMapLat.put("value", String.valueOf(latD));
                 jsonMapLat.put("agent_parameter", "options");
                 jsonMapLng.put("value", String.valueOf(lngD));
                 jsonMapLng.put("agent_parameter", "options");
-            } catch (IOException e) {
-                Log.w("Region", e.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -892,7 +894,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         break;
                     case InputType.TYPE_TEXT_VARIATION_NORMAL:
                         try {
-                            arrayList.get(num).put("value", editText.getText().toString());
+                            String[] parts = editText.getText().toString().split(",");
+                            JSONArray array = new JSONArray();
+                            for (int i = 0; i < parts.length; i++) {
+                                array.put(parts[i]);
+                            }
+                            arrayList.get(num).put("value", array);
                             arrayList.get(num).put("agent_parameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
