@@ -141,7 +141,23 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 map.setText("");
                 map.append(string);
                 try {
-                    mappingList.get(num - 1).put("value", string);
+                    switch (string) {
+                        case "low":
+                            mappingList.get(num - 1).put("value", 0);
+                            break;
+                        case "medium":
+                            mappingList.get(num - 1).put("value", 1);
+                            break;
+                        case "high":
+                            mappingList.get(num - 1).put("value", 2);
+                            break;
+                        case "very high":
+                            mappingList.get(num - 1).put("value", 3);
+                            break;
+                        case "danger":
+                            mappingList.get(num - 1).put("value", 4);
+                            break;
+                    }
                     mappingList.get(num - 1).put("agent_parameter", "options");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -268,6 +284,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         iterateList(tmp, richList);
         iterateList(tmp, numList);
         iterateList(tmp, schList);
+        iterateList(tmp, mappingList);
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
@@ -674,7 +691,11 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             case "mappingtext":
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
-                final String[] partsM = condition.split("\\|");
+                String[] temp = condition.split("\\|");
+                for (int i = 0; i < temp.length; i++) {
+                    temp[i] = temp[i].substring(2);
+                }
+                final String[] partsM = temp;
                 mapLayout = new LinearLayout(getApplicationContext());
                 mapLayout.setOrientation(LinearLayout.HORIZONTAL);
                 layout.addView(mapLayout);
@@ -698,6 +719,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 );
                 weightBt.setLayoutParams(params);
                 map = new TextView(getApplicationContext());
+                map.setTextSize(20);
+                map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                map.setText(item.getValue());
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
                 layout.addView(map);

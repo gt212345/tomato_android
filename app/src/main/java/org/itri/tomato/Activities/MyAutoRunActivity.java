@@ -2,6 +2,7 @@ package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -221,40 +223,49 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 startActivity(intent);
                 break;
             case -1:
-                progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
-                JSONObject jsonObjectDelete = new JSONObject();
-                try {
-                    jsonObjectDelete.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
-                    jsonObjectDelete.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
-                    jsonObjectDelete.put("userautorunId", id);
-                    jsonPara = jsonObjectDelete.toString();
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            String Action = Utilities.ACTION + "DelUserAutoRunById";
-                            String Params = Utilities.PARAMS + jsonPara;
-                            Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
-                            if (Utilities.getResponseCode().equals("true")) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        toast.setText("AutoRun Deleted");
-                                        toast.show();
-                                    }
-                                });
-                                progressDialog.dismiss();
-                                Intent intent = new Intent();
-                                intent.putExtra("from", TAG);
-                                intent.setClass(MyAutoRunActivity.this, AutoRunActivity.class);
-                                startActivity(intent);
-                                finish();
+                new AlertDialog.Builder(MyAutoRunActivity.this)
+                        .setMessage("Are you sure you want to delete?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                progressDialog = ProgressDialog.show(MyAutoRunActivity.this, "載入中", "請稍等......", false);
+                                JSONObject jsonObjectDelete = new JSONObject();
+                                try {
+                                    jsonObjectDelete.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
+                                    jsonObjectDelete.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
+                                    jsonObjectDelete.put("userautorunId", id);
+                                    jsonPara = jsonObjectDelete.toString();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String Action = Utilities.ACTION + "DelUserAutoRunById";
+                                            String Params = Utilities.PARAMS + jsonPara;
+                                            Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
+                                            if (Utilities.getResponseCode().equals("true")) {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        toast.setText("AutoRun Deleted");
+                                                        toast.show();
+                                                    }
+                                                });
+                                                progressDialog.dismiss();
+                                                Intent intent = new Intent();
+                                                intent.putExtra("from", TAG);
+                                                intent.setClass(MyAutoRunActivity.this, AutoRunActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        }
+                                    }).start();
+                                } catch (JSONException e) {
+                                    progressDialog.cancel();
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    }).start();
-                } catch (JSONException e) {
-                    progressDialog.cancel();
-                    e.printStackTrace();
-                }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
                 break;
             case R.id.run_btn:
                 progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
