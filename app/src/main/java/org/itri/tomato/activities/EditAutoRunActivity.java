@@ -310,6 +310,13 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         toast.show();
                         finish();
                     } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                toast.setText("Server failed");
+                                toast.show();
+                            }
+                        });
                         progressDialog.cancel();
                     }
                 }

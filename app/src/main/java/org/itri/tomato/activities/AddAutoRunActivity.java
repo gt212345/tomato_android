@@ -53,6 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,11 +93,11 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     Geocoder geocoder;
     List<Address> addressList;
     String dialogStr;
-    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, schList, mappingList;
-    EditText phone, text, number, pass, email, rich;
+    ArrayList<JSONObject> checkList, radioList, phoneList, emailList, textList, numList, passList, richList, schList, mappingList, arrayList;
+    EditText phone, text, number, pass, email, rich, array;
     LocationManager manager;
     Toolbar toolbar;
-    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countSch = 0, countMap = 0;
+    int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countSch = 0, countMap = 0, countArray = 0;
     double latD = 0;
     double lngD = 0;
     JSONObject jsonMapLat, jsonMapLng;
@@ -715,6 +716,17 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich);
                 countRich++;
                 break;
+            case "arraytext":
+                arrayList.add(putJson(new JSONObject(), item));
+                params = new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        3.0f
+                );
+                array = new EditText(getApplicationContext());
+                createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_NORMAL, countArray);
+                countArray++;
+                break;
             case "mappingtext":
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
@@ -860,6 +872,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             e.printStackTrace();
                         }
                         break;
+                    case InputType.TYPE_TEXT_VARIATION_NORMAL:
+                        try {
+                            arrayList.get(num).put("value", editText.getText().toString());
+                            arrayList.get(num).put("agent_parameter", "options");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
             }
         });
@@ -873,7 +893,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     1.0f
             );
             richBt.setLayoutParams(params);
-            richBt.setText("提示");
+            richBt.setText("輸入提示");
             orientLayout.addView(editText);
             orientLayout.addView(richBt);
             layout.addView(orientLayout);
@@ -942,7 +962,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             jsonObject.put("autorunId", id);
             jsonObject.put("autorunPara", jsonArray);
             jsonPara = jsonObject.toString();
-            Log.i("Add para:", jsonPara.toString());
+            Log.w("Add para:", jsonPara.toString());
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -963,6 +983,15 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         intent.setClass(AddAutoRunActivity.this, AutoRunActivity.class);
                         startActivity(intent);
                         finish();
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                toast.setText("Server failed");
+                                toast.show();
+                            }
+                        });
+                        progressDialog.cancel();
                     }
                 }
             }).start();
@@ -1009,6 +1038,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         passList = new ArrayList<>();
         richList = new ArrayList<>();
         schList = new ArrayList<>();
+        arrayList = new ArrayList<>();
     }
 
     void createIconList() {
