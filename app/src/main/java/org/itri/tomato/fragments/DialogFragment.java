@@ -3,7 +3,10 @@ package org.itri.tomato.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -11,17 +14,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import org.itri.tomato.DataRetrieveListener;
 import org.itri.tomato.activities.AddAutoRunActivity;
+import org.itri.tomato.activities.DropboxAuthActivity;
 import org.itri.tomato.activities.EditAutoRunActivity;
 import org.itri.tomato.R;
 import org.itri.tomato.Utilities;
 
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -35,12 +46,17 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     String string;
     int isMap;
     RadioGroup radioGroup;
+    ProgressBar progressBar;
     static Fragment fragment;
     private static final int CHECK_BOX = 1;
     private static final int RADIO_BUTTON = 2;
     private static final int SEARCH_DIALOG = 3;
     private static final int CHECK_BOX_EDIT = 4;
     private static final int RADIO_BUTTON_EDIT = 5;
+    private static final int DROP_BOX = 6;
+    private final static String AUTH_URL = "https://www.dropbox.com/1/oauth/authorize?";
+    String oauth = "oauth_token=";
+    String oauthCallback = "&oauth_callback=";
 
 
     public interface CheckBoxListener {
@@ -50,7 +66,6 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     public interface RadioButtonListener {
         void onRadioFinished(String String, int num, int isMap);
     }
-
 
     public static DialogFragment newInstance(String[] parts, int type, Fragment f, int num, int isMap) {
         DialogFragment dialogFragment = new DialogFragment();
@@ -68,6 +83,7 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         int counts = getArguments().getStringArray("parts").length;
         int type = getArguments().getInt("type");
+        String[] parts = getArguments().getStringArray("parts");
         isMap = getArguments().getInt("isMap");
         num = getArguments().getInt("num");
         ArrayList<String> names = new ArrayList<>();
@@ -75,10 +91,11 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
         for (String tmp : getArguments().getStringArray("parts")) {
             names.add(tmp);
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.fragment_dialog, null);
-        LinearLayout layout = (LinearLayout) view.findViewById(R.id.layout);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        final LinearLayout layout = (LinearLayout) view.findViewById(R.id.layout);
         switch (type) {
             case CHECK_BOX:
                 for (int i = 0; i < counts; i++) {
@@ -172,6 +189,36 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                     }
                 }).setNegativeButton("Cancel", null);
                 break;
+            case DROP_BOX:
+                String url = AUTH_URL + "oauth_token=" + parts[0] + "&oauth_callback=";
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setMax(100);
+                WebView webView = new WebView(getActivity());
+                webView.requestFocus();
+                webView.setBackgroundColor(Color.TRANSPARENT);
+                webView.getSettings().setDomStorageEnabled(true);
+                webView.getSettings().setJavaScriptEnabled(true);
+                webView.setWebViewClient(mWebViewClient);
+                webView.setWebChromeClient(new WebChromeClient() {
+                    @Override
+                    public void onProgressChanged(WebView view, int newProgress) {
+                        super.onProgressChanged(view, newProgress);
+                        progressBar.setProgress(newProgress);
+                        if (newProgress == 100) {
+                            progressBar.setVisibility(View.GONE);
+                        }
+                    }
+                });
+                webView.loadUrl(url);
+                layout.addView(webView);
+                builder.setView(view).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        DataRetrieveListener listener = (DropboxAuthActivity) getActivity();
+                        listener.onFinish();
+                    }
+                });
+                break;
         }
         return builder.create();
     }
@@ -199,5 +246,24 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
             checks.remove(compoundButton.getText().toString());
         }
     }
+
+    WebViewClient mWebViewClient = new WebViewClient() {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            Log.w("onReceive", errorCode + failingUrl + description);
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            // this method will proceed your url however if certification issues are there or not
+            handler.proceed();
+        }
+    };
 
 }

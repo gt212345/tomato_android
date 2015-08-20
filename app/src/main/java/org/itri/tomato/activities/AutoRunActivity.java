@@ -148,7 +148,7 @@ public class AutoRunActivity extends AppCompatActivity implements AdapterView.On
         drawerLayout.setDrawerListener(toggle);
         fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        if ((savedInstanceState == null && getIntent().getExtras().getString("from").equals("AddAutoRunActivity"))
+        if ((savedInstanceState == null && getIntent().getExtras().containsKey("from") && getIntent().getExtras().getString("from").equals("AddAutoRunActivity"))
                 || getIntent().getExtras().getString("from").equals("MyAutoRunActivity")) {
             fragment = new MyAutoRunListFragment();
             transaction.replace(R.id.container, fragment);
