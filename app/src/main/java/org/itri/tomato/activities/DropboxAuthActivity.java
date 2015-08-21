@@ -157,7 +157,6 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                 while ((line = bufferedReader.readLine()) != null) {
                     result.append(line);
                 }
-                Log.i("Token", result.toString());
                 String[] parts = result.toString().split("&");
                 secret = (parts[0].split("="))[1];
                 token = (parts[1].split("="))[1];

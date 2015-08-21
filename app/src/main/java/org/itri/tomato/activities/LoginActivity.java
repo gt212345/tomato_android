@@ -184,6 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                         sharedPreferences.edit().putString(Utilities.USER_ID, jsonObjectTmp.get("uid").toString()).apply();
                         sharedPreferences.edit().putString(Utilities.USER_TOKEN, jsonObjectTmp.get("token").toString()).apply();
                         Intent intent = new Intent();
+                        intent.putExtra("from", TAG);
                         intent.setClass(LoginActivity.this, AutoRunActivity.class);
                         startActivity(intent);
                         progressDialog.dismiss();

@@ -41,6 +41,7 @@ import org.itri.tomato.WhenDoIconView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MyAutoRunActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, DataRetrieveListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -385,11 +386,12 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 e.printStackTrace();
             }
             String Params = Utilities.PARAMS + para.toString();
-            autoRunItem = Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
+            JSONObject jsonTmp = Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 try {
-                    whenIconId = autoRunItem.getInt("whenIconId");
-                    doIconId = autoRunItem.getInt("doIconId");
+                    autoRunItem = new JSONObject(jsonTmp.getString("autorun"));
+                    whenIconId = Integer.parseInt(autoRunItem.getString("whenIconId"));
+                    doIconId = Integer.parseInt(autoRunItem.getString("doIconId"));
                     description = autoRunItem.getString("autorunDesc");
                     runOnUiThread(new Runnable() {
                         @Override

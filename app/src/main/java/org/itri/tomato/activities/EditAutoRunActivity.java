@@ -378,7 +378,8 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                                 jsonWhen.getJSONObject(i).getString("conditionType"),
                                 jsonWhen.getJSONObject(i).getString("condition"),
                                 jsonWhen.getJSONObject(i).getString("agent_parameter"),
-                                jsonWhen.getJSONObject(i).getString("value")
+                                jsonWhen.getJSONObject(i).getString("value"),
+                                jsonWhen.getJSONObject(i).getInt("default_value")
                         ));
                     }
                     JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
@@ -390,7 +391,8 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                                 jsonDo.getJSONObject(i).getString("conditionType"),
                                 jsonDo.getJSONObject(i).getString("condition"),
                                 jsonDo.getJSONObject(i).getString("agent_parameter"),
-                                jsonDo.getJSONObject(i).getString("value")
+                                jsonDo.getJSONObject(i).getString("value"),
+                                jsonDo.getJSONObject(i).getInt("default_value")
                         ));
                     }
                     counts = jsonWhen.length() + jsonDo.length();

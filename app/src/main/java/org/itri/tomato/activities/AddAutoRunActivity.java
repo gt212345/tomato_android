@@ -292,7 +292,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonWhen.getJSONObject(i).getString("conditionType"),
                                 jsonWhen.getJSONObject(i).getString("condition"),
                                 jsonWhen.getJSONObject(i).getString("agent_parameter"),
-                                jsonWhen.getJSONObject(i).getString("value")
+                                jsonWhen.getJSONObject(i).getString("value"),
+                                jsonWhen.getJSONObject(i).getInt("default_value")
                         ));
                     }
                     JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
@@ -304,7 +305,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonDo.getJSONObject(i).getString("conditionType"),
                                 jsonDo.getJSONObject(i).getString("condition"),
                                 jsonDo.getJSONObject(i).getString("agent_parameter"),
-                                jsonDo.getJSONObject(i).getString("value")
+                                jsonDo.getJSONObject(i).getString("value"),
+                                jsonDo.getJSONObject(i).getInt("default_value")
                         ));
                     }
                     counts = jsonWhen.length() + jsonDo.length();
@@ -313,6 +315,13 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     progressDialog.cancel();
                     Log.w("Json", e.toString());
                 }
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.cancel();
+                    }
+                });
             }
         }
     };
@@ -572,6 +581,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 weightBt.setLayoutParams(params);
                 check = new TextView(getApplicationContext());
+                setIfHasValue(item, check, 1);
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
                 layout.addView(check);
@@ -593,6 +603,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 phone = new EditText(getApplicationContext());
+                setIfHasValue(item, phone, 0);
                 createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE, countPhone++);
                 layout.addView(blank);
                 break;
@@ -604,6 +615,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 email = new EditText(getApplicationContext());
+                setIfHasValue(item, email, 0);
                 createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, countEmail);
                 layout.addView(blank);
                 break;
@@ -614,6 +626,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 number = new EditText(getApplicationContext());
+                setIfHasValue(item, number, 0);
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
                 layout.addView(blank);
                 break;
@@ -624,6 +637,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 pass = new EditText(getApplicationContext());
+                setIfHasValue(item, pass, 0);
                 createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD, countPass++);
                 layout.addView(blank);
                 break;
@@ -634,6 +648,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 text = new EditText(getApplicationContext());
+                setIfHasValue(item, text, 0);
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
                 layout.addView(blank);
                 break;
@@ -665,6 +680,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     );
                     weightBt.setLayoutParams(params);
                     sch = new TextView(getApplicationContext());
+                    setIfHasValue(item, sch, 1);
                     mapLayout.addView(weightTv);
                     mapLayout.addView(weightBt);
                     layout.addView(sch);
@@ -706,6 +722,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     );
                     weightBt.setLayoutParams(params);
                     radio = new TextView(getApplicationContext());
+                    setIfHasValue(item, radio, 1);
                     mapLayout.addView(weightTv);
                     mapLayout.addView(weightBt);
                     layout.addView(radio);
@@ -729,6 +746,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         3.0f
                 );
                 rich = new EditText(getApplicationContext());
+                setIfHasValue(item, rich, 1);
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich);
                 countRich++;
                 layout.addView(blank);
@@ -741,6 +759,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         3.0f
                 );
                 array = new EditText(getApplicationContext());
+                setIfHasValue(item, array, 0);
                 createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_NORMAL, countArray);
                 countArray++;
                 layout.addView(blank);
@@ -776,6 +795,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 weightBt.setLayoutParams(params);
                 map = new TextView(getApplicationContext());
+                setIfHasValue(item, map, 1);
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
                 layout.addView(map);
@@ -1047,6 +1067,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private void iterateList(ArrayList<JSONObject> main, ArrayList<JSONObject> sub) {
         for (JSONObject object : sub) {
             main.add(object);
+        }
+    }
+
+    private void setIfHasValue (AutoRunItem item, View view, int type) {
+        if (item.isHasValue() == 1) {
+            switch (type) {
+                case 0:
+                    ((EditText) view).setText(item.getValue());
+                    break;
+                case 1:
+                    ((TextView) view).setText(item.getValue());
+                    break;
+            }
         }
     }
 

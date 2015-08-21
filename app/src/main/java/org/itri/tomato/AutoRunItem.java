@@ -11,9 +11,10 @@ public class AutoRunItem {
     String condition;
     String agent_parameter;
     String value;
+    int hasValue;
 
 
-    public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agent_parameter, String value) {
+    public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agent_parameter, String value, int hasValue) {
         this.agentId = agentId;
         this.display = display;
         this.option = option;
@@ -21,6 +22,7 @@ public class AutoRunItem {
         this.condition = condition;
         this.agent_parameter = agent_parameter;
         this.value = value;
+        this.hasValue = hasValue;
     }
 
     public void setValue(String value) {
@@ -53,5 +55,9 @@ public class AutoRunItem {
 
     public String getValue() {
         return value;
+    }
+
+    public int isHasValue() {
+        return hasValue;
     }
 }
