@@ -51,7 +51,7 @@ public class Utilities {
      */
     public static final String ACTION = "&action=";
     public static final String PARAMS = "&params=";
-    public static final String API_URL = "http://210.61.209.197/TomatoX/tomato_api.php";
+    public static final String API_URL = "http://113.196.140.131/TomatoX2/index.php/API_Operations/tomatox_api";
     public static final String SENDER_ID = "948528150442";
     public static final String TYPE = "android";
 
@@ -91,13 +91,13 @@ public class Utilities {
                 }
                 inputStream.close();
                 JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-                JSONObject response = new JSONObject(jsonObject.getString("response"));
-                responseCode = response.getString("status");
+                JSONObject jsonResponse = new JSONObject(jsonObject.getJSONObject("response").toString());
+                responseCode = jsonResponse.getString("status");
                 if (responseCode.equals("true")) {
                     Log.i(Action, responseCode);
-                    return jsonObject;
+                    return jsonResponse;
                 } else {
-                    Log.w(Action, "failed");
+                    Log.w(Action, "failed, errorMsg: " + jsonResponse.getString("errormsg"));
                     return null;
                 }
             } else {

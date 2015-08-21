@@ -1,6 +1,7 @@
 package org.itri.tomato.activities;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -38,27 +40,30 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class DropboxAuthActivity extends AppCompatActivity implements View.OnClickListener, DataRetrieveListener {
+
     /**
      * OAuth 1.0 was officially deprecated on April 20, 2012, and is no longer supported.
      * Why the fuck do we still use this in 2015?
      */
+    private final static String APP_KEY = "ta5mth4nhj2qckg";
+    private final static String APP_SECRET = "f0j6ij3f4e4uxsu";
     private final static String REQUEST_TOKEN_URL = "https://api.dropbox.com/1/oauth/request_token";
     private final static String AUTH_URL = "https://www.dropbox.com/1/oauth/authorize?";
     private final static String ACCESS_TOKEN = "https://api.dropbox.com/1/oauth/access_token";
-    private static final int DROP_BOX = 6;
 
+    private static final int DROP_BOX = 6;
     String oauth = "oauth_token=";
     String oauthCallback = "&oauth_callback=";
     String token;
     String secret;
+    String accessSecrert;
+    String accessToken;
 
-    DataRetrieveListener listener;
-
+    String uid;
     /**
      * For DropBox API, no longer in used.
      */
-    private final static String APP_KEY = "v6muq2c27l4zfsi";
-    private final static String APP_SECRET = "dgs7aafbchna97t";
+    DataRetrieveListener listener;
     private DropboxAPI<AndroidAuthSession> mDBApi;
     private static String db_access_token;
     SharedPreferences sharedPreferences;
@@ -169,7 +174,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
         @Override
         public void run() {
             try {
-                URL request = new URL(REQUEST_TOKEN_URL);
+                URL request = new URL(ACCESS_TOKEN);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) request.openConnection();
                 httpURLConnection.setUseCaches(false);
                 httpURLConnection.setDoOutput(true);
@@ -189,7 +194,12 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                 while ((line = bufferedReader.readLine()) != null) {
                     result.append(line);
                 }
+                String[] parts = result.toString().split("&");
+                accessSecrert = (parts[0].split("="))[1];
+                accessToken = (parts[1].split("="))[1];
+                uid = (parts[2].split("="))[1];
                 Log.i("Auth token", result.toString());
+                new Thread(sentToken).start();
             } catch (MalformedURLException e) {
                 Log.w("Mal", e.toString());
             } catch (IOException e) {
@@ -207,15 +217,15 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
     Runnable sentToken = new Runnable() {
         @Override
         public void run() {
-            String Action = Utilities.ACTION + "PostConnectorTokenById";
+            String Action = Utilities.ACTION + "PostUserConnectorTokenById";
             JSONObject para = new JSONObject();
             try {
                 para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
                 para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
-                para.put("serviceToken", db_access_token);
-                para.put("serviceKey", "");
+                para.put("serviceToken", accessToken);
+                para.put("serviceKey", accessSecrert);
                 para.put("serviceUserName", "");
-                para.put("serviceId", "");
+                para.put("serviceUid", uid);
                 para.put("connectorId", "2");
             } catch (JSONException e) {
             }
@@ -226,7 +236,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                     @Override
                     public void run() {
                         isEnable = true;
-                        loginButtonDb.setText("Disable");
+//                        loginButtonDb.setText("Disable");
                     }
                 });
             }
@@ -237,4 +247,5 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
     public void onFinish() {
         new Thread(authToken).start();
     }
+
 }

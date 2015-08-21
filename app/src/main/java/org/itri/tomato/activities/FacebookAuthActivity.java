@@ -130,7 +130,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
     Runnable sentToken = new Runnable() {
         @Override
         public void run() {
-            String Action = Utilities.ACTION + "PostConnectorTokenById";
+            String Action = Utilities.ACTION + "PostUserConnectorTokenById";
             JSONObject para = new JSONObject();
             try {
                 para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
@@ -138,7 +138,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 para.put("serviceToken", fb_access_token);
                 para.put("serviceKey", "");
                 para.put("serviceUserName", name);
-                para.put("serviceId", id);
+                para.put("serviceUid", id);
                 para.put("connectorId", "1");
             } catch (JSONException e) {
                 Log.w("FACEBOOK", e.toString());

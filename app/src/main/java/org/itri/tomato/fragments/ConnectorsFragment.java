@@ -74,7 +74,7 @@ public class ConnectorsFragment extends Fragment implements DataRetrieveListener
     Runnable checkConnector = new Runnable() {
         @Override
         public void run() {
-            String Action = Utilities.ACTION + "GetConnectorStatusById";
+            String Action = Utilities.ACTION + "GetUserConnectorStatusById";
             JSONObject para = new JSONObject();
             try {
                 para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
@@ -89,7 +89,7 @@ public class ConnectorsFragment extends Fragment implements DataRetrieveListener
             } else {
                 isFB = false;
             }
-            Action = Utilities.ACTION + "GetConnectorStatusById";
+            Action = Utilities.ACTION + "GetUserConnectorStatusById";
             para = new JSONObject();
             try {
                 para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));

@@ -268,10 +268,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 e.printStackTrace();
             }
             String Params = Utilities.PARAMS + para.toString();
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, AddAutoRunActivity.this, true);
+            JSONObject jsonRes = Utilities.API_CONNECT(Action, Params, AddAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 try {
-                    JSONObject jsonRes = new JSONObject(jsonObject.getString("response"));
                     description = jsonRes.getString("autorunDesc");
                     id = jsonRes.getString("autorunId");
                     whenIconId = jsonRes.getInt("whenIconId");
@@ -1042,7 +1041,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         try {
             inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
         } catch (NullPointerException e) {
-
         }
     }
 

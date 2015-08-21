@@ -385,10 +385,9 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 e.printStackTrace();
             }
             String Params = Utilities.PARAMS + para.toString();
-            JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
+            autoRunItem = Utilities.API_CONNECT(Action, Params, MyAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 try {
-                    autoRunItem = new JSONObject(jsonObject.getString("response"));
                     whenIconId = autoRunItem.getInt("whenIconId");
                     doIconId = autoRunItem.getInt("doIconId");
                     description = autoRunItem.getString("autorunDesc");

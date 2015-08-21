@@ -123,10 +123,9 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     Log.w("JSON", e.toString());
                 }
                 String Params = Utilities.PARAMS + para.toString();
-                JSONObject jsonObject = Utilities.API_CONNECT(Action, Params, getActivity(), true);
+                JSONObject jsonObjectTmp = Utilities.API_CONNECT(Action, Params, getActivity(), true);
                 if (Utilities.getResponseCode().equals("true")) {
                     try {
-                        JSONObject jsonObjectTmp = new JSONObject(jsonObject.getString("response"));
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
                         for (int i = 0; i < jsonArray.length(); i++) {
                             if (jsonArray.getJSONObject(i).getString("enable").equals("on")) {
@@ -142,6 +141,8 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     } catch (JSONException e) {
                         Log.w("JSON", e.toString());
                     }
+                } else {
+                    pullRefreshLayout.setRefreshing(false);
                 }
             }
         }).start();

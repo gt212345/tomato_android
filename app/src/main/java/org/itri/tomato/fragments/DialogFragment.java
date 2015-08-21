@@ -1,5 +1,6 @@
 package org.itri.tomato.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
@@ -11,9 +12,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -193,8 +196,8 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
                 String url = AUTH_URL + "oauth_token=" + parts[0] + "&oauth_callback=";
                 progressBar.setVisibility(View.VISIBLE);
                 progressBar.setMax(100);
-                WebView webView = new WebView(getActivity());
-                webView.requestFocus();
+                WebView webView = new MyWebView(getActivity());
+                webView.requestFocus(View.FOCUS_DOWN);
                 webView.setBackgroundColor(Color.TRANSPARENT);
                 webView.getSettings().setDomStorageEnabled(true);
                 webView.getSettings().setJavaScriptEnabled(true);
@@ -265,5 +268,35 @@ public class DialogFragment extends android.app.DialogFragment implements Compou
             handler.proceed();
         }
     };
+
+    private static class MyWebView extends WebView
+    {
+        public MyWebView(Context context)
+        {
+            super(context);
+        }
+
+        // Note this!
+        @Override
+        public boolean onCheckIsTextEditor()
+        {
+            return true;
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent ev)
+        {
+            switch (ev.getAction())
+            {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_UP:
+                    if (!hasFocus())
+                        requestFocus();
+                    break;
+            }
+
+            return super.onTouchEvent(ev);
+        }
+    }
 
 }
