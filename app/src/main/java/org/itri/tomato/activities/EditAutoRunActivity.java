@@ -202,7 +202,34 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 title.setGravity(Gravity.CENTER);
                 title.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 title.setTextSize(40);
+                EditText desc = new EditText(getApplicationContext());
+                desc.setTextSize(20);
+                desc.setText(description);
+                desc.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
+                desc.setHintTextColor(Color.parseColor("#9E9E9E"));
+                desc.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                LinearLayout.LayoutParams params;
+                params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                desc.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        description = charSequence.toString();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                    }
+                });
+                desc.setLayoutParams(params);
                 layout.addView(title);
+                layout.addView(desc);
                 if (autoRunItemsWhen.size() != 0) {
                     TextView whenTitle = new TextView(getApplicationContext());
                     whenTitle.setTextColor(getResources().getColor(android.R.color.white));
@@ -225,8 +252,6 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         createView(item);
                     }
                 }
-                LinearLayout.LayoutParams params;
-
                 Button apply = new Button(getApplicationContext());
                 apply.setTextSize(20);
                 apply.setText("Apply");
@@ -295,6 +320,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             jsonObject.put("uid", sharedPreferences.getString(Utilities.USER_ID, ""));
             jsonObject.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, ""));
             jsonObject.put("userautorunId", id);
+            jsonObject.put("autorunDesc", description);
             jsonObject.put("autorunPara", jsonArray);
             jsonPara = jsonObject.toString();
             Log.w(TAG, jsonPara);

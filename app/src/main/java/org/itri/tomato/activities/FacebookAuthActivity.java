@@ -158,14 +158,13 @@ public class FacebookAuthActivity extends AppCompatActivity {
             }
         }
     };
-
     /**
-     * server not support yet
+     * spec not confirmed
      */
     Runnable deleteToken = new Runnable() {
         @Override
         public void run() {
-            String Action = Utilities.ACTION + "PostConnectorTokenById";
+            String Action = Utilities.ACTION + "DelUserConnectorById";
             JSONObject para = new JSONObject();
             try {
                 para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
