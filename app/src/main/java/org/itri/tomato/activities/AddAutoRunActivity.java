@@ -315,7 +315,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonWhen.getJSONObject(i).getString("value"),
                                 jsonWhen.getJSONObject(i).getInt("defaultValue")
                         ));
-                        Log.w(autoRunItemsWhen.get(i).getDisplay(), autoRunItemsWhen.get(i).getValue());
                     }
                     JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
                     for (int i = 0; i < jsonDo.length(); i++) {
@@ -329,7 +328,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonDo.getJSONObject(i).getString("value"),
                                 jsonDo.getJSONObject(i).getInt("defaultValue")
                         ));
-                        Log.w(autoRunItemsDo.get(i).getDisplay(), autoRunItemsDo.get(i).getValue());
                     }
                     counts = jsonWhen.length() + jsonDo.length();
                     dataRetrieveListener.onFinish();
@@ -1197,9 +1195,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         iterateList(tmp, schList);
         iterateList(tmp, mappingList);
         iterateList(tmp, arrayList);
-        Log.w("tmp Size", tmp.size()+"");
         for (JSONObject object : tmp) {
-            Log.w("object length", object.length() + "");
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
             }
