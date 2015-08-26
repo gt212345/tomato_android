@@ -235,6 +235,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                     @Override
                     public void run() {
                         isEnable = true;
+                        DropboxAuthActivity.this.finish();
 //                        loginButtonDb.setText("Disable");
                     }
                 });

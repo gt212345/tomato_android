@@ -17,6 +17,8 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +35,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,6 +77,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     private TextView mTitleView;
     private int mActionBarSize;
     private int mFlexibleSpaceImageHeight;
+    private static final int MAP_RESULT = 200;
+    private static final int CHECK_FB_RESULT = 300;
+    private static final int CHECK_DB_RESULT = 400;
+    private static final int CHECK_2FB_RESULT = 500;
 
 
     String id;
@@ -104,7 +111,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     String jsonPara;
     int counts, whenIconId, doIconId;
     ArrayList<String> connectorList;
-    boolean isFaceAuth = false, isDropAuth = false;
+    boolean isFaceAuth = false, isDropAuth = false, has2Auth = false;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -221,14 +228,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 intent.putExtra("Lng", lngD);
             }
             intent.setClass(AddAutoRunActivity.this, MapActivity.class);
-            startActivityForResult(intent, 200);
+            startActivityForResult(intent, MAP_RESULT);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == 200) {
+        if (resultCode == RESULT_OK && requestCode == MAP_RESULT) {
             latD = roundDown5(data.getDoubleExtra("lat", 0));
             lngD = roundDown5(data.getDoubleExtra("lng", 0));
             lat.setText(latStr + ": ");
@@ -251,6 +258,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        } else if (requestCode == CHECK_FB_RESULT) {
+            new Thread(checkFacebook).start();
+        } else if (requestCode == CHECK_DB_RESULT) {
+            new Thread(checkDropbox).start();
+        } else if (requestCode == CHECK_2FB_RESULT) {
+            new Thread(checkFacebook).start();
         }
     }
 
@@ -302,6 +315,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonWhen.getJSONObject(i).getString("value"),
                                 jsonWhen.getJSONObject(i).getInt("defaultValue")
                         ));
+                        Log.w(autoRunItemsWhen.get(i).getDisplay(), autoRunItemsWhen.get(i).getValue());
                     }
                     JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
                     for (int i = 0; i < jsonDo.length(); i++) {
@@ -315,6 +329,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonDo.getJSONObject(i).getString("value"),
                                 jsonDo.getJSONObject(i).getInt("defaultValue")
                         ));
+                        Log.w(autoRunItemsDo.get(i).getDisplay(), autoRunItemsDo.get(i).getValue());
                     }
                     counts = jsonWhen.length() + jsonDo.length();
                     dataRetrieveListener.onFinish();
@@ -962,7 +977,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         richBt.setText("隱藏");
                     } else {
                         condition.setVisibility(View.GONE);
-                        richBt.setText("提示");
+                        richBt.setText("輸入提示");
                     }
                 }
             });
@@ -977,30 +992,25 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         return Math.floor(d * 1e5) / 1e5;
     }
 
-    @Override
-    public void onClick(View view) {
-        for (String tmp : connectorList) {
-            switch (tmp) {
-                case "dropbox":
-                    new Thread(checkDropbox).start();
-                    return;
-                case "facebook":
-                    new Thread(checkFacebook).start();
-                    return;
-            }
-        }
-        isDropAuth = true;
-        isFaceAuth = true;
-        add();
-    }
-
     private JSONObject putJson(JSONObject object, AutoRunItem item) {
-        try {
-            object.put("agentId", item.getAgentId());
-            object.put("option", item.getOption());
-            object.put("conditionType", item.getConditionType());
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(item.isHasValue() == 1) {
+            try {
+                object.put("agentId", item.getAgentId());
+                object.put("option", item.getOption());
+                object.put("conditionType", item.getConditionType());
+                object.put("value", item.getValue());
+                object.put("agentParameter", "options");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                object.put("agentId", item.getAgentId());
+                object.put("option", item.getOption());
+                object.put("conditionType", item.getConditionType());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         return object;
     }
@@ -1070,6 +1080,35 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 R.drawable.dropbox));
         icons.add(BitmapFactory.decodeResource(getResources(),
                 R.drawable.noti));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.bulb));
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (connectorList.size()) {
+            case 0:
+                isDropAuth = true;
+                isFaceAuth = true;
+                add();
+                break;
+            case 1:
+                switch (connectorList.get(0)) {
+                    case "facebook":
+                        isDropAuth = true;
+                        new Thread(checkFacebook).start();
+                        break;
+                    case "dropbox":
+                        isFaceAuth = true;
+                        new Thread(checkDropbox).start();
+                        break;
+                }
+                return;
+            case 2:
+                has2Auth = true;
+                new Thread(checkFacebook).start();
+                return;
+        }
     }
 
     Runnable checkFacebook = new Runnable() {
@@ -1087,8 +1126,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             Utilities.API_CONNECT(Action, Para, AddAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 isFaceAuth = true;
+                if (has2Auth) {
+                    new Thread(checkDropbox).start();
+                } else {
+                    add();
+                }
             } else {
-                isFaceAuth = false;
+                Intent intent = new Intent();
+                intent.setClass(AddAutoRunActivity.this, FacebookAuthActivity.class);
+                if (has2Auth) {
+                    startActivityForResult(intent, CHECK_2FB_RESULT);
+                } else {
+                    startActivityForResult(intent, CHECK_FB_RESULT);
+                }
             }
         }
     };
@@ -1108,24 +1158,22 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             Utilities.API_CONNECT(Action, Para, AddAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 isDropAuth = true;
+                add();
             } else {
-                isDropAuth = false;
+                Intent intent = new Intent();
+                intent.setClass(AddAutoRunActivity.this, DropboxAuthActivity.class);
+                startActivityForResult(intent, CHECK_DB_RESULT);
             }
-            add();
         }
     };
 
     private void add() {
         if (!isFaceAuth) {
-//            Intent intent = new Intent();
-//            intent.setClass(AddAutoRunActivity.this, FacebookAuthActivity.class);
-//            startActivity(intent);
-//            return;
+            new Thread(checkFacebook).start();
+            return;
         }
         if (!isDropAuth) {
-            Intent intent = new Intent();
-            intent.setClass(AddAutoRunActivity.this, DropboxAuthActivity.class);
-            startActivity(intent);
+            new Thread(checkDropbox).start();
             return;
         }
         runOnUiThread(new Runnable() {
@@ -1149,7 +1197,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         iterateList(tmp, schList);
         iterateList(tmp, mappingList);
         iterateList(tmp, arrayList);
+        Log.w("tmp Size", tmp.size()+"");
         for (JSONObject object : tmp) {
+            Log.w("object length", object.length() + "");
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
             }

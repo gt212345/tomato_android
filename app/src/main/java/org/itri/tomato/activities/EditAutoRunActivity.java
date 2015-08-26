@@ -908,7 +908,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     1.0f
             );
             richBt.setLayoutParams(params);
-            richBt.setText("提示");
+            richBt.setText("輸入提示");
             orientLayout.addView(editText);
             orientLayout.addView(richBt);
             layout.addView(orientLayout);
@@ -927,7 +927,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         richBt.setText("隱藏");
                     } else {
                         condition.setVisibility(View.GONE);
-                        richBt.setText("提示");
+                        richBt.setText("輸入提示");
                     }
                 }
             });

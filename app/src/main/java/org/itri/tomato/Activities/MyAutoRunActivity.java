@@ -432,5 +432,7 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 R.drawable.dropbox));
         icons.add(BitmapFactory.decodeResource(getResources(),
                 R.drawable.noti));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.bulb));
     }
 }

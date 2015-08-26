@@ -186,6 +186,8 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                 R.drawable.dropbox));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.bulb));
     }
 
     @Override

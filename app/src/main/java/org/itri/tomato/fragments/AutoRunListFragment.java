@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
@@ -99,6 +101,12 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
             @Override
             public void onRefresh() {
                 adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullRefreshLayout.setRefreshing(false);
+                    }
+                }, 3000);
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList(), null);
@@ -129,6 +137,8 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                 R.drawable.dropbox));
         bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
                 R.drawable.noti));
+        bitmaps.add(BitmapFactory.decodeResource(getActivity().getResources(),
+                R.drawable.bulb));
     }
 
 
@@ -173,7 +183,7 @@ public class AutoRunListFragment extends Fragment implements AdapterView.OnItemC
                     try {
                         JSONArray jsonArray = new JSONArray(jsonObjectTmp.getString("autoruns"));
                         for (int i = 0; i < jsonArray.length(); i++) {
-                            items.add(new ListItem(bitmaps.get(jsonArray.getJSONObject(i).getInt("whenIconId") - 1), bitmaps.get(jsonArray.getJSONObject(i).getInt("doIconId") - 1)
+                            items.add(new ListItem(bitmaps.get(Integer.parseInt(jsonArray.getJSONObject(i).getString("whenIconId")) - 1), bitmaps.get(Integer.parseInt(jsonArray.getJSONObject(i).getString("doIconId")) - 1)
                                     , jsonArray.getJSONObject(i).getString("autorunDesc"), true, false, false));
                             autoRunIDs.add(jsonArray.getJSONObject(i).getInt("autorunId"));
                         }

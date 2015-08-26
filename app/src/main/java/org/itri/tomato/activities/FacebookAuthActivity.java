@@ -3,6 +3,7 @@ package org.itri.tomato.activities;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.hardware.camera2.params.Face;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -150,6 +151,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                     public void run() {
 //                        isEnable = true;
                         loginButton.setText("Disable");
+                        FacebookAuthActivity.this.finish();
                     }
                 });
             } else {
