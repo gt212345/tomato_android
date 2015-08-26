@@ -73,6 +73,12 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
             @Override
             public void onRefresh() {
                 adapter = new MarketListAdapter(getActivity(), getAutoRunList(), MyAutoRunListFragment.this);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        pullRefreshLayout.setRefreshing(false);
+                    }
+                }, 3000);
             }
         });
         adapter = new MarketListAdapter(getActivity(), getAutoRunList(), MyAutoRunListFragment.this);
@@ -113,17 +119,6 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     @Override
                     public void run() {
                         pullRefreshLayout.setRefreshing(true);
-                        pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
-                            @Override
-                            public void onRefresh() {
-                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        pullRefreshLayout.setRefreshing(false);
-                                    }
-                                }, 3000);
-                            }
-                        });
                         autoRunList.setOnItemClickListener(null);
                     }
                 });
