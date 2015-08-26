@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(Color.parseColor("#B2EBF2"));
         }
+//        Utilities.getHashKey(this);
         editAccount = (EditText) findViewById(R.id.editAccount);
         editPass = (EditText) findViewById(R.id.editPass);
         Button login = (Button) findViewById(R.id.login);

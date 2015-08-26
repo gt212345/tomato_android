@@ -103,6 +103,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     JSONObject jsonMapLat, jsonMapLng;
     String jsonPara;
     int counts, whenIconId, doIconId;
+    ArrayList<String> connectorList;
+    boolean isFaceAuth = false, isDropAuth = false;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -243,9 +245,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             }
             try {
                 jsonMapLat.put("value", String.valueOf(latD));
-                jsonMapLat.put("agent_parameter", "options");
+                jsonMapLat.put("agentParameter", "options");
                 jsonMapLng.put("value", String.valueOf(lngD));
-                jsonMapLng.put("agent_parameter", "options");
+                jsonMapLng.put("agentParameter", "options");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -256,6 +258,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void run() {
+            connectorList = new ArrayList<>();
             autoRunItemsWhen = new ArrayList<>();
             autoRunItemsDo = new ArrayList<>();
             String Action = Utilities.ACTION + "GetAutoRunById";
@@ -275,6 +278,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     id = jsonRes.getString("autorunId");
                     whenIconId = jsonRes.getInt("whenIconId");
                     doIconId = jsonRes.getInt("doIconId");
+                    JSONArray connectors = new JSONArray(jsonRes.getJSONObject("requestConnector").getString("connectorName"));
+                    for (int i = 0; i < connectors.length(); i++) {
+                        connectorList.add(connectors.getString(i));
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -291,9 +298,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonWhen.getJSONObject(i).getString("option"),
                                 jsonWhen.getJSONObject(i).getString("conditionType"),
                                 jsonWhen.getJSONObject(i).getString("condition"),
-                                jsonWhen.getJSONObject(i).getString("agent_parameter"),
+                                jsonWhen.getJSONObject(i).getString("agentParameter"),
                                 jsonWhen.getJSONObject(i).getString("value"),
-                                jsonWhen.getJSONObject(i).getInt("default_value")
+                                jsonWhen.getJSONObject(i).getInt("defaultValue")
                         ));
                     }
                     JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
@@ -304,9 +311,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 jsonDo.getJSONObject(i).getString("option"),
                                 jsonDo.getJSONObject(i).getString("conditionType"),
                                 jsonDo.getJSONObject(i).getString("condition"),
-                                jsonDo.getJSONObject(i).getString("agent_parameter"),
+                                jsonDo.getJSONObject(i).getString("agentParameter"),
                                 jsonDo.getJSONObject(i).getString("value"),
-                                jsonDo.getJSONObject(i).getInt("default_value")
+                                jsonDo.getJSONObject(i).getInt("defaultValue")
                         ));
                     }
                     counts = jsonWhen.length() + jsonDo.length();
@@ -403,7 +410,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
         try {
             checkList.get(num - 1).put("value", temp.substring(0, temp.length() - 1));
-            checkList.get(num - 1).put("agent_parameter", "options");
+            checkList.get(num - 1).put("agentParameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -437,7 +444,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                             mappingList.get(num - 1).put("value", 4);
                             break;
                     }
-                    mappingList.get(num - 1).put("agent_parameter", "options");
+                    mappingList.get(num - 1).put("agentParameter", "options");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -448,7 +455,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 radio.append(string);
                 try {
                     radioList.get(num - 1).put("value", string);
-                    radioList.get(num - 1).put("agent_parameter", "options");
+                    radioList.get(num - 1).put("agentParameter", "options");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -459,7 +466,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 sch.append(string);
                 try {
                     schList.get(num - 1).put("value", string);
-                    schList.get(num - 1).put("agent_parameter", "schedule");
+                    schList.get(num - 1).put("agentParameter", "schedule");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -754,13 +761,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             case "arraytext":
                 arrayList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        3.0f
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 array = new EditText(getApplicationContext());
                 setIfHasValue(item, array, 0);
-                createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_NORMAL, countArray);
+                createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT, countArray);
                 countArray++;
                 layout.addView(blank);
                 break;
@@ -866,7 +872,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_CLASS_PHONE:
                         try {
                             phoneList.get(num).put("value", editText.getText().toString());
-                            phoneList.get(num).put("agent_parameter", "options");
+                            phoneList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -874,7 +880,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS:
                         try {
                             emailList.get(num).put("value", editText.getText().toString());
-                            emailList.get(num).put("agent_parameter", "options");
+                            emailList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -882,7 +888,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_CLASS_NUMBER:
                         try {
                             numList.get(num).put("value", editText.getText().toString());
-                            numList.get(num).put("agent_parameter", "options");
+                            numList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -890,7 +896,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_TEXT_VARIATION_PASSWORD:
                         try {
                             passList.get(num).put("value", editText.getText().toString());
-                            passList.get(num).put("agent_parameter", "options");
+                            passList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -898,7 +904,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_CLASS_TEXT:
                         try {
                             textList.get(num).put("value", editText.getText().toString());
-                            textList.get(num).put("agent_parameter", "options");
+                            textList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -906,12 +912,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     case InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
                         try {
                             richList.get(num).put("value", editText.getText().toString());
-                            richList.get(num).put("agent_parameter", "options");
+                            richList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         break;
-                    case InputType.TYPE_TEXT_VARIATION_NORMAL:
+                    case InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT:
                         try {
                             String[] parts = editText.getText().toString().split(",");
                             JSONArray array = new JSONArray();
@@ -919,7 +925,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                                 array.put(parts[i]);
                             }
                             arrayList.get(num).put("value", array);
-                            arrayList.get(num).put("agent_parameter", "options");
+                            arrayList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -973,7 +979,161 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onClick(View view) {
-        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+        for (String tmp : connectorList) {
+            switch (tmp) {
+                case "dropbox":
+                    new Thread(checkDropbox).start();
+                    return;
+                case "facebook":
+                    new Thread(checkFacebook).start();
+                    return;
+            }
+        }
+        isDropAuth = true;
+        isFaceAuth = true;
+        add();
+    }
+
+    private JSONObject putJson(JSONObject object, AutoRunItem item) {
+        try {
+            object.put("agentId", item.getAgentId());
+            object.put("option", item.getOption());
+            object.put("conditionType", item.getConditionType());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object;
+    }
+
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        try {
+            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+        } catch (NullPointerException e) {
+        }
+    }
+
+    private void iterateList(ArrayList<JSONObject> main, ArrayList<JSONObject> sub) {
+        for (JSONObject object : sub) {
+            main.add(object);
+        }
+    }
+
+    private void setIfHasValue(AutoRunItem item, View view, int type) {
+        if (item.isHasValue() == 1) {
+            switch (type) {
+                case 0:
+                    ((EditText) view).setText(item.getValue());
+                    break;
+                case 1:
+                    ((TextView) view).setText(item.getValue());
+                    break;
+            }
+        }
+    }
+
+    private void createList() {
+        mappingList = new ArrayList<>();
+        checkList = new ArrayList<>();
+        radioList = new ArrayList<>();
+        phoneList = new ArrayList<>();
+        emailList = new ArrayList<>();
+        textList = new ArrayList<>();
+        numList = new ArrayList<>();
+        passList = new ArrayList<>();
+        richList = new ArrayList<>();
+        schList = new ArrayList<>();
+        arrayList = new ArrayList<>();
+    }
+
+    void createIconList() {
+        icons = new ArrayList<>();
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.raining));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.noti));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.home));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.email));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.person));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.email));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.email));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.ring));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.fb));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.dropbox));
+        icons.add(BitmapFactory.decodeResource(getResources(),
+                R.drawable.noti));
+    }
+
+    Runnable checkFacebook = new Runnable() {
+        @Override
+        public void run() {
+            String Action = Utilities.ACTION + "GetUserConnectorStatusById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("connectorId", "1");
+            } catch (JSONException e) {
+            }
+            String Para = Utilities.PARAMS + para.toString();
+            Utilities.API_CONNECT(Action, Para, AddAutoRunActivity.this, true);
+            if (Utilities.getResponseCode().equals("true")) {
+                isFaceAuth = true;
+            } else {
+                isFaceAuth = false;
+            }
+        }
+    };
+
+    Runnable checkDropbox = new Runnable() {
+        @Override
+        public void run() {
+            String Action = Utilities.ACTION + "GetUserConnectorStatusById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("connectorId", "2");
+            } catch (JSONException e) {
+            }
+            String Para = Utilities.PARAMS + para.toString();
+            Utilities.API_CONNECT(Action, Para, AddAutoRunActivity.this, true);
+            if (Utilities.getResponseCode().equals("true")) {
+                isDropAuth = true;
+            } else {
+                isDropAuth = false;
+            }
+            add();
+        }
+    };
+
+    private void add() {
+        if (!isFaceAuth) {
+//            Intent intent = new Intent();
+//            intent.setClass(AddAutoRunActivity.this, FacebookAuthActivity.class);
+//            startActivity(intent);
+//            return;
+        }
+        if (!isDropAuth) {
+            Intent intent = new Intent();
+            intent.setClass(AddAutoRunActivity.this, DropboxAuthActivity.class);
+            startActivity(intent);
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog = ProgressDialog.show(AddAutoRunActivity.this, "載入中", "請稍等......", false);
+            }
+        });
         JSONArray jsonArray = new JSONArray();
         ArrayList<JSONObject> tmp = new ArrayList<>();
         tmp.add(jsonMapLat);
@@ -988,6 +1148,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         iterateList(tmp, numList);
         iterateList(tmp, schList);
         iterateList(tmp, mappingList);
+        iterateList(tmp, arrayList);
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
@@ -1043,84 +1204,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             progressDialog.cancel();
             e.printStackTrace();
         }
-    }
-
-    private JSONObject putJson(JSONObject object, AutoRunItem item) {
-        try {
-            object.put("agentId", item.getAgentId());
-            object.put("option", item.getOption());
-            object.put("conditionType", item.getConditionType());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return object;
-    }
-
-    public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        try {
-            inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
-        } catch (NullPointerException e) {
-        }
-    }
-
-    private void iterateList(ArrayList<JSONObject> main, ArrayList<JSONObject> sub) {
-        for (JSONObject object : sub) {
-            main.add(object);
-        }
-    }
-
-    private void setIfHasValue (AutoRunItem item, View view, int type) {
-        if (item.isHasValue() == 1) {
-            switch (type) {
-                case 0:
-                    ((EditText) view).setText(item.getValue());
-                    break;
-                case 1:
-                    ((TextView) view).setText(item.getValue());
-                    break;
-            }
-        }
-    }
-
-    private void createList() {
-        mappingList = new ArrayList<>();
-        checkList = new ArrayList<>();
-        radioList = new ArrayList<>();
-        phoneList = new ArrayList<>();
-        emailList = new ArrayList<>();
-        textList = new ArrayList<>();
-        numList = new ArrayList<>();
-        passList = new ArrayList<>();
-        richList = new ArrayList<>();
-        schList = new ArrayList<>();
-        arrayList = new ArrayList<>();
-    }
-
-    void createIconList() {
-        icons = new ArrayList<>();
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.raining));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.noti));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.home));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.email));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.person));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.email));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.email));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.ring));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.fb));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.dropbox));
-        icons.add(BitmapFactory.decodeResource(getResources(),
-                R.drawable.noti));
     }
 
 }

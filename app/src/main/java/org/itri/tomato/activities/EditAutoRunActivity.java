@@ -128,7 +128,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         }
         try {
             checkList.get(num - 1).put("value", temp.substring(0, temp.length() - 1));
-            checkList.get(num - 1).put("agent_parameter", "options");
+            checkList.get(num - 1).put("agentParameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -158,7 +158,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                             mappingList.get(num - 1).put("value", 4);
                             break;
                     }
-                    mappingList.get(num - 1).put("agent_parameter", "options");
+                    mappingList.get(num - 1).put("agentParameter", "options");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -167,7 +167,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 radio.append(string);
                 try {
                     radioList.get(num - 1).put("value", string);
-                    radioList.get(num - 1).put("agent_parameter", "options");
+                    radioList.get(num - 1).put("agentParameter", "options");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -176,7 +176,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 sch.append(string);
                 try {
                     schList.get(num - 1).put("value", string);
-                    schList.get(num - 1).put("agent_parameter", "schedule");
+                    schList.get(num - 1).put("agentParameter", "schedule");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -282,9 +282,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     region.setText(addressList.get(0).getAddressLine(0));
                 }
                 jsonMapLat.put("value", String.valueOf(latD));
-                jsonMapLat.put("agent_parameter", "options");
+                jsonMapLat.put("agentParameter", "options");
                 jsonMapLng.put("value", String.valueOf(lngD));
-                jsonMapLng.put("agent_parameter", "options");
+                jsonMapLng.put("agentParameter", "options");
             } catch (IOException e) {
                 Log.w("Region", e.toString());
             } catch (JSONException e) {
@@ -310,6 +310,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         iterateList(tmp, numList);
         iterateList(tmp, schList);
         iterateList(tmp, mappingList);
+        iterateList(tmp, arrayList);
         for (JSONObject object : tmp) {
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
@@ -403,9 +404,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                                 jsonWhen.getJSONObject(i).getString("option"),
                                 jsonWhen.getJSONObject(i).getString("conditionType"),
                                 jsonWhen.getJSONObject(i).getString("condition"),
-                                jsonWhen.getJSONObject(i).getString("agent_parameter"),
+                                jsonWhen.getJSONObject(i).getString("agentParameter"),
                                 jsonWhen.getJSONObject(i).getString("value"),
-                                jsonWhen.getJSONObject(i).getInt("default_value")
+                                1
                         ));
                     }
                     JSONArray jsonDo = new JSONArray(jsonPara.getString("do"));
@@ -416,9 +417,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                                 jsonDo.getJSONObject(i).getString("option"),
                                 jsonDo.getJSONObject(i).getString("conditionType"),
                                 jsonDo.getJSONObject(i).getString("condition"),
-                                jsonDo.getJSONObject(i).getString("agent_parameter"),
+                                jsonDo.getJSONObject(i).getString("agentParameter"),
                                 jsonDo.getJSONObject(i).getString("value"),
-                                jsonDo.getJSONObject(i).getInt("default_value")
+                                1
                         ));
                     }
                     counts = jsonWhen.length() + jsonDo.length();
@@ -454,7 +455,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         latStr = item.getDisplay();
                         try {
                             jsonMapLat.put("value", item.getValue());
-                            jsonMapLat.put("agent_parameter", "options");
+                            jsonMapLat.put("agentParameter", "options");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -467,7 +468,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                         try {
                             jsonMapLng.put("value", item.getValue());
-                            jsonMapLng.put("agent_parameter", "options");
+                            jsonMapLng.put("agentParameter", "options");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -521,7 +522,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         lat.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                         try {
                             jsonMapLat.put("value", item.getValue());
-                            jsonMapLat.put("agent_parameter", "options");
+                            jsonMapLat.put("agentParameter", "options");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -534,7 +535,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                         lng.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                         try {
                             jsonMapLng.put("value", item.getValue());
-                            jsonMapLng.put("agent_parameter", "options");
+                            jsonMapLng.put("agentParameter", "options");
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -743,9 +744,8 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             case "arraytext":
                 arrayList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        3.0f
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 array = new EditText(getApplicationContext());
                 createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_NORMAL, countArray);
@@ -837,7 +837,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     case InputType.TYPE_CLASS_PHONE:
                         try {
                             phoneList.get(num).put("value", editText.getText().toString());
-                            phoneList.get(num).put("agent_parameter", "options");
+                            phoneList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -845,7 +845,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     case InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS:
                         try {
                             emailList.get(num).put("value", editText.getText().toString());
-                            emailList.get(num).put("agent_parameter", "options");
+                            emailList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -853,7 +853,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     case InputType.TYPE_CLASS_NUMBER:
                         try {
                             numList.get(num).put("value", editText.getText().toString());
-                            numList.get(num).put("agent_parameter", "options");
+                            numList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -861,7 +861,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     case InputType.TYPE_TEXT_VARIATION_PASSWORD:
                         try {
                             passList.get(num).put("value", editText.getText().toString());
-                            passList.get(num).put("agent_parameter", "options");
+                            passList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -869,7 +869,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     case InputType.TYPE_CLASS_TEXT:
                         try {
                             textList.get(num).put("value", editText.getText().toString());
-                            textList.get(num).put("agent_parameter", "options");
+                            textList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -877,7 +877,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                     case InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS:
                         try {
                             richList.get(num).put("value", editText.getText().toString());
-                            richList.get(num).put("agent_parameter", "options");
+                            richList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -890,7 +890,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                                 array.put(parts[i]);
                             }
                             arrayList.get(num).put("value", array);
-                            arrayList.get(num).put("agent_parameter", "options");
+                            arrayList.get(num).put("agentParameter", "options");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -944,7 +944,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             object.put("option", item.getOption());
             object.put("condtionType", item.getConditionType());
             object.put("value", item.getValue());
-            object.put("agent_parameter", "options");
+            object.put("agentParameter", "options");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -977,6 +977,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         passList = new ArrayList<>();
         richList = new ArrayList<>();
         schList = new ArrayList<>();
+        arrayList = new ArrayList<>();
     }
 
     private void checkGps() {

@@ -80,7 +80,7 @@ public class TextContent extends LinearLayout implements ContentRow {
             object.put("option", mItem.getOption());
             object.put("conditionType", mContentType);
             object.put("value", getData());
-            object.put("agent_parameter", mItem.getConditionType());
+            object.put("agentParameter", mItem.getConditionType());
         } catch (JSONException e) {
             e.printStackTrace();
         }

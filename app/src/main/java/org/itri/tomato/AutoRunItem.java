@@ -9,18 +9,18 @@ public class AutoRunItem {
     String option;
     String conditionType;
     String condition;
-    String agent_parameter;
+    String agentParameter;
     String value;
     int hasValue;
 
 
-    public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agent_parameter, String value, int hasValue) {
+    public AutoRunItem(String agentId, String display, String option, String conditionType, String condition, String agentParameter, String value, int hasValue) {
         this.agentId = agentId;
         this.display = display;
         this.option = option;
         this.conditionType = conditionType;
         this.condition = condition;
-        this.agent_parameter = agent_parameter;
+        this.agentParameter = agentParameter;
         this.value = value;
         this.hasValue = hasValue;
     }
@@ -49,8 +49,8 @@ public class AutoRunItem {
         return condition;
     }
 
-    public String getAgent_parameter() {
-        return agent_parameter;
+    public String getagentParameter() {
+        return agentParameter;
     }
 
     public String getValue() {

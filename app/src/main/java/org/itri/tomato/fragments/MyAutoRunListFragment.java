@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -111,6 +113,17 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                     @Override
                     public void run() {
                         pullRefreshLayout.setRefreshing(true);
+                        pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        pullRefreshLayout.setRefreshing(false);
+                                    }
+                                }, 3000);
+                            }
+                        });
                         autoRunList.setOnItemClickListener(null);
                     }
                 });
@@ -142,7 +155,12 @@ public class MyAutoRunListFragment extends Fragment implements DataRetrieveListe
                         Log.w("JSON", e.toString());
                     }
                 } else {
-                    pullRefreshLayout.setRefreshing(false);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            pullRefreshLayout.setRefreshing(false);
+                        }
+                    });
                 }
             }
         }).start();

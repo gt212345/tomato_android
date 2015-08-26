@@ -18,8 +18,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
-import com.facebook.ProfileTracker;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
@@ -39,11 +39,10 @@ public class FacebookAuthActivity extends AppCompatActivity {
     private static String fb_access_token = "";
     Toast toast;
     SharedPreferences sharedPreferences;
-    ProfileTracker profileTracker;
     String id;
     String name;
     Button loginButton;
-    boolean isEnable;
+//    boolean isEnable;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -51,7 +50,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        isEnable = getIntent().getBooleanExtra("enable", false);
+//        isEnable = getIntent().getBooleanExtra("enable", false);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -65,27 +64,43 @@ public class FacebookAuthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_facebook_auth);
         callbackManager = CallbackManager.Factory.create();
         loginButton = (Button) findViewById(R.id.login_button_fb);
-        if (isEnable) {
-            loginButton.setText("Disable");
-        } else {
-            loginButton.setText("Enable");
-        }
+        LoginManager.getInstance().logOut();
+//        if (isEnable) {
+//            loginButton.setText("Disable");
+//        } else {
+        loginButton.setText("Enable");
+//        }
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!isEnable) {
-                    LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email"));
-                } else {
-                    toast.setText("Not Support Yet");
-                    toast.show();
-                }
+//                if (!isEnable) {
+//                    LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email", "publish_actions"));
+//                LoginManager.getInstance().logOut();
+                LoginManager.getInstance().logInWithPublishPermissions(FacebookAuthActivity.this, Arrays.asList("publish_actions"));
+//                } else {
+//                    toast.setText("Not Support Yet");
+//                    toast.show();
+//                }
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 fb_access_token = loginResult.getAccessToken().getToken();
-                profileTracker.startTracking();
+                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                    //當RESPONSE回來的時候
+                    @Override
+                    public void onCompleted(JSONObject object, GraphResponse response) {
+                        //讀出姓名 ID FB個人頁面連結
+                        name = object.optString("name");
+                        id = object.optString("id");
+                        new Thread(sentToken).start();
+                    }
+                });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name");
+                request.setParameters(parameters);
+                request.executeAsync();
             }
 
             @Override
@@ -100,31 +115,14 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 toast.show();
             }
         });
-        profileTracker = new ProfileTracker() {
-            @Override
-            public void startTracking() {
-                super.startTracking();
-                if (!fb_access_token.equals("")) {
-                    name = Profile.getCurrentProfile().getName();
-                    id = Profile.getCurrentProfile().getId();
-                    Log.w("facebook account", name + "," + id);
-                    new Thread(sentToken).start();
-                }
-            }
-
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-//                name = currentProfile.getName();
-//                id = currentProfile.getId();
-//                new Thread(sentToken).start();
-            }
-        };
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     Runnable sentToken = new Runnable() {
@@ -150,7 +148,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        isEnable = true;
+//                        isEnable = true;
                         loginButton.setText("Disable");
                     }
                 });
@@ -183,7 +181,6 @@ public class FacebookAuthActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        profileTracker.stopTracking();
     }
 
 }
