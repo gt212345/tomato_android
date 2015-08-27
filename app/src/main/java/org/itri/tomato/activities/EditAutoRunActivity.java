@@ -942,7 +942,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
         try {
             object.put("agentId", item.getAgentId());
             object.put("option", item.getOption());
-            object.put("condtionType", item.getConditionType());
+            object.put("conditionType", item.getConditionType());
             object.put("value", item.getValue());
             object.put("agentParameter", "options");
         } catch (JSONException e) {

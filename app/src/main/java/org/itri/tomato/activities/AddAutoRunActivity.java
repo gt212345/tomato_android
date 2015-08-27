@@ -1084,6 +1084,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onClick(View view) {
+        Log.w("List", connectorList.size() + "");
         switch (connectorList.size()) {
             case 0:
                 isDropAuth = true;

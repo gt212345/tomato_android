@@ -90,6 +90,7 @@ public class Utilities {
                     stringBuilder.append(temp + "\n");
                 }
                 inputStream.close();
+                Log.w("Response", stringBuilder.toString());
                 JSONObject jsonObject = new JSONObject(stringBuilder.toString());
                 JSONObject jsonResponse = new JSONObject(jsonObject.getJSONObject("response").toString());
                 responseCode = jsonResponse.getString("status");

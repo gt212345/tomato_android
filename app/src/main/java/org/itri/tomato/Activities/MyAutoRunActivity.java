@@ -207,7 +207,12 @@ public class MyAutoRunActivity extends AppCompatActivity implements ObservableSc
                 layout.addView(delete);
                 mImageView.setIcon(icons.get(whenIconId - 1), icons.get(doIconId - 1), size.x, mActionBarSize);
                 mImageView.invalidate();
-                progressDialog.dismiss();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                    }
+                });
                 onScrollChanged(0, false, false);
             }
         });
