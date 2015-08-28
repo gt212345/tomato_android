@@ -83,7 +83,6 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
@@ -91,6 +90,14 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(getResources().getColor(R.color.statusBar));
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         manager = (LocationManager) getSystemService(LOCATION_SERVICE);
         dataRetrieveListener = EditAutoRunActivity.this;
@@ -610,7 +617,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
                 layout.addView(blank);
                 break;
-            case "pass":
+            case "password":
                 passList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -741,7 +748,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 countArray++;
                 layout.addView(blank);
                 break;
-            case "mappingtext":
+            case "radiomaptext":
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 String[] temp = condition.split("\\|");

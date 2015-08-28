@@ -151,6 +151,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                     public void run() {
 //                        isEnable = true;
                         loginButton.setText("Disable");
+                        setResult(RESULT_OK);
                         FacebookAuthActivity.this.finish();
                     }
                 });

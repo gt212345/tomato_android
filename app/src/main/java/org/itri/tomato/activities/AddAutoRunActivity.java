@@ -81,7 +81,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     String id;
     ArrayList<Bitmap> icons;
-    boolean isMapCreated = false;
+    boolean isMapCreated = false, isChecked = false, isAUth = false;
+    boolean isFaceAuth = false, isDropAuth = false, has2Auth = false;
     DialogFragment dialogFragment;
     Toast toast;
     LinearLayout layout;
@@ -108,7 +109,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     int counts, whenIconId, doIconId;
     String[] globalMapText;
     ArrayList<String> connectorList;
-    boolean isFaceAuth = false, isDropAuth = false, has2Auth = false;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -116,23 +116,19 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addautorun);
-        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        dataRetrieveListener = AddAutoRunActivity.this;
-        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
-        createIconList();
-        mImageView = (WhenDoIconView) findViewById(R.id.image);
-        new Thread(getAutoRunSettings).start();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
-        mActionBarSize = 125;/**/
-        geocoder = new Geocoder(this, Locale.TAIWAN);
-        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         }
+        mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
+        mActionBarSize = 125;/**/
+        geocoder = new Geocoder(this, Locale.TAIWAN);
+        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        dataRetrieveListener = AddAutoRunActivity.this;
         /**
          * init UI
          */
@@ -150,6 +146,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         mScrollView.setScrollViewCallbacks(this);
         mTitleView = (TextView) findViewById(R.id.title);
         setTitle(null);
+        createIconList();
+        mImageView = (WhenDoIconView) findViewById(R.id.image);
         ScrollUtils.addOnGlobalLayoutListener(mScrollView, new Runnable() {
             @Override
             public void run() {
@@ -167,6 +165,23 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 //                mScrollView.scrollTo(0, 0);
             }
         });
+        isChecked = false;
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+        if (!isChecked) {
+            new Thread(getAutoRunService).start();
+        }
+        if (isChecked && !isAUth) {
+            toast.setText("No Authentication");
+            toast.show();
+            finish();
+        }
     }
 
     @Override
@@ -255,11 +270,14 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        } else if (requestCode == CHECK_FB_RESULT) {
+        } else if (resultCode == RESULT_OK && requestCode == CHECK_FB_RESULT) {
+            isAUth = true;
             new Thread(checkFacebook).start();
-        } else if (requestCode == CHECK_DB_RESULT) {
+        } else if (resultCode == RESULT_OK && requestCode == CHECK_DB_RESULT) {
+            isAUth = true;
             new Thread(checkDropbox).start();
-        } else if (requestCode == CHECK_2FB_RESULT) {
+        } else if (resultCode == RESULT_OK && requestCode == CHECK_2FB_RESULT) {
+            isAUth = true;
             new Thread(checkFacebook).start();
         }
     }
@@ -268,7 +286,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void run() {
-            connectorList = new ArrayList<>();
             autoRunItemsWhen = new ArrayList<>();
             autoRunItemsDo = new ArrayList<>();
             String Action = Utilities.ACTION + "GetAutoRunById";
@@ -343,6 +360,61 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         }
     };
 
+    Runnable getAutoRunService = new Runnable() {
+        @Override
+        public void run() {
+            connectorList = new ArrayList<>();
+            String Action = Utilities.ACTION + "GetAutoRunServiceById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("autorunId", getIntent().getExtras().getInt("autoRunId"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            String Params = Utilities.PARAMS + para.toString();
+            JSONObject jsonRes = Utilities.API_CONNECT(Action, Params, AddAutoRunActivity.this, true);
+            if (Utilities.getResponseCode().equals("true")) {
+                isChecked = true;
+                try {
+                    JSONArray connectors = new JSONArray(jsonRes.getJSONObject("requestConnector").getString("connectorName"));
+                    for (int i = 0; i < connectors.length(); i++) {
+                        connectorList.add(connectors.getString(i));
+                    }
+                    switch (connectorList.size()) {
+                        case 0:
+                            isDropAuth = true;
+                            isFaceAuth = true;
+                            new Thread(getAutoRunSettings).start();
+                            break;
+                        case 1:
+                            switch (connectorList.get(0)) {
+                                case "facebook":
+                                    isDropAuth = true;
+                                    new Thread(checkFacebook).start();
+                                    break;
+                                case "dropbox":
+                                    isFaceAuth = true;
+                                    new Thread(checkDropbox).start();
+                                    break;
+                            }
+                            return;
+                        case 2:
+                            has2Auth = true;
+                            new Thread(checkFacebook).start();
+                            return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+    /**
+     * Switch to use ContextRower in phase 2.
+     */
     ContentRower cr;
 
     @Override
@@ -637,7 +709,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
                 layout.addView(blank);
                 break;
-            case "pass":
+            case "password":
                 passList.add(putJson(new JSONObject(), item));
                 params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -778,7 +850,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 countArray++;
                 layout.addView(blank);
                 break;
-            case "mappingtext":
+            case "radiomaptext":
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 String[] temp = condition.split("\\|");
@@ -1088,29 +1160,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onClick(View view) {
-        switch (connectorList.size()) {
-            case 0:
-                isDropAuth = true;
-                isFaceAuth = true;
-                add();
-                break;
-            case 1:
-                switch (connectorList.get(0)) {
-                    case "facebook":
-                        isDropAuth = true;
-                        new Thread(checkFacebook).start();
-                        break;
-                    case "dropbox":
-                        isFaceAuth = true;
-                        new Thread(checkDropbox).start();
-                        break;
-                }
-                return;
-            case 2:
-                has2Auth = true;
-                new Thread(checkFacebook).start();
-                return;
-        }
+        add();
     }
 
     Runnable checkFacebook = new Runnable() {
@@ -1131,7 +1181,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 if (has2Auth) {
                     new Thread(checkDropbox).start();
                 } else {
-                    add();
+                    new Thread(getAutoRunSettings).start();
                 }
             } else {
                 Intent intent = new Intent();
@@ -1160,7 +1210,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             Utilities.API_CONNECT(Action, Para, AddAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 isDropAuth = true;
-                add();//switch to get autoRun
+                new Thread(getAutoRunSettings).start();
             } else {
                 Intent intent = new Intent();
                 intent.setClass(AddAutoRunActivity.this, DropboxAuthActivity.class);
@@ -1168,6 +1218,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             }
         }
     };
+
+    private void getList() {
+        new Thread(getAutoRunSettings).start();
+    }
 
     private void add() {
         if (!isFaceAuth) {
@@ -1200,12 +1254,18 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         iterateList(tmp, mappingList);
         iterateList(tmp, arrayList);
         for (JSONObject object : tmp) {
-            Log.w("length", object.length() + "");
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
+            } else if (object != null) {
+//                try {
+//                    Log.w(object.getString("display"), object.length() + "");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
         if (jsonArray.length() != counts) {
+//            Log.w("length,counts", jsonArray.length() + "," + counts);
             toast.setText("Settings not complete!!");
             toast.show();
             progressDialog.cancel();
