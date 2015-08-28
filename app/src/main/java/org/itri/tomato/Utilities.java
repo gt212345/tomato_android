@@ -128,7 +128,8 @@ public class Utilities {
                 MessageDigest md;
                 md = MessageDigest.getInstance("SHA");
                 md.update(signature.toByteArray());
-                String KeyResult = new String(Base64.encode(md.digest(), 0));//String something = new String(Base64.encodeBytes(md.digest()));
+                String KeyResult = new String(Base64.encode(md.digest(), 0));
+                //String something = new String(Base64.encodeBytes(md.digest()));
                 Log.e("hash key", KeyResult);
                 Toast.makeText(context, "My FB Key is \n" + KeyResult, Toast.LENGTH_LONG).show();
             }

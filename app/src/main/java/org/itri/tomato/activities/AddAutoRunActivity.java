@@ -17,8 +17,6 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,7 +33,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +53,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +106,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     JSONObject jsonMapLat, jsonMapLng;
     String jsonPara;
     int counts, whenIconId, doIconId;
+    String[] globalMapText;
     ArrayList<String> connectorList;
     boolean isFaceAuth = false, isDropAuth = false, has2Auth = false;
 
@@ -440,22 +437,10 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 map.append(string);
                 try {
-                    switch (string) {
-                        case "low":
-                            mappingList.get(num - 1).put("value", 0);
-                            break;
-                        case "medium":
-                            mappingList.get(num - 1).put("value", 1);
-                            break;
-                        case "high":
-                            mappingList.get(num - 1).put("value", 2);
-                            break;
-                        case "very high":
-                            mappingList.get(num - 1).put("value", 3);
-                            break;
-                        case "danger":
-                            mappingList.get(num - 1).put("value", 4);
-                            break;
+                    for (int i = 0; i < globalMapText.length; i++) {
+                        if (string.equals(globalMapText[i].split(":")[1])) {
+                            mappingList.get(num - 1).put("value", globalMapText[i].split(":")[0]);
+                        }
                     }
                     mappingList.get(num - 1).put("agentParameter", "options");
                 } catch (JSONException e) {
@@ -601,7 +586,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 weightBt.setLayoutParams(params);
                 check = new TextView(getApplicationContext());
-                setIfHasValue(item, check, 1);
+                check.setTextSize(20);
+                check.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
+                setIfHasValue(item, check, 2);
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
                 layout.addView(check);
@@ -700,6 +687,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     );
                     weightBt.setLayoutParams(params);
                     sch = new TextView(getApplicationContext());
+                    sch.setTextSize(20);
+                    sch.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     setIfHasValue(item, sch, 1);
                     mapLayout.addView(weightTv);
                     mapLayout.addView(weightBt);
@@ -742,6 +731,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     );
                     weightBt.setLayoutParams(params);
                     radio = new TextView(getApplicationContext());
+                    radio.setTextSize(20);
+                    radio.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                     setIfHasValue(item, radio, 1);
                     mapLayout.addView(weightTv);
                     mapLayout.addView(weightBt);
@@ -766,6 +757,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         3.0f
                 );
                 rich = new EditText(getApplicationContext());
+                rich.setTextSize(20);
+                rich.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 setIfHasValue(item, rich, 1);
                 createEdit(item, params, rich, InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS, countRich);
                 countRich++;
@@ -778,6 +771,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 array = new EditText(getApplicationContext());
+                array.setTextSize(20);
+                array.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 setIfHasValue(item, array, 0);
                 createEdit(item, params, array, InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT, countArray);
                 countArray++;
@@ -787,8 +782,9 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 String[] temp = condition.split("\\|");
+                globalMapText = condition.split("\\|");
                 for (int i = 0; i < temp.length; i++) {
-                    temp[i] = temp[i].substring(2);
+                    temp[i] = temp[i].split(":")[1];
                 }
                 final String[] partsM = temp;
                 mapLayout = new LinearLayout(getApplicationContext());
@@ -814,6 +810,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 );
                 weightBt.setLayoutParams(params);
                 map = new TextView(getApplicationContext());
+                map.setTextSize(20);
+                map.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 setIfHasValue(item, map, 1);
                 mapLayout.addView(weightTv);
                 mapLayout.addView(weightBt);
@@ -991,7 +989,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     }
 
     private JSONObject putJson(JSONObject object, AutoRunItem item) {
-        if(item.isHasValue() == 1) {
+        if (item.isHasValue() == 1) {
             try {
                 object.put("agentId", item.getAgentId());
                 object.put("option", item.getOption());
@@ -1035,6 +1033,12 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                     break;
                 case 1:
                     ((TextView) view).setText(item.getValue());
+                    break;
+                case 2:
+                    String[] parts = item.getValue().split("\\|");
+                    for (String str : parts) {
+                        ((TextView) view).append(str + "\n");
+                    }
                     break;
             }
         }
@@ -1084,7 +1088,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     @Override
     public void onClick(View view) {
-        Log.w("List", connectorList.size() + "");
         switch (connectorList.size()) {
             case 0:
                 isDropAuth = true;
@@ -1157,7 +1160,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             Utilities.API_CONNECT(Action, Para, AddAutoRunActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
                 isDropAuth = true;
-                add();
+                add();//switch to get autoRun
             } else {
                 Intent intent = new Intent();
                 intent.setClass(AddAutoRunActivity.this, DropboxAuthActivity.class);
@@ -1197,6 +1200,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         iterateList(tmp, mappingList);
         iterateList(tmp, arrayList);
         for (JSONObject object : tmp) {
+            Log.w("length", object.length() + "");
             if (object != null && object.length() == 5) {
                 jsonArray.put(object);
             }

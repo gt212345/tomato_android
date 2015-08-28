@@ -70,6 +70,7 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
     EditText phone, text, number, pass, email, rich, array;
     LocationManager manager;
     Toolbar toolbar;
+    String[] globalMapText;
     int countCheck = 0, countRadio = 0, countPhone = 0, countEmail = 0, countText = 0, countNum = 0, countPass = 0, countRich = 0, countMap, countSch = 0, countArray = 0;
     double latD = 0;
     double lngD = 0;
@@ -141,22 +142,10 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 map.setText("");
                 map.append(string);
                 try {
-                    switch (string) {
-                        case "low":
-                            mappingList.get(num - 1).put("value", 0);
-                            break;
-                        case "medium":
-                            mappingList.get(num - 1).put("value", 1);
-                            break;
-                        case "high":
-                            mappingList.get(num - 1).put("value", 2);
-                            break;
-                        case "very high":
-                            mappingList.get(num - 1).put("value", 3);
-                            break;
-                        case "danger":
-                            mappingList.get(num - 1).put("value", 4);
-                            break;
+                    for (int i = 0; i < globalMapText.length; i++) {
+                        if (string.equals(globalMapText[i].split(":")[1])) {
+                            mappingList.get(num - 1).put("value", globalMapText[i].split(":")[0]);
+                        }
                     }
                     mappingList.get(num - 1).put("agentParameter", "options");
                 } catch (JSONException e) {
@@ -756,8 +745,9 @@ public class EditAutoRunActivity extends AppCompatActivity implements DataRetrie
                 mappingList.add(putJson(new JSONObject(), item));
                 condition = item.getCondition();
                 String[] temp = condition.split("\\|");
+                globalMapText = condition.split("\\|");
                 for (int i = 0; i < temp.length; i++) {
-                    temp[i] = temp[i].substring(2);
+                    temp[i] = temp[i].split(":")[1];
                 }
                 final String[] partsM = temp;
                 mapLayout = new LinearLayout(getApplicationContext());
