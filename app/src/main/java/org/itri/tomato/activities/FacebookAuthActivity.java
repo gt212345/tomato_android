@@ -3,7 +3,6 @@ package org.itri.tomato.activities;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.hardware.camera2.params.Face;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -43,7 +43,8 @@ public class FacebookAuthActivity extends AppCompatActivity {
     String id;
     String name;
     Button loginButton;
-//    boolean isEnable;
+    TextView status;
+    boolean isEnable;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -51,7 +52,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-//        isEnable = getIntent().getBooleanExtra("enable", false);
+        isEnable = getIntent().getBooleanExtra("enable", false);
         if (sharedPreferences.getInt(Utilities.SDK_VERSION, -100) >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -66,22 +67,22 @@ public class FacebookAuthActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
         loginButton = (Button) findViewById(R.id.login_button_fb);
         LoginManager.getInstance().logOut();
-//        if (isEnable) {
-//            loginButton.setText("Disable");
-//        } else {
-        loginButton.setText("Enable");
-//        }
+        status = (TextView) findViewById(R.id.fbStatus);
+        if (isEnable) {
+            status.setText("Status:                                         Enable");//temp use
+            loginButton.setText("Disable");
+        } else {
+            status.setText("Status:                                         Disable");//temp use
+            loginButton.setText("Enable");
+        }
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (!isEnable) {
-//                    LoginManager.getInstance().logInWithReadPermissions(FacebookAuthActivity.this, Arrays.asList("public_profile", "email", "publish_actions"));
-//                LoginManager.getInstance().logOut();
-                LoginManager.getInstance().logInWithPublishPermissions(FacebookAuthActivity.this, Arrays.asList("publish_actions"));
-//                } else {
-//                    toast.setText("Not Support Yet");
-//                    toast.show();
-//                }
+                if (!isEnable) {
+                    LoginManager.getInstance().logInWithPublishPermissions(FacebookAuthActivity.this, Arrays.asList("publish_actions"));
+                } else {
+                    new Thread(deleteToken).start();
+                }
             }
         });
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -149,7 +150,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-//                        isEnable = true;
+                        isEnable = true;
                         loginButton.setText("Disable");
                         setResult(RESULT_OK);
                         FacebookAuthActivity.this.finish();
@@ -159,9 +160,7 @@ public class FacebookAuthActivity extends AppCompatActivity {
             }
         }
     };
-    /**
-     * spec not confirmed
-     */
+
     Runnable deleteToken = new Runnable() {
         @Override
         public void run() {
@@ -176,6 +175,10 @@ public class FacebookAuthActivity extends AppCompatActivity {
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, FacebookAuthActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
+                loginButton.setText("Enable");
+                toast.setText("Disabled");
+                FacebookAuthActivity.this.finish();
+                toast.show();
             } else {
             }
         }

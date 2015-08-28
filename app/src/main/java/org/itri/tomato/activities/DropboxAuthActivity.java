@@ -18,6 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dropbox.client2.DropboxAPI;
@@ -70,6 +71,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
     Button loginButtonDb;
     boolean isEnable;
     Toast toast;
+    TextView status;
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -77,6 +79,7 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dropbox_auth);
+        status = (TextView) findViewById(R.id.dbStatus);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         isEnable = getIntent().getBooleanExtra("enable", false);
@@ -93,23 +96,25 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
 //        AndroidAuthSession session = new AndroidAuthSession(appKeys);
 //        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
         loginButtonDb = (Button) findViewById(R.id.login_button_db);
-//        if (isEnable) {
-//            loginButtonDb.setText("Disable");
-//        } else {
-//            loginButtonDb.setText("Enable");
-//        }
+        if (isEnable) {
+            status.setText("Status:                                     Enable");//temp use
+            loginButtonDb.setText("Disable");
+        } else {
+            status.setText("Status:                                     Disable");//temp use
+            loginButtonDb.setText("Enable");
+        }
         loginButtonDb.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-//        if (!isEnable) {
+        if (!isEnable) {
 //            mDBApi.getSession().startOAuth2Authentication(DropboxAuthActivity.this);
-//        } else {
-//            toast.setText("Not Support Yet");
-//            toast.show();
-//        }
-        new Thread(requestToken).start();
+            new Thread(requestToken).start();
+        } else {
+            new Thread(deleteToken).start();
+        }
+
     }
 
     @Override
@@ -237,9 +242,30 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
                         isEnable = true;
                         setResult(RESULT_OK);
                         DropboxAuthActivity.this.finish();
-//                        loginButtonDb.setText("Disable");
+                        loginButtonDb.setText("Disable");
                     }
                 });
+            }
+        }
+    };
+
+    Runnable deleteToken = new Runnable() {
+        @Override
+        public void run() {
+            String Action = Utilities.ACTION + "DelUserConnectorById";
+            JSONObject para = new JSONObject();
+            try {
+                para.put("uid", sharedPreferences.getString(Utilities.USER_ID, null));
+                para.put("token", sharedPreferences.getString(Utilities.USER_TOKEN, null));
+                para.put("connectorId", "2");
+            } catch (JSONException e) {
+            }
+            String Para = Utilities.PARAMS + para.toString();
+            Utilities.API_CONNECT(Action, Para, DropboxAuthActivity.this, true);
+            if (Utilities.getResponseCode().equals("true")) {
+                toast.setText("Disabled");
+                toast.show();
+                DropboxAuthActivity.this.finish();
             }
         }
     };

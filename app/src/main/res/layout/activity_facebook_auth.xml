@@ -8,12 +8,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.itri.tomato.activities.FacebookAuthActivity">
 
+    <TextView
+        android:id="@+id/fbStatus"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/login_button_fb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/fbStatus"
         android:layout_gravity="center_horizontal"
         android:text="Enable"
         android:theme="@style/ThemeOverlay.AppCompat.Dark" />
@@ -35,7 +42,7 @@
         android:layout_alignTop="@+id/fbIcon"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/login_button_fb"
+        android:layout_toEndOf="@+id/fbStatus"
         android:layout_toRightOf="@+id/fbIcon"
         android:text="Facebook is a social networking website launched in Feb 2004.Users may create a personal profile, add other users as friends, and exchange messages, including automatic notifications when they update their profile" />
 
