@@ -69,10 +69,10 @@ public class FacebookAuthActivity extends AppCompatActivity {
         LoginManager.getInstance().logOut();
         status = (TextView) findViewById(R.id.fbStatus);
         if (isEnable) {
-            status.setText("Status:                                         Enable");//temp use
+            status.setText("Status:                                     Enable");//temp use
             loginButton.setText("Disable");
         } else {
-            status.setText("Status:                                         Disable");//temp use
+            status.setText("Status:                                     Disable");//temp use
             loginButton.setText("Enable");
         }
         loginButton.setOnClickListener(new View.OnClickListener() {

@@ -97,10 +97,10 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
 //        mDBApi = new DropboxAPI<AndroidAuthSession>(session);
         loginButtonDb = (Button) findViewById(R.id.login_button_db);
         if (isEnable) {
-            status.setText("Status:                                     Enable");//temp use
+            status.setText("Status:                                 Enable");//temp use
             loginButtonDb.setText("Disable");
         } else {
-            status.setText("Status:                                     Disable");//temp use
+            status.setText("Status:                                 Disable");//temp use
             loginButtonDb.setText("Enable");
         }
         loginButtonDb.setOnClickListener(this);
