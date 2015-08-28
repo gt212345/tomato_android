@@ -263,9 +263,15 @@ public class DropboxAuthActivity extends AppCompatActivity implements View.OnCli
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, DropboxAuthActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
-                toast.setText("Disabled");
-                toast.show();
-                DropboxAuthActivity.this.finish();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loginButtonDb.setText("Enable");
+                        toast.setText("Disabled");
+                        toast.show();
+                        DropboxAuthActivity.this.finish();
+                    }
+                });
             }
         }
     };

@@ -69,10 +69,10 @@ public class FacebookAuthActivity extends AppCompatActivity {
         LoginManager.getInstance().logOut();
         status = (TextView) findViewById(R.id.fbStatus);
         if (isEnable) {
-            status.setText("Status:                                     Enable");//temp use
+            status.setText("Status:                                 Enable");//temp use
             loginButton.setText("Disable");
         } else {
-            status.setText("Status:                                     Disable");//temp use
+            status.setText("Status:                                 Disable");//temp use
             loginButton.setText("Enable");
         }
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -175,10 +175,15 @@ public class FacebookAuthActivity extends AppCompatActivity {
             String Para = Utilities.PARAMS + para.toString();
             Utilities.API_CONNECT(Action, Para, FacebookAuthActivity.this, true);
             if (Utilities.getResponseCode().equals("true")) {
-                loginButton.setText("Enable");
-                toast.setText("Disabled");
-                FacebookAuthActivity.this.finish();
-                toast.show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loginButton.setText("Enable");
+                        toast.setText("Disabled");
+                        FacebookAuthActivity.this.finish();
+                        toast.show();
+                    }
+                });
             } else {
             }
         }
