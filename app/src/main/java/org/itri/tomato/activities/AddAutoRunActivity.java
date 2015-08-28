@@ -23,12 +23,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,7 +83,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
 
     String id;
     ArrayList<Bitmap> icons;
-    boolean isMapCreated = false, isChecked = false, isAUth = false;
+    boolean isMapCreated = false, isChecked = false, isAuth = false;
     boolean isFaceAuth = false, isDropAuth = false, has2Auth = false;
     DialogFragment dialogFragment;
     Toast toast;
@@ -123,6 +125,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.setStatusBarColor(this.getResources().getColor(R.color.statusBar));
         }
+        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(R.dimen.flexible_space_image_height);
         mActionBarSize = 125;/**/
         geocoder = new Geocoder(this, Locale.TAIWAN);
@@ -173,14 +176,8 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     @Override
     protected void onResume() {
         super.onResume();
-        progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
         if (!isChecked) {
             new Thread(getAutoRunService).start();
-        }
-        if (isChecked && !isAUth) {
-            toast.setText("No Authentication");
-            toast.show();
-            finish();
         }
     }
 
@@ -248,6 +245,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == MAP_RESULT) {
+            progressDialog.dismiss();
             latD = roundDown5(data.getDoubleExtra("lat", 0));
             lngD = roundDown5(data.getDoubleExtra("lng", 0));
             lat.setText(latStr + ": ");
@@ -271,14 +269,22 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 e.printStackTrace();
             }
         } else if (resultCode == RESULT_OK && requestCode == CHECK_FB_RESULT) {
-            isAUth = true;
+            progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+            isAuth = true;
             new Thread(checkFacebook).start();
         } else if (resultCode == RESULT_OK && requestCode == CHECK_DB_RESULT) {
-            isAUth = true;
+            progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
+            isAuth = true;
             new Thread(checkDropbox).start();
         } else if (resultCode == RESULT_OK && requestCode == CHECK_2FB_RESULT) {
-            isAUth = true;
+            progressDialog = ProgressDialog.show(this, "載入中", "請稍等......", false);
             new Thread(checkFacebook).start();
+        } else {
+            if (isChecked && !isAuth) {
+                toast.setText("No Authentication");
+                toast.show();
+                finish();
+            }
         }
     }
 
@@ -386,6 +392,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         case 0:
                             isDropAuth = true;
                             isFaceAuth = true;
+                            isAuth = true;
                             new Thread(getAutoRunSettings).start();
                             break;
                         case 1:
@@ -458,7 +465,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                 TextView overlay = new TextView(getApplicationContext());
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        800
+                        500
                 );
                 overlay.setLayoutParams(params);
                 layout.addView(overlay);
@@ -682,6 +689,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 phone = new EditText(getApplicationContext());
+                phone.setInputType(InputType.TYPE_CLASS_PHONE);
                 setIfHasValue(item, phone, 0);
                 createEdit(item, params, phone, InputType.TYPE_CLASS_PHONE, countPhone++);
                 layout.addView(blank);
@@ -694,6 +702,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 email = new EditText(getApplicationContext());
+                email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                 setIfHasValue(item, email, 0);
                 createEdit(item, params, email, InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS, countEmail);
                 layout.addView(blank);
@@ -705,6 +714,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 number = new EditText(getApplicationContext());
+                number.setInputType(InputType.TYPE_CLASS_NUMBER);
                 setIfHasValue(item, number, 0);
                 createEdit(item, params, number, InputType.TYPE_CLASS_NUMBER, countNum++);
                 layout.addView(blank);
@@ -716,6 +726,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 pass = new EditText(getApplicationContext());
+                pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 setIfHasValue(item, pass, 0);
                 createEdit(item, params, pass, InputType.TYPE_TEXT_VARIATION_PASSWORD, countPass++);
                 layout.addView(blank);
@@ -727,6 +738,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
                 text = new EditText(getApplicationContext());
+                text.setSingleLine(false);
                 setIfHasValue(item, text, 0);
                 createEdit(item, params, text, InputType.TYPE_CLASS_TEXT, countText++);
                 layout.addView(blank);
@@ -829,6 +841,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
                         3.0f
                 );
                 rich = new EditText(getApplicationContext());
+                rich.setSingleLine(false);
                 rich.setTextSize(20);
                 rich.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
                 setIfHasValue(item, rich, 1);
@@ -934,7 +947,7 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
         layout.addView(weightTv);
         editText.setTextSize(20);
         editText.getBackground().setColorFilter(getResources().getColor(R.color.abc_primary_text_material_light), PorterDuff.Mode.SRC_ATOP);
-        editText.setInputType(inputType);
+//        editText.setInputType(inputType);
         editText.setHintTextColor(Color.parseColor("#9E9E9E"));
         editText.setTextColor(getResources().getColor(R.color.abc_primary_text_material_light));
         editText.setLayoutParams(param);
@@ -1030,7 +1043,6 @@ public class AddAutoRunActivity extends AppCompatActivity implements ObservableS
             orientLayout.addView(editText);
             orientLayout.addView(richBt);
             layout.addView(orientLayout);
-
             final TextView condition = new TextView(getApplicationContext());
             condition.setTextColor(getResources().getColor(android.R.color.black));
             condition.setText(item.getCondition());
